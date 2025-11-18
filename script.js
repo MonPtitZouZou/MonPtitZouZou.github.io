@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     start.disabled = true;
     start.textContent = "Vérification en cours…";
 
-    // Simuler vérification 3 secondes
+    // Simuler une vérification de 3 secondes
     setTimeout(() => {
       reveal.classList.add('show');   // afficher le prank
       start.textContent = "Lancer la vérification";
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Rendre le bouton "Retour" insaisissable
       const retourBtn = reveal.querySelector(".white-btn");
-      makeButtonUncatchable(retourBtn);
+      makeButtonUncatchable(retourBtn, reveal);
 
     }, 3000);
   });
@@ -52,33 +52,36 @@ function share() {
   }
 }
 
-// Bouton retour simple (si vraiment cliqué)
-function closePrank() {
-  const reveal = document.getElementById('reveal');
-  reveal.classList.remove('show');
-}
-
-// Fonction pour rendre le bouton "Retour" insaisissable
-function makeButtonUncatchable(button) {
-  button.style.position = "relative"; // reste dans sa box
+// Fonction bouton "Retour" insaisissable
+function makeButtonUncatchable(button, container) {
+  button.style.position = "absolute";  // permet déplacement libre
   button.style.transition = "transform 0.2s";
 
+  // placer bouton à sa position actuelle
+  const rect = button.getBoundingClientRect();
+  const parentRect = container.getBoundingClientRect();
+  let offsetX = rect.left - parentRect.left;
+  let offsetY = rect.top - parentRect.top;
+  button.style.left = offsetX + "px";
+  button.style.top = offsetY + "px";
+
+  const btnWidth = button.offsetWidth;
+  const btnHeight = button.offsetHeight;
+
   button.addEventListener("mouseenter", () => {
-    // Déplacement aléatoire léger à l'intérieur de sa boîte
-    const moveX = (Math.random() - 0.5) * 50; // ±25px
-    const moveY = (Math.random() - 0.5) * 20; // ±10px
-    button.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    const maxX = container.clientWidth - btnWidth;
+    const maxY = container.clientHeight - btnHeight;
+
+    // nouvelle position aléatoire dans la zone
+    const newX = Math.random() * maxX;
+    const newY = Math.random() * maxY;
+
+    button.style.transform = `translate(${newX - offsetX}px, ${newY - offsetY}px)`;
   });
 
-  button.addEventListener("mouseleave", () => {
-    // Revenir à sa position d'origine
-    button.style.transform = `translate(0,0)`;
-  });
-
-  // Optionnel : si on clique vraiment dessus (rare)
-  // Optionnel : si on clique vraiment dessus (rare)
+  // si on clique vraiment dessus (rare)
   button.addEventListener("click", () => {
     alert("Tu as réussi à cliquer !");
-    document.getElementById('reveal').classList.remove("show");
+    container.classList.remove("show");
   });
 }
