@@ -1,19 +1,27 @@
-const start = document.getElementById('startBtn');
-const reveal = document.getElementById('reveal');
-const card = document.getElementById('card');
+// script.js
 
-start.addEventListener('click', () => {
-  start.disabled = true;
-  start.textContent = "Vérification en cours…";
+// S'assurer que le DOM est chargé avant d'exécuter le JS
+document.addEventListener("DOMContentLoaded", () => {
+  const start = document.getElementById('startBtn');
+  const reveal = document.getElementById('reveal');
+  const card = document.getElementById('card');
 
-  setTimeout(() => {
-    reveal.classList.add('show');
-    start.textContent = "Lancer la vérification";
-    start.disabled = false;
-    spawnConfetti(40);
-  }, 3000);
+  // Clic sur "Lancer la vérification"
+  start.addEventListener('click', () => {
+    start.disabled = true;
+    start.textContent = "Vérification en cours…";
+
+    // Simuler une vérification de 3 secondes
+    setTimeout(() => {
+      reveal.classList.add('show');   // afficher le prank
+      start.textContent = "Lancer la vérification";
+      start.disabled = false;
+      spawnConfetti(40);              // lancer les confettis
+    }, 3000);
+  });
 });
 
+// Fonction pour créer les confettis
 function spawnConfetti(n) {
   const colors = ['#ff5c8a','#ffd166','#7ae582','#7cc7ff','#b399ff'];
 
@@ -31,10 +39,12 @@ function spawnConfetti(n) {
 
     card.appendChild(el);
 
+    // Supprimer le confetti après l'animation
     setTimeout(() => el.remove(), 2200);
   }
 }
 
+// Bouton "Partager" dans le prank
 function share() {
   const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
   if (navigator.share) {
@@ -46,6 +56,8 @@ function share() {
   }
 }
 
+// Bouton "Retourner" pour fermer le prank
 function closePrank() {
+  const reveal = document.getElementById('reveal');
   reveal.classList.remove('show');
 }
