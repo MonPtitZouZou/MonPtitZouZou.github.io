@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const reveal = document.getElementById('reveal');
   const card = document.getElementById('card');
 
-  // Clic sur "Lancer la vérification"
   start.addEventListener('click', () => {
     start.disabled = true;
     start.textContent = "Vérification en cours…";
@@ -15,10 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
       start.disabled = false;
       spawnConfetti(40);              // lancer les confettis
 
-      // Après quelques secondes, ouvrir la "page finale"
+      // Ouvrir la page finale après 1.5s
       setTimeout(() => {
         openFakePage();
-      }, 1500); // décalage après l'apparition du prank
+      }, 1500);
+
     }, 3000);
   });
 });
@@ -43,7 +43,7 @@ function spawnConfetti(n) {
   }
 }
 
-// Bouton "Partager"
+// Partage
 function share() {
   const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
   if (navigator.share) {
@@ -53,7 +53,7 @@ function share() {
   }
 }
 
-// Bouton "Retourner" pour fermer le prank
+// Retour prank
 function closePrank() {
   const reveal = document.getElementById('reveal');
   reveal.classList.remove('show');
@@ -61,39 +61,52 @@ function closePrank() {
 
 // --- Page finale avec bouton insaisissable ---
 function openFakePage() {
+  // Création overlay
   const overlay = document.createElement('div');
   overlay.id = "fakePage";
   overlay.style.position = "fixed";
-  overlay.style.inset = "0";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
   overlay.style.background = "#071029";
   overlay.style.display = "flex";
-  overlay.style.flexDirection = "column";
   overlay.style.alignItems = "center";
   overlay.style.justifyContent = "center";
+  overlay.style.flexDirection = "column";
   overlay.style.color = "#fff";
-  overlay.style.zIndex = 9999;
+  overlay.style.zIndex = "9999";
 
+  // Titre
   const title = document.createElement('h1');
   title.textContent = "Vérification finale…";
   overlay.appendChild(title);
 
+  // Bouton insaisissable
   const btn = document.createElement('button');
   btn.textContent = "Retour";
+  btn.style.position = "absolute";
   btn.style.padding = "12px 24px";
   btn.style.borderRadius = "12px";
   btn.style.cursor = "pointer";
-  btn.style.position = "absolute";
+  // Initial position
   btn.style.top = "50%";
   btn.style.left = "50%";
   overlay.appendChild(btn);
 
   document.body.appendChild(overlay);
 
-  // Bouton insaisissable
+  // Bouger le bouton à chaque survol
   btn.addEventListener("mouseenter", () => {
     const maxX = window.innerWidth - btn.offsetWidth;
     const maxY = window.innerHeight - btn.offsetHeight;
     btn.style.left = Math.random() * maxX + "px";
     btn.style.top = Math.random() * maxY + "px";
+  });
+
+  // Si tu veux vraiment un bouton cliquable après plusieurs essais
+  btn.addEventListener("click", () => {
+    alert("Tu as réussi à cliquer !");
+    overlay.remove();
   });
 }
