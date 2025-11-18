@@ -7,20 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
     start.disabled = true;
     start.textContent = "Vérification en cours…";
 
+    // Simuler vérification 3 secondes
     setTimeout(() => {
       reveal.classList.add('show');   // afficher le prank
       start.textContent = "Lancer la vérification";
       start.disabled = false;
-      spawnConfetti(40);              // lancer les confettis
+      spawnConfetti(40);              // lancer confettis
 
-      const originalBtn = reveal.querySelector(".white-btn");
-      makeButtonUncatchable(originalBtn, reveal);
+      // Rendre le bouton "Retour" insaisissable
+      const retourBtn = reveal.querySelector(".white-btn");
+      makeButtonUncatchable(retourBtn);
 
     }, 3000);
   });
 });
 
-// Confettis
+// Fonction confettis
 function spawnConfetti(n) {
   const colors = ['#ff5c8a','#ffd166','#7ae582','#7cc7ff','#b399ff'];
   const card = document.getElementById('card');
@@ -40,7 +42,7 @@ function spawnConfetti(n) {
   }
 }
 
-// Partage
+// Fonction partage
 function share() {
   const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
   if (navigator.share) {
@@ -50,34 +52,32 @@ function share() {
   }
 }
 
-// Retour prank (optionnel si on clique vraiment)
+// Bouton retour simple (si vraiment cliqué)
 function closePrank() {
   const reveal = document.getElementById('reveal');
   reveal.classList.remove('show');
 }
 
-// Bouton insaisissable sans casser la page
-function makeButtonUncatchable(originalBtn, container) {
-  // Cloner le bouton pour pouvoir le bouger librement
-  const clone = originalBtn.cloneNode(true);
-  clone.style.position = "absolute";
-  clone.style.top = originalBtn.offsetTop + "px";
-  clone.style.left = originalBtn.offsetLeft + "px";
-  clone.style.margin = "0";
-  clone.style.zIndex = "1000";
-  originalBtn.parentElement.appendChild(clone);
+// Fonction pour rendre le bouton "Retour" insaisissable
+function makeButtonUncatchable(button) {
+  button.style.position = "relative"; // reste dans sa box
+  button.style.transition = "transform 0.2s";
 
-  originalBtn.style.visibility = "hidden";
-
-  clone.addEventListener("mouseenter", () => {
-    const maxX = container.clientWidth - clone.offsetWidth;
-    const maxY = container.clientHeight - clone.offsetHeight;
-    clone.style.left = Math.random() * maxX + "px";
-    clone.style.top = Math.random() * maxY + "px";
+  button.addEventListener("mouseenter", () => {
+    // Déplacement aléatoire léger à l'intérieur de sa boîte
+    const moveX = (Math.random() - 0.5) * 50; // ±25px
+    const moveY = (Math.random() - 0.5) * 20; // ±10px
+    button.style.transform = `translate(${moveX}px, ${moveY}px)`;
   });
 
-  clone.addEventListener("click", () => {
+  button.addEventListener("mouseleave", () => {
+    // Revenir à sa position d'origine
+    button.style.transform = `translate(0,0)`;
+  });
+
+  // Optionnel : si on clique vraiment dessus (rare)
+  button.addEventListener("click", () => {
     alert("Tu as réussi à cliquer !");
-    container.classList.remove("show");
+    document.getElementById('reveal').classList.remove("show");
   });
 }
