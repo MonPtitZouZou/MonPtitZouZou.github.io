@@ -5,10 +5,7 @@
   --text:#e6eef8;
 }
 
-* {
-  box-sizing:border-box;
-  font-family:Inter, system-ui, Arial, sans-serif;
-}
+* { box-sizing:border-box; font-family:Inter, system-ui, Arial, sans-serif; }
 
 body {
   margin:0;
@@ -32,39 +29,13 @@ body {
   overflow:hidden;
 }
 
-h1 {
-  margin:0 0 8px;
-  font-size:28px;
-  letter-spacing:-0.4px;
-}
+h1 { margin:0 0 8px; font-size:28px; letter-spacing:-0.4px; }
+.lead { margin:0 0 20px; opacity:0.9; }
 
-.lead {
-  margin:0 0 20px;
-  opacity:0.9;
-}
-
-.row {
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.badge {
-  background:linear-gradient(90deg,var(--accent),#ff9bb8);
-  padding:8px 12px;
-  border-radius:999px;
-  font-weight:700;
-}
-
-.meta {
-  font-size:13px;
-  opacity:0.9;
-}
-
-.big {
-  font-size:14px;
-  margin-top:18px;
-}
+.row { display:flex; gap:12px; align-items:center; }
+.badge { background:linear-gradient(90deg,var(--accent),#ff9bb8); padding:8px 12px; border-radius:999px; font-weight:700; }
+.meta { font-size:13px; opacity:0.9; }
+.big { font-size:14px; margin-top:18px; }
 
 button {
   border:0;
@@ -76,30 +47,13 @@ button {
   cursor:pointer;
 }
 
-.white-btn {
-  background:#fff;
-  color:#081023;
-}
+.white-btn { background:#fff; color:#081023; }
 
-.small-note {
-  font-size:13px;
-  opacity:0.85;
-  margin-top:8px;
-}
-
-.side {
-  width:220px;
-  text-align:center;
-  opacity:0.95;
-}
-
-.timer-text {
-  margin-top:10px;
-  font-size:13px;
-}
+.small-note { font-size:13px; opacity:0.85; margin-top:8px; }
+.side { width:220px; text-align:center; opacity:0.95; }
+.timer-text { margin-top:10px; font-size:13px; }
 
 /* REVEAL PRANK */
-
 .reveal {
   position:absolute;
   inset:0;
@@ -115,27 +69,11 @@ button {
   transition:transform .6s cubic-bezier(.2,.9,.3,1);
   backdrop-filter:blur(2px);
 }
+.reveal.show { transform:translateY(0%); }
 
-.reveal.show {
-  transform:translateY(0%);
-}
-
-.prank-title {
-  font-size:44px;
-  font-weight:800;
-  letter-spacing:-1px;
-}
-
-.prank-sub {
-  opacity:0.95;
-}
-
-.buttons {
-  display:flex;
-  gap:10px;
-}
-
-/* CONFETTI */
+.prank-title { font-size:44px; font-weight:800; letter-spacing:-1px; }
+.prank-sub { opacity:0.95; }
+.buttons { display:flex; gap:10px; position:relative; }
 
 .confetti-piece {
   position:absolute;
@@ -147,12 +85,7 @@ button {
 }
 
 @keyframes fall {
-  to {
-    transform:translateY(420px) rotate(360deg);
-    opacity:1;
-  }
+  to { transform:translateY(420px) rotate(360deg); opacity:1; }
 }
 
-@media (max-width:520px) {
-  .prank-title { font-size:30px; }
-}
+@media (max-width:520px) { .prank-title { font-size:30px; } }
