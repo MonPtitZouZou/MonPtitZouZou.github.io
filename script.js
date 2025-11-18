@@ -76,6 +76,7 @@ function makeButtonUncatchable(button) {
   });
 
   // Optionnel : si on clique vraiment dessus (rare)
+  // Optionnel : si on clique vraiment dessus (rare)
   button.addEventListener("click", () => {
     alert("Tu as réussi à cliquer !");
     document.getElementById('reveal').classList.remove("show");
