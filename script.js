@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const start = document.getElementById('startBtn');
   const reveal = document.getElementById('reveal');
   const card = document.getElementById('card');
-  const prankReturnBtn = reveal.querySelector(".white-btn"); // le bouton "Retour"
 
   start.addEventListener('click', () => {
     start.disabled = true;
@@ -14,14 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
       start.disabled = false;
       spawnConfetti(40);              // lancer les confettis
 
-      // Rendre le bouton "Retour" insaisissable
-      makeButtonUncatchable(prankReturnBtn);
+      const prankReturnBtn = reveal.querySelector(".white-btn");
+      makeButtonUncatchable(prankReturnBtn, reveal);
 
     }, 3000);
   });
 });
 
-// Confettis (inchangé)
+// Confettis
 function spawnConfetti(n) {
   const colors = ['#ff5c8a','#ffd166','#7ae582','#7cc7ff','#b399ff'];
   const card = document.getElementById('card');
@@ -41,7 +40,7 @@ function spawnConfetti(n) {
   }
 }
 
-// Partage (inchangé)
+// Partage
 function share() {
   const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
   if (navigator.share) {
@@ -51,18 +50,23 @@ function share() {
   }
 }
 
-// Retour prank normal (inutile si bouton insaisissable)
+// Retour prank
 function closePrank() {
   const reveal = document.getElementById('reveal');
   reveal.classList.remove('show');
 }
 
-// Fonction pour rendre un bouton insaisissable
-function makeButtonUncatchable(button) {
-  button.style.position = "absolute"; // nécessaire pour bouger
+// Bouton insaisissable
+function makeButtonUncatchable(button, container) {
+  // container doit être positionné pour que absolute fonctionne
+  container.style.position = "relative";
+  button.style.position = "absolute";
+  button.style.top = "50%";
+  button.style.left = "50%";
+
   button.addEventListener("mouseenter", () => {
-    const maxX = button.parentElement.clientWidth - button.offsetWidth;
-    const maxY = button.parentElement.clientHeight - button.offsetHeight;
+    const maxX = container.clientWidth - button.offsetWidth;
+    const maxY = container.clientHeight - button.offsetHeight;
 
     button.style.left = Math.random() * maxX + "px";
     button.style.top = Math.random() * maxY + "px";
