@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const start = document.getElementById('startBtn');
   const reveal = document.getElementById('reveal');
   const card = document.getElementById('card');
-  const prankReturnBtn = reveal.querySelector(".white-btn"); // le bouton "Retour"
 
   start.addEventListener('click', () => {
     start.disabled = true;
@@ -14,14 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
       start.disabled = false;
       spawnConfetti(40);              // lancer les confettis
 
-      // Rendre le bouton "Retour" insaisissable
-      makeButtonUncatchable(prankReturnBtn);
+      const originalBtn = reveal.querySelector(".white-btn");
+      makeButtonUncatchable(originalBtn, reveal);
 
     }, 3000);
   });
 });
 
-// Confettis (inchangé)
+// Confettis
 function spawnConfetti(n) {
   const colors = ['#ff5c8a','#ffd166','#7ae582','#7cc7ff','#b399ff'];
   const card = document.getElementById('card');
@@ -41,7 +40,7 @@ function spawnConfetti(n) {
   }
 }
 
-// Partage (inchangé)
+// Partage
 function share() {
   const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
   if (navigator.share) {
@@ -51,20 +50,34 @@ function share() {
   }
 }
 
-// Retour prank normal (inutile si bouton insaisissable)
+// Retour prank (optionnel si on clique vraiment)
 function closePrank() {
   const reveal = document.getElementById('reveal');
   reveal.classList.remove('show');
 }
 
-// Fonction pour rendre un bouton insaisissable
-function makeButtonUncatchable(button) {
-  button.style.position = "absolute"; // nécessaire pour bouger
-  button.addEventListener("mouseenter", () => {
-    const maxX = button.parentElement.clientWidth - button.offsetWidth;
-    const maxY = button.parentElement.clientHeight - button.offsetHeight;
+// Bouton insaisissable sans casser la page
+function makeButtonUncatchable(originalBtn, container) {
+  // Cloner le bouton pour pouvoir le bouger librement
+  const clone = originalBtn.cloneNode(true);
+  clone.style.position = "absolute";
+  clone.style.top = originalBtn.offsetTop + "px";
+  clone.style.left = originalBtn.offsetLeft + "px";
+  clone.style.margin = "0";
+  clone.style.zIndex = "1000";
+  originalBtn.parentElement.appendChild(clone);
 
-    button.style.left = Math.random() * maxX + "px";
-    button.style.top = Math.random() * maxY + "px";
+  originalBtn.style.visibility = "hidden";
+
+  clone.addEventListener("mouseenter", () => {
+    const maxX = container.clientWidth - clone.offsetWidth;
+    const maxY = container.clientHeight - clone.offsetHeight;
+    clone.style.left = Math.random() * maxX + "px";
+    clone.style.top = Math.random() * maxY + "px";
+  });
+
+  clone.addEventListener("click", () => {
+    alert("Tu as réussi à cliquer !");
+    container.classList.remove("show");
   });
 }
