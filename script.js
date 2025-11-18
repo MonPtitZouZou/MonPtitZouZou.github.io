@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       start.disabled = false;
       spawnConfetti(40);              // lancer confettis
 
-      // rendre le bouton "Retour" insaisissable
+      // rendre le bouton "Retour" fuyant
       const retourBtn = reveal.querySelector(".white-btn");
       makeButtonUncatchable(retourBtn);
 
@@ -51,26 +51,51 @@ function share() {
   }
 }
 
-// Fonction bouton "Retour" insaisissable
+// Fonction bouton "Retour" fuyant
 function makeButtonUncatchable(button) {
-  button.style.position = "relative";       // reste dans sa boîte
-  button.style.transition = "transform 0.2s";
+  const container = button.parentElement.parentElement; // .reveal
+  button.style.position = "absolute";
 
-  button.addEventListener("mouseenter", () => {
-    const maxX = 80;  // déplacement horizontal max
-    const maxY = 30;  // déplacement vertical max
-    const moveX = (Math.random() - 0.5) * maxX * 2; // ±maxX px
-    const moveY = (Math.random() - 0.5) * maxY * 2; // ±maxY px
-    button.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  // placer bouton au centre au départ
+  button.style.left = "50%";
+  button.style.top = "50%";
+  button.style.transform = "translate(-50%, -50%)";
+
+  container.addEventListener("mousemove", (e) => {
+    const rect = container.getBoundingClientRect();
+    const btnWidth = button.offsetWidth;
+    const btnHeight = button.offsetHeight;
+
+    // position souris relative au container
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const btnRect = button.getBoundingClientRect();
+    const btnX = btnRect.left - rect.left + btnWidth/2;
+    const btnY = btnRect.top - rect.top + btnHeight/2;
+
+    const distX = btnX - mouseX;
+    const distY = btnY - mouseY;
+    const dist = Math.sqrt(distX*distX + distY*distY);
+
+    // si la souris est trop proche, bouger le bouton
+    if (dist < 120) {
+      let moveX = (distX/dist)*80; // force proportionnelle
+      let moveY = (distY/dist)*80;
+
+      // limiter le bouton à la zone visible
+      let newX = Math.min(Math.max(btnX + moveX, btnWidth/2), rect.width - btnWidth/2);
+      let newY = Math.min(Math.max(btnY + moveY, btnHeight/2), rect.height - btnHeight/2);
+
+      button.style.left = newX + "px";
+      button.style.top = newY + "px";
+      button.style.transform = "translate(-50%, -50%)";
+    }
   });
 
-  button.addEventListener("mouseleave", () => {
-    button.style.transform = `translate(0,0)`; // revient au centre
-  });
-
-  // Si l'utilisateur clique vraiment dessus
+  // si l'utilisateur clique vraiment dessus
   button.addEventListener("click", () => {
     alert("Tu as réussi à cliquer !");
-    document.getElementById('reveal').classList.remove("show");
+    container.classList.remove("show");
   });
 }
