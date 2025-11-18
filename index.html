@@ -1,51 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tu t'es fait trollé !</title>
+  <title>Vérification en cours…</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="container">
-    <header>
-      <h1 id="title">Site officiel de "TROLLAGE"</h1>
-      <p class="subtitle">Un petit cadeau pour ton poto...</p>
-    </header>
+  <main class="center">
+    <div class="card">
+      <h1 id="headline">Vérification de sécurité</h1>
+      <p id="sub">Veuillez patienter pendant la vérification du système…</p>
 
-    <main>
-      <section class="stage">
-        <div id="fake-screen" class="fake-screen">
-          <h2>ERREUR SYSTÈME</h2>
-          <p>Processus <strong>LOL.EXE</strong> a rencontré une erreur critique.</p>
-          <p id="countdown">Réinitialisation dans <span id="sec">5</span>...</p>
+      <div class="loader" id="loader" aria-hidden="true">
+        <div class="bar-bg">
+          <div class="bar" id="progress" style="width:0%"></div>
         </div>
+        <div class="dots" id="dots">•••</div>
+        <small class="muted">Ne fermez pas cette fenêtre</small>
+      </div>
 
-        <div id="reveal" class="reveal hidden">
-          <div class="confetti" aria-hidden="true"></div>
-          <h2>POUM — T'AS ÉTÉ TROLLÉ ! 🎉</h2>
-          <p>Rien de cassé, c'était juste pour rigoler. Bisous.</p>
-          <div class="actions">
-            <button id="again">Rejouer la blague</button>
-            <button id="nice">Envoyer un message sympa</button>
-          </div>
+      <div id="reveal" class="hidden">
+        <div class="confetti" aria-hidden="true"></div>
+        <h2 id="reveal-title">Surprise ! 🎉</h2>
+        <p id="reveal-msg">Rien de cassé — c'était pour rigoler. Dis-lui bonjour de ma part !</p>
+        <div class="actions">
+          <button id="again">Recommencer</button>
+          <button id="personalize">Personnaliser</button>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="instructions">
-        <h3>Mode d'emploi</h3>
-        <ol>
-          <li>Ouvre ce site sur l'ordi de ton pote (ou partage le lien).</li>
-          <li>Attends que la fausse erreur apparaisse.</li>
-          <li>Révèle la blague et rigole ensemble — reste sympa !</li>
-        </ol>
-      </section>
-    </main>
-
-    <footer>
-      <small>Créé avec amour (et un peu de vilaineté) — garde ça bon enfant 😉</small>
-    </footer>
-  </div>
+    <footer class="note">Astuce : personnalisé sans collecte — tout reste local.</footer>
+  </main>
 
   <script src="script.js"></script>
 </body>
