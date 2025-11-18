@@ -7,16 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
     start.disabled = true;
     start.textContent = "Vérification en cours…";
 
-    // Simuler une vérification de 3 secondes
     setTimeout(() => {
       reveal.classList.add('show');   // afficher le prank
       start.textContent = "Lancer la vérification";
       start.disabled = false;
       spawnConfetti(40);              // lancer confettis
 
-      // Rendre le bouton "Retour" insaisissable
+      // rendre le bouton "Retour" insaisissable
       const retourBtn = reveal.querySelector(".white-btn");
-      makeButtonUncatchable(retourBtn, reveal);
+      makeButtonUncatchable(retourBtn);
 
     }, 3000);
   });
@@ -53,35 +52,25 @@ function share() {
 }
 
 // Fonction bouton "Retour" insaisissable
-function makeButtonUncatchable(button, container) {
-  button.style.position = "absolute";  // permet déplacement libre
+function makeButtonUncatchable(button) {
+  button.style.position = "relative";       // reste dans sa boîte
   button.style.transition = "transform 0.2s";
 
-  // placer bouton à sa position actuelle
-  const rect = button.getBoundingClientRect();
-  const parentRect = container.getBoundingClientRect();
-  let offsetX = rect.left - parentRect.left;
-  let offsetY = rect.top - parentRect.top;
-  button.style.left = offsetX + "px";
-  button.style.top = offsetY + "px";
-
-  const btnWidth = button.offsetWidth;
-  const btnHeight = button.offsetHeight;
-
   button.addEventListener("mouseenter", () => {
-    const maxX = container.clientWidth - btnWidth;
-    const maxY = container.clientHeight - btnHeight;
-
-    // nouvelle position aléatoire dans la zone
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
-
-    button.style.transform = `translate(${newX - offsetX}px, ${newY - offsetY}px)`;
+    const maxX = 80;  // déplacement horizontal max
+    const maxY = 30;  // déplacement vertical max
+    const moveX = (Math.random() - 0.5) * maxX * 2; // ±maxX px
+    const moveY = (Math.random() - 0.5) * maxY * 2; // ±maxY px
+    button.style.transform = `translate(${moveX}px, ${moveY}px)`;
   });
 
-  // si on clique vraiment dessus (rare)
+  button.addEventListener("mouseleave", () => {
+    button.style.transform = `translate(0,0)`; // revient au centre
+  });
+
+  // Si l'utilisateur clique vraiment dessus
   button.addEventListener("click", () => {
     alert("Tu as réussi à cliquer !");
-    container.classList.remove("show");
+    document.getElementById('reveal').classList.remove("show");
   });
 }
