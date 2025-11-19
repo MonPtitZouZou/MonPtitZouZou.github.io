@@ -1,51 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Important — Vérification requise</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Statut Discord • TonPseudo</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="card" id="card">
-    <div class="info">
-      <div style="flex:1">
-        <h1>Action requise — Vérification de sécurité</h1>
-        <p class="lead">Nous avons détecté une activité inhabituelle sur votre compte. Pour continuer, confirmez votre identité.</p>
+  <div class="container">
+    <img id="avatar" class="avatar" src="" alt="Avatar" />
+    <h1 id="username">Chargement…</h1>
+    <p id="discriminator" class="tag"></p>
 
-        <div class="row">
-          <div class="badge">VÉRIFICATION</div>
-          <div class="meta">Serveur : europe-01 • Session : 7b3f…a9</div>
-        </div>
-
-        <div class="big">Appuyez sur le bouton ci-dessous pour lancer la vérification automatique.</div>
-
-        <div style="margin-top:22px">
-          <button id="startBtn">Lancer la vérification</button>
-          <div class="small-note">Ne donne jamais ton mot de passe. Cette page est locale — aucune donnée n'est envoyée.</div>
-        </div>
-      </div>
-
-      <div class="side">
-        <svg width="180" height="180" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <rect x="8" y="8" width="104" height="104" rx="20" fill="#07203a"/>
-          <path d="M30 66c6-8 18-14 30-14s24 6 30 14" stroke="#ffd6e0" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="60" cy="48" r="10" fill="#ffd6e0" opacity="0.9"/>
-        </svg>
-        <div class="timer-text">Analyse rapide — 0:04</div>
-      </div>
+    <div id="status-indicator" class="status offline">
+      <span id="status-text">Hors ligne</span>
     </div>
 
-    <div id="reveal" class="reveal">
-      <div class="prank-title">PRANK ! 🎉</div>
-      <div class="prank-sub">C'était une blague — tranquillou 😄</div>
+    <div id="voice-info" class="voice hidden">
+      <h2>En vocal dans :</h2>
+      <p id="channel-name">Salon XYZ</p>
+      <p id="duration">depuis <span id="minutes">0</span> min</p>
+    </div>
 
-      <div class="buttons">
-        <button onclick="share()">Partager la blague</button>
-        <button class="white-btn">Retour</button>
-      </div>
-
-      <div class="small-note">N’utilise pas ça pour demander des infos perso — juste pour rigoler !</div>
+    <div id="not-voice" class="not-voice">
+      Pas en vocal pour le moment
     </div>
   </div>
 
