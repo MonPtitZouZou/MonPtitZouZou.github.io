@@ -1,4 +1,4 @@
-const USER_ID = "763055060678213652"; // ← garde ton ID
+const USER_ID = "763055060678213652"; // ← ton ID
 
 const avatarEl = document.getElementById("avatar");
 const usernameEl = document.getElementById("username");
@@ -11,7 +11,14 @@ const channelName = document.getElementById("channel-name");
 const minutesEl = document.getElementById("minutes");
 let voiceStartTime = null;
 
-// === FONCTIONS (garde exactement les mêmes que avant) ===
+// AFFICHAGE IMMÉDIAT AU CHARGEMENT (plus jamais 15 min d'attente)
+fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`)
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) updatePresence({ d: data.data });
+  });
+
+// FONCTIONS
 function updatePresence(data) {
   if (!data?.d) return;
   const p = data.d;
@@ -19,7 +26,7 @@ function updatePresence(data) {
 
   avatarEl.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=256`;
   usernameEl.textContent = user.global_name || user.username;
-  tagEl.textContent = `#${user.discriminator}`;
+  tagEl.textContent = user.discriminator === "0" ? "" : `#${user.discriminator}`;
 
   const status = p.discord_status;
   statusIndicator.className = `status ${status}`;
@@ -27,12 +34,12 @@ function updatePresence(data) {
                           status === "idle" ? "Absent" :
                           status === "dnd" ? "Ne pas déranger" : "Hors ligne";
 
-  const voice = p.activities?.find(a => a.type === 2);
+  const voice = p.activities?.find(a => a.type === 2 && a.name !== "Spotify");
   if (voice) {
     voiceInfo.classList.remove("hidden");
     notVoice.classList.add("hidden");
     channelName.textContent = voice.state || "Salon vocal privé";
-    voiceStartTime = voice.timestamps?.start;
+    voiceStartTime = voice.timestamps?.start || Date.now();
     updateDuration();
     setInterval(updateDuration, 30000);
   } else {
@@ -48,13 +55,13 @@ function updateDuration() {
   minutesEl.textContent = minutes;
 }
 
-// === NOUVEAU CODE WebSocket (remplace tout le fetch) ===
+// WEBSOCKET POUR LES MISES À JOUR EN LIVE
 const ws = new WebSocket("wss://api.lanyard.rest/socket");
 
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
 
-  if (data.op === 1) { // hello
+  if (data.op === 1) {
     ws.send(JSON.stringify({
       op: 2,
       d: { subscribe_to_id: USER_ID }
