@@ -1,101 +1,67 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const start = document.getElementById('startBtn');
-  const reveal = document.getElementById('reveal');
-  const card = document.getElementById('card');
+// CHANGE UNIQUEMENT CETTE LIGNE
+const USER_ID = "TON_USER_ID_ICI";   // ← Mets ton vrai User ID ici !
 
-  start.addEventListener('click', () => {
-    start.disabled = true;
-    start.textContent = "Vérification en cours…";
+const avatarEl = document.getElementById("avatar");
+const usernameEl = document.getElementById("username");
+const tagEl = document.getElementById("discriminator");
+const statusIndicator = document.getElementById("status-indicator");
+const statusText = document.getElementById("status-text");
+const voiceInfo = document.getElementById("voice-info");
+const notVoice = document.getElementById("not-voice");
+const channelName = document.getElementById("channel-name");
+const minutesEl = document.getElementById("minutes");
 
-    setTimeout(() => {
-      reveal.classList.add('show');   // afficher le prank
-      start.textContent = "Lancer la vérification";
-      start.disabled = false;
-      spawnConfetti(40);              // lancer confettis
+let voiceStartTime = null;
 
-      // rendre le bouton "Retour" fuyant
-      const retourBtn = reveal.querySelector(".white-btn");
-      makeButtonUncatchable(retourBtn);
+function updatePresence(data) {
+  if (!data || !data.data) return;
+  const p = data.data;
+  const user = p.discord_user;
 
-    }, 3000);
-  });
-});
+  // Avatar + pseudo
+  avatarEl.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=256`;
+  usernameEl.textContent = user.global_name || user.username;
+  tagEl.textContent = `#${user.discriminator}`;
 
-// Fonction confettis
-function spawnConfetti(n) {
-  const colors = ['#ff5c8a','#ffd166','#7ae582','#7cc7ff','#b399ff'];
-  const card = document.getElementById('card');
+  // Statut global
+  const status = p.discord_status;
+  statusIndicator.className = `status ${status}`;
+  statusText.textContent = status === "online" ? "En ligne" :
+                          status === "idle" ? "Absent" :
+                          status === "dnd" ? "Ne pas déranger" : "Hors ligne";
 
-  for (let i = 0; i < n; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.left = (10 + Math.random() * 80) + '%';
-    el.style.top = (Math.random() * 30) + '%';
-    el.style.background = colors[i % colors.length];
-    el.style.transform = `translateY(-40px) rotate(${Math.random()*360}deg)`;
-    el.style.animationDelay = (Math.random() * 800) + 'ms';
-    el.style.width = (6 + Math.random()*12) + 'px';
-    el.style.height = (8 + Math.random()*16) + 'px';
-    card.appendChild(el);
-    setTimeout(() => el.remove(), 2200);
-  }
-}
+  // Recherche activité vocale (type === 2)
+  const voice = p.activities?.find(a => a.type === 2);
 
-// Fonction partage
-function share() {
-  const text = "Je viens de me faire avoir par un petit prank 😈 (tkt, c'était drôle)";
-  if (navigator.share) {
-    navigator.share({ text }).catch(() => alert("Impossible de partager."));
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert("Texte copié !"));
-  }
-}
-
-// Fonction bouton "Retour" fuyant
-function makeButtonUncatchable(button) {
-  const container = button.parentElement.parentElement; // .reveal
-  button.style.position = "absolute";
-
-  // placer bouton au centre au départ
-  button.style.left = "50%";
-  button.style.top = "50%";
-  button.style.transform = "translate(-50%, -50%)";
-
-  container.addEventListener("mousemove", (e) => {
-    const rect = container.getBoundingClientRect();
-    const btnWidth = button.offsetWidth;
-    const btnHeight = button.offsetHeight;
-
-    // position souris relative au container
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const btnRect = button.getBoundingClientRect();
-    const btnX = btnRect.left - rect.left + btnWidth/2;
-    const btnY = btnRect.top - rect.top + btnHeight/2;
-
-    const distX = btnX - mouseX;
-    const distY = btnY - mouseY;
-    const dist = Math.sqrt(distX*distX + distY*distY);
-
-    // si la souris est trop proche, bouger le bouton
-    if (dist < 120) {
-      let moveX = (distX/dist)*80; // force proportionnelle
-      let moveY = (distY/dist)*80;
-
-      // limiter le bouton à la zone visible
-      let newX = Math.min(Math.max(btnX + moveX, btnWidth/2), rect.width - btnWidth/2);
-      let newY = Math.min(Math.max(btnY + moveY, btnHeight/2), rect.height - btnHeight/2);
-
-      button.style.left = newX + "px";
-      button.style.top = newY + "px";
-      button.style.transform = "translate(-50%, -50%)";
+  if (voice) {
+    voiceInfo.classList.remove("hidden");
+    notVoice.classList.add("hidden");
+    channelName.textContent = voice.state || "Salon vocal privé";
+    
+    if (voice.timestamps?.start) {
+      voiceStartTime = voice.timestamps.start;
+      updateDuration();
+      setInterval(updateDuration, 30000); // toutes les 30s
     }
-  });
-
-  // si l'utilisateur clique vraiment dessus
-  button.addEventListener("click", () => {
-    alert("Tu as réussi à cliquer !");
-    container.classList.remove("show");
-  });
+  } else {
+    voiceInfo.classList.add("hidden");
+    notVoice.classList.remove("hidden");
+    voiceStartTime = null;
+  }
 }
+
+function updateDuration() {
+  if (!voiceStartTime) return;
+  const minutes = Math.floor((Date.now() - voiceStartTime) / 60000);
+  minutesEl.textContent = minutes;
+}
+
+// Fetch toutes les 5 secondes
+setInterval(() => {
+  fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`)
+    .then(r => r.json())
+    .then(updatePresence);
+}, 5000);
+
+// Premier chargement
+fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`).then(r => r.json()).then(updatePresence);
