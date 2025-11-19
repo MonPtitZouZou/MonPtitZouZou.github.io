@@ -1,5 +1,5 @@
 // CHANGE UNIQUEMENT CETTE LIGNE
-const USER_ID = "TON_USER_ID_ICI";   // ← Mets ton vrai User ID ici !
+const USER_ID = "763055060678213652";   // ← Mets ton vrai User ID ici !
 
 const avatarEl = document.getElementById("avatar");
 const usernameEl = document.getElementById("username");
