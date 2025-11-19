@@ -1,5 +1,4 @@
-// CHANGE UNIQUEMENT CETTE LIGNE
-const USER_ID = "763055060678213652";   // ← Mets ton vrai User ID ici !
+const USER_ID = "763055060678213652"; // ← garde ton ID
 
 const avatarEl = document.getElementById("avatar");
 const usernameEl = document.getElementById("username");
@@ -10,39 +9,32 @@ const voiceInfo = document.getElementById("voice-info");
 const notVoice = document.getElementById("not-voice");
 const channelName = document.getElementById("channel-name");
 const minutesEl = document.getElementById("minutes");
-
 let voiceStartTime = null;
 
+// === FONCTIONS (garde exactement les mêmes que avant) ===
 function updatePresence(data) {
-  if (!data || !data.data) return;
-  const p = data.data;
+  if (!data?.d) return;
+  const p = data.d;
   const user = p.discord_user;
 
-  // Avatar + pseudo
   avatarEl.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=256`;
   usernameEl.textContent = user.global_name || user.username;
   tagEl.textContent = `#${user.discriminator}`;
 
-  // Statut global
   const status = p.discord_status;
   statusIndicator.className = `status ${status}`;
   statusText.textContent = status === "online" ? "En ligne" :
                           status === "idle" ? "Absent" :
                           status === "dnd" ? "Ne pas déranger" : "Hors ligne";
 
-  // Recherche activité vocale (type === 2)
   const voice = p.activities?.find(a => a.type === 2);
-
   if (voice) {
     voiceInfo.classList.remove("hidden");
     notVoice.classList.add("hidden");
     channelName.textContent = voice.state || "Salon vocal privé";
-    
-    if (voice.timestamps?.start) {
-      voiceStartTime = voice.timestamps.start;
-      updateDuration();
-      setInterval(updateDuration, 30000); // toutes les 30s
-    }
+    voiceStartTime = voice.timestamps?.start;
+    updateDuration();
+    setInterval(updateDuration, 30000);
   } else {
     voiceInfo.classList.add("hidden");
     notVoice.classList.remove("hidden");
@@ -56,12 +48,21 @@ function updateDuration() {
   minutesEl.textContent = minutes;
 }
 
-// Fetch toutes les 5 secondes
-setInterval(() => {
-  fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`)
-    .then(r => r.json())
-    .then(updatePresence);
-}, 5000);
+// === NOUVEAU CODE WebSocket (remplace tout le fetch) ===
+const ws = new WebSocket("wss://api.lanyard.rest/socket");
 
-// Premier chargement
-fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`).then(r => r.json()).then(updatePresence);
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.op === 1) { // hello
+    ws.send(JSON.stringify({
+      op: 2,
+      d: { subscribe_to_id: USER_ID }
+    }));
+    setInterval(() => ws.send(JSON.stringify({ op: 3 })), data.d.heartbeat_interval);
+  }
+
+  if (data.op === 0 && data.t === "PRESENCE_UPDATE") {
+    updatePresence(data);
+  }
+};
