@@ -1,75 +1,127 @@
-const USER_ID = "763055060678213652"; // ← ton ID
+// --- Liste des utilisateurs ---
+const users = [
+  {
+    pseudo: "MonPtitZouZou",
+    avatar: "https://cdn.discordapp.com/avatars/763055060678213652/9457b7812017bee62a8edd6cce1d9034.webp?size=256",
+    birthday: { day: 10, month: 10, hour: 0, minute: 0, second: 0, year: 2002 } // 10 novembre 2002
+  },
+  {
+    pseudo: "MecKaeL",
+    avatar: "https://images-ext-1.discordapp.net/external/370M3txhO5n7vlK_SZTfuZpgjUeDvaxzYGmQU1D4B54/https/cdn.discordapp.com/avatars/644934592901414932/355a8d8592a487ca18e7e142c3ef8746.webp?format=webp",
+    birthday: { day: 25, month: 7, hour: 0, minute: 0, second: 0, year: 2004 } // 25 août 2005
+  },
+  {
+    pseudo: "Printillie",
+    avatar: "https://cdn.discordapp.com/avatars/689781399661838347/69c0bb311a7baab4f82cd260b8ebab3b.webp",
+    birthday: { day: 21, month: 2, hour: 0, minute: 0, second: 0, year: 2005 } // 31 aout 2005
+  },
+  {
+    pseudo: "Anaïs",
+    avatar: "https://cdn.discordapp.com/avatars/459373865932685324/fd079e443979b0979e03cf0b44ab40e1.webp",
+    birthday: { day: 31, month: 11, hour: 0, minute: 0, second: 0, year: 2005 } // 31 décembre 2005
+  },
+  {
+    pseudo: "Marie",
+    avatar: "https://cdn.discordapp.com/avatars/760428505149997056/61e4defc2121796de1d11886e1b41947.webp",
+    birthday: { day: 22, month: 9, hour: 0, minute: 0, second: 0, year: 2005 } // 22 septembre 2005
+  }
+];
 
-const avatarEl = document.getElementById("avatar");
-const usernameEl = document.getElementById("username");
-const tagEl = document.getElementById("discriminator");
-const statusIndicator = document.getElementById("status-indicator");
-const statusText = document.getElementById("status-text");
-const voiceInfo = document.getElementById("voice-info");
-const notVoice = document.getElementById("not-voice");
-const channelName = document.getElementById("channel-name");
-const minutesEl = document.getElementById("minutes");
-let voiceStartTime = null;
+// Décor confettis
+const confettiCount = 50;
+for(let i=0;i<confettiCount;i++){
+  const div = document.createElement('div');
+  div.className = 'confetti';
+  div.style.left = Math.random() * 100 + 'vw';
+  div.style.backgroundColor = ['#FFD700','#FF69B4','#00FFFF','#FF4500'][Math.floor(Math.random()*4)];
+  div.style.animationDuration = (3 + Math.random()*5) + 's';
+  document.body.appendChild(div);
+}
 
-// AFFICHAGE IMMÉDIAT AU CHARGEMENT (plus jamais 15 min d'attente)
-fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`)
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) updatePresence({ d: data.data });
-  });
 
-// FONCTIONS
-function updatePresence(data) {
-  if (!data?.d) return;
-  const p = data.d;
-  const user = p.discord_user;
+// --- Fonction pour calculer le temps restant ---
+function timeUntilBirthday(birthday) {
+  const now = new Date();
+  const parisNow = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  let nextBirthday = new Date(parisNow.getFullYear(), birthday.month, birthday.day, birthday.hour || 0, birthday.minute || 0, birthday.second || 0);
+  if(parisNow > nextBirthday) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+  return nextBirthday - parisNow;
+}
 
-  avatarEl.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=256`;
-  usernameEl.textContent = user.global_name || user.username;
-  tagEl.textContent = user.discriminator === "0" ? "" : `#${user.discriminator}`;
+// --- Trier les utilisateurs par prochain anniversaire ---
+users.sort((a,b) => timeUntilBirthday(a.birthday) - timeUntilBirthday(b.birthday));
 
-  const status = p.discord_status;
-  statusIndicator.className = `status ${status}`;
-  statusText.textContent = status === "online" ? "En ligne" :
-                          status === "idle" ? "Absent" :
-                          status === "dnd" ? "Ne pas déranger" : "Hors ligne";
+// --- Génération HTML ---
+const container = document.getElementById("users-container");
 
-  const voice = p.activities?.find(a => a.type === 2 && a.name !== "Spotify");
-  if (voice) {
-    voiceInfo.classList.remove("hidden");
-    notVoice.classList.add("hidden");
-    channelName.textContent = voice.state || "Salon vocal privé";
-    voiceStartTime = voice.timestamps?.start || Date.now();
-    updateDuration();
-    setInterval(updateDuration, 30000);
+users.forEach((user, index) => {
+  const div = document.createElement("div");
+  div.className = "user-container";
+
+  const now = new Date();
+  const parisNow = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  let age = parisNow.getFullYear() - user.birthday.year;
+  const nextBirthdayDate = new Date(parisNow.getFullYear(), user.birthday.month, user.birthday.day);
+  if(parisNow > nextBirthdayDate) age += 1;
+
+  let html = `
+    <img id="avatar${index}" class="avatar" src="${user.avatar}" alt="Avatar" />
+    <h1 id="username${index}">${user.pseudo}</h1>
+    <p class="age"> ${age-1} ans -> ${age} ans</p>
+  `;
+
+  // Statut
+  if(user.statut){
+    html += `
+      <div id="status-indicator${index}" class="status ${user.statut}">
+        <span id="status-text${index}">${user.statut}</span>
+      </div>
+    `;
   } else {
-    voiceInfo.classList.add("hidden");
-    notVoice.classList.remove("hidden");
-    voiceStartTime = null;
+    html += `
+      <div id="status-indicator${index}" class="status offline" style="visibility:hidden;">
+        <span id="status-text${index}">&nbsp;</span>
+      </div>
+    `;
   }
+
+  html += `
+    <h2>Prochain anniversaire 🎉</h2>
+    <div id="birthday-countdown${index}" class="birthday-countdown">0 jours 0 h 0 min 0 s</div>
+  `;
+
+  div.innerHTML = html;
+  container.appendChild(div);
+});
+
+// --- Mise à jour des comptes à rebours ---
+function updateCountdowns() {
+  const now = new Date();
+  const parisNow = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+
+  users.forEach((user, index) => {
+    const b = user.birthday;
+    let nextBirthday = new Date(parisNow.getFullYear(), b.month, b.day, 0, 0, 0);
+    if(parisNow > nextBirthday) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+
+    if(parisNow.getDate() === b.day && parisNow.getMonth() === b.month) {
+      document.getElementById(`birthday-countdown${index}`).textContent = "Joyeux anniversaire 🎉";
+      return;
+    }
+
+    const diff = nextBirthday - parisNow;
+    const totalSeconds = Math.floor(diff / 1000);
+
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor(totalSeconds / 3600) % 24;
+    const minutes = Math.floor(totalSeconds / 60) % 60;
+    const seconds = totalSeconds % 60;
+
+    document.getElementById(`birthday-countdown${index}`).textContent =
+      `${days} jours ${hours} h ${minutes} min ${seconds} s`;
+  });
 }
 
-function updateDuration() {
-  if (!voiceStartTime) return;
-  const minutes = Math.floor((Date.now() - voiceStartTime) / 60000);
-  minutesEl.textContent = minutes;
-}
-
-// WEBSOCKET POUR LES MISES À JOUR EN LIVE
-const ws = new WebSocket("wss://api.lanyard.rest/socket");
-
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-
-  if (data.op === 1) {
-    ws.send(JSON.stringify({
-      op: 2,
-      d: { subscribe_to_id: USER_ID }
-    }));
-    setInterval(() => ws.send(JSON.stringify({ op: 3 })), data.d.heartbeat_interval);
-  }
-
-  if (data.op === 0 && data.t === "PRESENCE_UPDATE") {
-    updatePresence(data);
-  }
-};
+// --- Lancer la mise à jour toutes les secondes ---
+updateCountdowns();
+setInterval(updateCountdowns, 1000);
