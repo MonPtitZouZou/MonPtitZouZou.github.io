@@ -3,30 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Statut Discord • TonPseudo</title>
+  <title>Statut Discord • Multi-Utilisateurs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <img id="avatar" class="avatar" src="" alt="Avatar" />
-    <h1 id="username">Chargement…</h1>
-    <p id="discriminator" class="tag"></p>
-
-    <div id="status-indicator" class="status offline">
-      <span id="status-text">Hors ligne</span>
-    </div>
-
-    <div id="voice-info" class="voice hidden">
-      <h2>En vocal dans :</h2>
-      <p id="channel-name">Salon XYZ</p>
-      <p id="duration">depuis <span id="minutes">0</span> min</p>
-    </div>
-
-    <div id="not-voice" class="not-voice">
-      Pas en vocal pour le moment
-    </div>
-  </div>
-
+  <div id="users-container"></div>
   <script src="script.js"></script>
 </body>
 </html>
