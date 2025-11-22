@@ -100,9 +100,9 @@ function updateCountdowns(){
       if(countdown) countdown.textContent="Joyeux anniversaire 🎉";
       if(ageText){
         if(b.year){
-            ageText.textContent = `Fêtera son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
+            ageText.textContent = `Fête son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
         } else {
-            ageText.textContent = `Fêtera son Xème anniversaire 🎉`;
+            ageText.textContent = `Fête son Xème anniversaire 🎉`;
         }
       }
 
