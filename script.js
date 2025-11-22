@@ -5,6 +5,9 @@ const users = [
   { pseudo: "Printillie", avatar: "https://cdn.discordapp.com/avatars/689781399661838347/69c0bb311a7baab4f82cd260b8ebab3b.webp", birthday: { day: 21, month: 2, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Anaïs", avatar: "https://cdn.discordapp.com/avatars/459373865932685324/fd079e443979b0979e03cf0b44ab40e1.webp", birthday: { day: 31, month: 11, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Marie", avatar: "https://cdn.discordapp.com/avatars/760428505149997056/61e4defc2121796de1d11886e1b41947.webp", birthday: { day: 22, month: 9, hour:0, minute:0, second:0, year:2005 } },
+  { pseudo: "Timo", avatar: "https://cdn.discordapp.com/avatars/384046505042116610/200188c1a9447615b9d8e73fda7ce564.webp", birthday: { day: 19, month: 10, hour:0, minute:0, second:0, year:2005 } },
+  { pseudo: "Rocco", avatar: "https://cdn.discordapp.com/avatars/706514911643172884/0fb4b0fd6b244df4dfcdc6b4ba9a724a.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2008 } },
+  { pseudo: "Mathys", avatar: "https://cdn.discordapp.com/avatars/836362324532658257/0b8b2d16f61c370962618ca46e03698c.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2007 } },
 ];
 
 // --- Confettis ---
