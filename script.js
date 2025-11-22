@@ -7,7 +7,9 @@ const users = [
   { pseudo: "Marie", avatar: "https://cdn.discordapp.com/avatars/760428505149997056/61e4defc2121796de1d11886e1b41947.webp", birthday: { day: 22, month: 9, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Timo", avatar: "https://cdn.discordapp.com/avatars/384046505042116610/200188c1a9447615b9d8e73fda7ce564.webp", birthday: { day: 19, month: 10, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Rocco", avatar: "https://cdn.discordapp.com/avatars/706514911643172884/0fb4b0fd6b244df4dfcdc6b4ba9a724a.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2008 } },
-  { pseudo: "Mathys", avatar: "https://cdn.discordapp.com/avatars/836362324532658257/0b8b2d16f61c370962618ca46e03698c.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2007 } },
+  { pseudo: "Mathys", avatar: "https://cdn.discordapp.com/avatars/836362324532658257/0b8b2d16f61c370962618ca46e03698c.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2008 } },
+  { pseudo: "Ramata", avatar: "https://cdn.discordapp.com/avatars/689561679364620361/6f3e4f3110ed14ad87fd80c8f8f33a7e.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2005 } },
+  { pseudo: "Thibault", avatar: "https://cdn.discordapp.com/avatars/418451864716312581/a374f0ee19300c10d07f6b42533b48e6.webp", birthday: { day: 23, month: 8, hour:0, minute:0, second:0, year:2004 } },
 ];
 
 // --- Confettis ---
