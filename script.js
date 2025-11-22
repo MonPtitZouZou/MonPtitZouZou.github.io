@@ -8,7 +8,7 @@ const users = [
 ];
 
 // --- Confettis ---
-const confettiCount = 300;
+const confettiCount = 150;
 for(let i=0;i<confettiCount;i++){
   const div = document.createElement('div');
   div.className = 'confetti';
@@ -56,9 +56,12 @@ users.forEach((user, index) => {
   let ageTextHtml = '';
   if (b.year) {
     let ageBefore = parisNow.getFullYear() - b.year;
-    if (parisNow.getMonth() > b.month || (parisNow.getMonth() === b.month && parisNow.getDate() < b.day)) ageBefore--;
-    let ageAfter = ageBefore + 1;
-    ageTextHtml = `<p class="age">${ageBefore} ans -> ${ageAfter} ans</p>`;
+    // Si l'anniversaire n'est pas encore passé cette année, on retire 1
+    if (parisNow.getMonth() < b.month || (parisNow.getMonth() === b.month && parisNow.getDate() < b.day)) {
+    ageBefore--;
+}
+let ageAfter = ageBefore + 1;
+ageTextHtml = `<p class="age">${ageBefore} ans -> ${ageAfter} ans</p>`;
   } else {
     ageTextHtml = `<p class="age">X ans -> X ans</p>`;
   }
@@ -94,7 +97,7 @@ function updateCountdowns(){
       if(countdown) countdown.textContent="Joyeux anniversaire 🎉";
       if(ageText){
         if(b.year){
-            ageText.textContent = `Fêtera son ${parisNow.getFullYear()-b.year+1}ème anniversaire 🎉`;
+            ageText.textContent = `Fêtera son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
         } else {
             ageText.textContent = `Fêtera son Xème anniversaire 🎉`;
         }
