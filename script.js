@@ -8,7 +8,7 @@ const users = [
 ];
 
 // --- Confettis ---
-const confettiCount = 150;
+const confettiCount = 300;
 for(let i=0;i<confettiCount;i++){
   const div = document.createElement('div');
   div.className = 'confetti';
