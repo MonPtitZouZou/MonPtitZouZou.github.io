@@ -11,7 +11,7 @@ const users = [
   { pseudo: "Ramata", avatar: "https://cdn.discordapp.com/avatars/689561679364620361/6f3e4f3110ed14ad87fd80c8f8f33a7e.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Thibault", avatar: "https://cdn.discordapp.com/avatars/418451864716312581/a374f0ee19300c10d07f6b42533b48e6.webp", birthday: { day: 23, month: 8, hour:0, minute:0, second:0, year:2004 } },
 ];
-
+ 
 // --- Confettis ---
 const confettiCount = 150;
 for(let i=0;i<confettiCount;i++){
