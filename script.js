@@ -11,19 +11,24 @@ const users = [
   { pseudo: "Ramata", avatar: "https://cdn.discordapp.com/avatars/689561679364620361/6f3e4f3110ed14ad87fd80c8f8f33a7e.webp", birthday: { day: 16, month: 5, hour:0, minute:0, second:0, year:2005 } },
   { pseudo: "Thibault", avatar: "https://cdn.discordapp.com/avatars/418451864716312581/a374f0ee19300c10d07f6b42533b48e6.webp", birthday: { day: 23, month: 8, hour:0, minute:0, second:0, year:2004 } },
   { pseudo: "Mitrion", avatar: "https://i.pinimg.com/736x/8d/dc/f7/8ddcf7cff65f03564e0508a6bb76589c.jpg", birthday: { day: 20, month: 3, hour:0, minute:0, second:0, year:2004 } },
+
 ];
  
-// --- Confettis ---
-const confettiCount = 150;
+// --- Confettis avec emojis ---
+const emojis = ['🎉','✨','🥳','🎊','🍀','🌟']; // liste des emojis à utiliser
+const confettiCount = 40;
+
 for(let i=0;i<confettiCount;i++){
   const div = document.createElement('div');
   div.className = 'confetti';
   div.style.left = Math.random()*100+'vw';
-  div.style.backgroundColor = ['#FFD700','#FF69B4','#00FFFF','#FF4500'][Math.floor(Math.random()*4)];
+  div.style.fontSize = (12 + Math.random()*18) + 'px'; // taille aléatoire
+  div.textContent = emojis[Math.floor(Math.random() * emojis.length)];
   div.style.animationDuration = (3 + Math.random()*5)+'s';
   div.style.setProperty("--round", Math.random() > 0.5 ? 1 : 0);
   document.body.appendChild(div);
 }
+
 
 // --- Temps avant anniversaire ---
 function timeUntilBirthday(birthday){
