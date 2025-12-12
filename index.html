@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anniversaire</title>
+  <title>C35 Anniversaire</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
 
@@ -153,7 +153,11 @@
 .sort-btn.active {
     background: var(--primary-gradient);
     color: white;
-    border-color: transparent;
+    /* On garde la bordure pour ne pas changer la taille du bouton, mais on la rend transparente */
+    border: 1px solid transparent; 
+    /* LE FIX EST ICI : On oblige le fond à aller jusque sous la bordure */
+    background-origin: border-box; 
+    background-clip: padding-box, border-box;
     transform: translateY(-2px);
 }
 
@@ -172,8 +176,11 @@
     .month-filter.active {
         background: var(--primary-gradient);
         color: white;
-        border-color: transparent;
-        transform: translateY(-2px);
+border: 1px solid transparent;
+    /* LE FIX EST ICI */
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    transform: translateY(-2px);
     }
 
     /* CONTAINER */
@@ -217,6 +224,7 @@
     /* BADGE PROXIMITÉ */
     .proximity-badge {
         position: absolute;
+        z-index: 1000;
         top: 15px;
         right: 15px;
         padding: 6px 12px;
@@ -260,6 +268,23 @@
         display: block;
     }
 
+          /* AVATAR FALLBACK avec initiales */
+      .avatar-fallback {
+          width: 125px;
+          height: 125px;
+          border-radius: 50%;
+          border: 1px solid #ffffff;
+          box-shadow: 0 0 55px rgb(255, 0, 0);
+          margin-bottom: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2.5em;
+          font-weight: 800;
+          background: var(--primary-gradient);
+          color: white;
+      }
+
     /* PSEUDO */
     .user-container h1 {
         width: 100%;
@@ -289,12 +314,6 @@
         margin: 10px 0;
     }
 
-    /* SIGNE ASTROLOGIQUE */
-    .zodiac {
-        font-size: 1.5em;
-        margin: 10px 0;
-    }
-
     /* TITRE SECTION */
     .user-container h2 {
         width: 100%;
@@ -302,7 +321,7 @@
         font-weight: 500;
         color: #b0b0c0;
         font-size: 0.95em;
-        margin: 15px 0 10px;
+        margin: 10px 0 -10px;
     }
 
     /* COMPTE À REBOURS */
@@ -318,18 +337,100 @@
         padding: 10px;
     }
 
-    /* ANIMATION ANNIVERSAIRE */
-    .user-container.birthday {
-        border: 2px solid #ffc800;
-        animation: borderPulse 1s infinite ease-in-out;
-        filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.9));
-    }
+/* =========================================
+   NOUVEAU STYLE "JOUR J" (À REMPLACER/AJOUTER)
+   ========================================= */
 
-    @keyframes borderPulse {
-        0% { box-shadow: 0 0 15px rgba(255, 168, 0, 0.3); }
-        50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), 0 0 50px rgba(255, 168, 0, 0.4); }
-        100% { box-shadow: 0 0 15px rgba(255, 168, 0, 0.3); }
+/* La carte elle-même : Fond animé + Bordure RGB */
+.user-container.birthday {
+    background: linear-gradient(135deg, #2a0808, #1a1a2e);
+    position: relative;
+    z-index: 10;
+    /* Animation de bordure arc-en-ciel */
+    animation: partyBorder 3s linear infinite, cardFloat 3s ease-in-out infinite;
+    border: 2px solid transparent;
+}
+
+/* L'avatar qui "bat" comme un cœur ou une enceinte */
+.user-container.birthday .avatar {
+    animation: avatarBeat 0.8s infinite alternate cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
+                0 0 60px #ff00de, 
+                0 0 90px #00ffff;
+    border-color: #fff;
+}
+
+/* Le texte "Joyeux Anniversaire" en arc-en-ciel */
+.user-container.birthday .birthday-countdown {
+    font-size: 1.2em;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    background-size: 400%;
+    
+    /* === CORRECTION ICI === */
+    background-clip: text;         /* Version standard (pour le futur) */
+    -webkit-background-clip: text; /* Version actuelle (nécessaire pour Chrome/Safari) */
+    
+    -webkit-text-fill-color: transparent;
+    animation: rainbowText 5s linear infinite;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+
+
+/* === LES KEYFRAMES (ANIMATIONS) === */
+
+/* 1. Bordure RGB rotative */
+@keyframes partyBorder {
+    0% { 
+        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+        border-color: #ff0000;
     }
+    20% { 
+        box-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00;
+        border-color: #ffff00;
+    }
+    40% { 
+        box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+        border-color: #00ff00;
+    }
+    60% { 
+        box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+        border-color: #00ffff;
+    }
+    80% { 
+        box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+        border-color: #ff00ff;
+    }
+    100% { 
+        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+        border-color: #ff0000;
+    }
+}
+
+/* 2. Avatar qui pulse */
+@keyframes avatarBeat {
+    0% { transform: scale(1); filter: brightness(1); }
+    100% { transform: scale(1.1); filter: brightness(1.3); }
+}
+
+/* 3. Texte arc-en-ciel qui coule */
+@keyframes rainbowText {
+    0% { background-position: 0%; }
+    100% { background-position: 400%; }
+}
+
+/* 4. La carte qui flotte un peu plus haut */
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(-10px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* 5. Petit saut du titre */
+@keyframes textBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
     /* CONFETTIS */
     .confetti {
@@ -350,31 +451,12 @@
         .user-container { width: 100%; max-width: 320px; }
     }
 
-    /* SIGNE ASTROLOGIQUE */
-.zodiac {
-    margin: 10px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.zodiac-symbol {
-    font-size: 1.2em;
-}
-
-.zodiac-name {
-    margin: -10px 0;
-    font-size: 0.65em;
-    color: #b0b0c0;
-    font-weight: 400;
-}
 
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>Anniversaire</h1>
+    <h1>C35 Anniversaire</h1>
     <div class="stats-container">
       <div class="stat-box">
         <div class="stat-number" id="total-count">0</div>
@@ -382,11 +464,15 @@
       </div>
       <div class="stat-box">
         <div class="stat-number" id="today-count">0</div>
-        <div class="stat-label">Aujourd'hui</div>
+        <div class="stat-label">🎂 Aujourd'hui</div>
       </div>
       <div class="stat-box">
         <div class="stat-number" id="week-count">0</div>
-        <div class="stat-label">Cette semaine</div>
+        <div class="stat-label">🎂 7J à venir</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="avg-age">0</div>
+        <div class="stat-label">Âge moyen</div>
       </div>
     </div>
   </div>
@@ -439,44 +525,32 @@
 
 ];
 
-    // Confettis
+    // Confettis optimisés - Actifs en permanence
     const emojis = ['🎉','✨','🥳','🎊','🍀','🌟'];
-    const confettiCount = 40;
-    for(let i=0;i<confettiCount;i++){
-      const div = document.createElement('div');
-      div.className = 'confetti';
-      div.style.left = Math.random()*100+'vw';
-      div.style.fontSize = (12 + Math.random()*18) + 'px';
-      div.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      div.style.animationDuration = (3 + Math.random()*5)+'s';
-      div.style.setProperty("--round", Math.random() > 0.5 ? 1 : 0);
-      document.body.appendChild(div);
+
+    function createConfetti() {
+      const confettiCount = 45; // Réduit pour meilleures performances
+      for(let i = 0; i < confettiCount; i++){
+        const div = document.createElement('div');
+        div.className = 'confetti';
+        div.style.left = Math.random() * 100 + 'vw';
+        div.style.fontSize = (12 + Math.random() * 18) + 'px';
+        div.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        const duration = 3 + Math.random() * 4;
+        div.style.animationDuration = duration + 's';
+        div.style.animationIterationCount = '1'; // Une seule fois
+        document.body.appendChild(div);
+        
+        // Détruire après animation
+        setTimeout(() => div.remove(), duration * 1000);
+      }
     }
 
-function getZodiacSign(day, month) {
-  const signs = [
-    {name: "Capricorne", symbol: "♑", end: [1, 19]},
-    {name: "Verseau", symbol: "♒", end: [2, 18]},
-    {name: "Poissons", symbol: "♓", end: [3, 20]},
-    {name: "Bélier", symbol: "♈", end: [4, 19]},
-    {name: "Taureau", symbol: "♉", end: [5, 20]},
-    {name: "Gémeaux", symbol: "♊", end: [6, 20]},
-    {name: "Cancer", symbol: "♋", end: [7, 22]},
-    {name: "Lion", symbol: "♌", end: [8, 22]},
-    {name: "Vierge", symbol: "♍", end: [9, 22]},
-    {name: "Balance", symbol: "♎", end: [10, 22]},
-    {name: "Scorpion", symbol: "♏", end: [11, 21]},
-    {name: "Sagittaire", symbol: "♐", end: [12, 21]},
-    {name: "Capricorne", symbol: "♑", end: [12, 31]}
-  ];
-  
-  for (let sign of signs) {
-    if (month < sign.end[0] || (month === sign.end[0] && day <= sign.end[1])) {
-      return sign; // Retourne l'objet complet
-    }
-  }
-  return signs[0];
-}
+    // Démarrer les confettis en continu
+    createConfetti();
+    setInterval(createConfetti, 3000); // Nouvelles vagues toutes les 6s
+
+
 
 function timeUntilBirthday(birthday){
   const now = new Date();
@@ -523,37 +597,32 @@ if (isToday) {
   badge = '<div class="proximity-badge badge-today">AUJOURD\'HUI 🎉</div>';
 } else if (hoursUntil < 24) {
   badge = '<div class="proximity-badge badge-today">Dans quelques heures ⏰</div>';
-} else if (daysUntil <= 7) {
-  badge = '<div class="proximity-badge badge-week">Dans ' + daysUntil + 'j</div>';
-} else if (daysUntil <= 30) {
-  badge = '<div class="proximity-badge badge-month">Ce mois</div>';
+} else if (daysUntil < 7) {
+  badge = '<div class="proximity-badge badge-week">Moins de 7j</div>';
+} else if (daysUntil < 30) {
+  badge = '<div class="proximity-badge badge-month">Moins de 30j</div>';
 }
 
       const birthDateHtml = `<div class="birth-date">${b.day} ${monthNames[b.month] || ''} ${b.year || 'X'}</div>`;
       
       let ageTextHtml = '';
-      if (b.year) {
-        let ageBefore = parisNow.getFullYear() - b.year;
-        if (parisNow.getMonth() < b.month || (parisNow.getMonth() === b.month && parisNow.getDate() < b.day)) {
-          ageBefore--;
-        }
-        let ageAfter = ageBefore + 1;
-        ageTextHtml = `<p class="age">${ageBefore} ans -> ${ageAfter} ans</p>`;
-      } else {
-        ageTextHtml = `<p class="age">X ans → X ans</p>`;
-      }
+if (b.year) {
+  let currentAge = parisNow.getFullYear() - b.year;
+  if (parisNow.getMonth() < b.month || (parisNow.getMonth() === b.month && parisNow.getDate() < b.day)) {
+    currentAge--;
+  }
+  ageTextHtml = `<p class="age">${currentAge} ans</p>`;
+} else {
+  ageTextHtml = `<p class="age">Âge inconnu</p>`;
+}
 
-      const zodiac = getZodiacSign(b.day, b.month + 1);
 
 div.innerHTML = `
   ${badge}
-  <img id="avatar${index}" class="avatar" src="${user.avatar}" alt="Avatar"/>
+  <img id="avatar${index}" class="avatar" src="${user.avatar}" alt="Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="display:block;"/>
+  <div class="avatar-fallback" style="display:none;">${user.pseudo.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
   <h1 id="username${index}">${user.pseudo}</h1>
   ${birthDateHtml}
-  <div class="zodiac">
-    <div class="zodiac-symbol">${zodiac.symbol}</div>
-    <div class="zodiac-name">${zodiac.name}</div>
-  </div>
   ${ageTextHtml}
   <h2>Prochain anniversaire</h2>
   <div id="birthday-countdown${index}" class="birthday-countdown">0 jours 0 h 0 min 0 s</div>
@@ -562,50 +631,71 @@ div.innerHTML = `
     });
 
     function updateCountdowns(){
-      const now=new Date();
-      const parisNow=new Date(now.toLocaleString("en-US",{timeZone:"Europe/Paris"}));
-      let todayCount = 0;
-      let weekCount = 0;
+  const now=new Date();
+  const parisNow=new Date(now.toLocaleString("en-US",{timeZone:"Europe/Paris"}));
+  let todayCount = 0;
+  let weekCount = 0;
 
-      users.forEach((user,index)=>{
-        const b = user.birthday;
-        const countdown = document.getElementById(`birthday-countdown${index}`);
-        const ageElem = document.querySelectorAll('.age')[index];
-        const h2 = countdown.previousElementSibling;
-        const userBox = document.getElementById(`avatar${index}`).parentElement;
+  users.forEach((user,index)=>{
+    const b = user.birthday;
+    const countdown = document.getElementById(`birthday-countdown${index}`);
+    const ageElem = document.querySelectorAll('.age')[index];
+    const h2 = countdown.previousElementSibling;
+    const userBox = document.getElementById(`avatar${index}`).parentElement;
 
-        if(parisNow.getDate() === b.day && parisNow.getMonth() === b.month){
-          todayCount++;
-          if(h2) h2.style.visibility='hidden';
-          if(countdown) countdown.textContent="Joyeux anniversaire 🎉";
-          if(ageElem && b.year){
-            ageElem.textContent = `Fête son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
-          }
-          userBox.classList.add('birthday');
-          return;
-        } else {
-          userBox.classList.remove('birthday');
-        }
-
-        let nextBirthday=new Date(parisNow.getFullYear(),b.month,b.day,0,0,0);
-        if(parisNow>nextBirthday) nextBirthday.setFullYear(nextBirthday.getFullYear()+1);
-        const diff=nextBirthday-parisNow;
-        const totalSeconds=Math.floor(diff/1000);
-        const days=Math.floor(totalSeconds/86400);
-        
-        if(days <= 7) weekCount++;
-        
-        const hours=Math.floor(totalSeconds/3600)%24;
-        const minutes=Math.floor(totalSeconds/60)%60;
-        const seconds=totalSeconds%60;
-
-        if(countdown) countdown.textContent=`${days} jours ${hours} h ${minutes} min ${seconds} s`;
-      });
-
-      document.getElementById('total-count').textContent = users.length;
-      document.getElementById('today-count').textContent = todayCount;
-      document.getElementById('week-count').textContent = weekCount;
+    if(parisNow.getDate() === b.day && parisNow.getMonth() === b.month){
+      todayCount++;
+      if(h2) h2.style.visibility='hidden';
+      if(countdown) countdown.textContent="Joyeux anniversaire 🎉";
+      if(ageElem && b.year){
+        ageElem.textContent = `Fête son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
+      }
+      userBox.classList.add('birthday');
+      return;
+    } else {
+      userBox.classList.remove('birthday');
     }
+
+    let nextBirthday=new Date(parisNow.getFullYear(),b.month,b.day,0,0,0);
+    if(parisNow>nextBirthday) nextBirthday.setFullYear(nextBirthday.getFullYear()+1);
+    const diff=nextBirthday-parisNow;
+    const totalSeconds=Math.floor(diff/1000);
+    const days=Math.floor(totalSeconds/86400);
+    
+    if(days <= 7) weekCount++;
+    
+    const hours=Math.floor(totalSeconds/3600)%24;
+    const minutes=Math.floor(totalSeconds/60)%60;
+    const seconds=totalSeconds%60;
+
+    if(countdown) countdown.textContent=`${days} jours ${hours} h ${minutes} min ${seconds} s`;
+  });
+
+  // ========== AJOUTE CE BLOC ICI (PARTIE 2) ==========
+  // Calculer l'âge moyen
+  let totalAge = 0;
+  let countWithYear = 0;
+  users.forEach(user => {
+    if(user.birthday.year) {
+      let age = parisNow.getFullYear() - user.birthday.year;
+      if(parisNow.getMonth() < user.birthday.month || 
+         (parisNow.getMonth() === user.birthday.month && parisNow.getDate() < user.birthday.day)) {
+        age--;
+      }
+      totalAge += age;
+      countWithYear++;
+    }
+  });
+
+
+  const avgAge = countWithYear > 0 ? Math.round(totalAge / countWithYear) : 0;
+  // ========== FIN DU BLOC ==========
+
+  document.getElementById('total-count').textContent = users.length;
+  document.getElementById('today-count').textContent = todayCount;
+  document.getElementById('week-count').textContent = weekCount;
+  document.getElementById('avg-age').textContent = avgAge; // ← AJOUTE CETTE LIGNE (PARTIE 3)
+}
 
     // Recherche
     document.getElementById('search-input').addEventListener('input', function(e) {
@@ -683,3 +773,16 @@ document.querySelectorAll('.sort-btn').forEach(btn => {
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
