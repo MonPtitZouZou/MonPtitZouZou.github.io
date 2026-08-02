@@ -14,6 +14,25 @@
 const fs = require('fs');
 const path = require('path');
 
+/* ============================================================
+ * RÉGLAGES — c'est ici qu'on personnalise le message
+ * ============================================================ */
+const CONFIG = {
+  // Adresse de ton site GitHub Pages, SANS le / final.
+  // Sert à afficher homme.jpg / femme.jpg en vignette dans le message.
+  // Mets '' pour ne pas afficher de vignette.
+  siteUrl: '',
+
+  // Rend le titre cliquable vers ton site. '' pour désactiver.
+  lienSite: '',
+
+  // '@everyone', '@here', '<@&ID_DU_ROLE>' ou '' pour ne rien mentionner.
+  mention: '',
+
+  // Couleur de la barre latérale (jaune doré).
+  couleur: 0xfee75c,
+};
+
 const WEBHOOK_URL = process.env.DISCORD_WEBHOOK;
 if (!WEBHOOK_URL) {
   console.error('❌ La variable DISCORD_WEBHOOK est manquante.');
@@ -31,7 +50,8 @@ function getTodayParis() {
       process.exit(1);
     }
     console.log(`🧪 Mode test : date forcée au ${override}`);
-    return { day: d, month: m, year: new Date().getFullYear() };
+    const y = new Date().getFullYear();
+    return { day: d, month: m, year: y, hour: 0, weekday: new Date(y, m - 1, d).getDay() };
   }
   const parts = new Intl.DateTimeFormat('fr-FR', {
     timeZone: 'Europe/Paris',
@@ -42,13 +62,11 @@ function getTodayParis() {
     hourCycle: 'h23',
   }).formatToParts(new Date());
   const get = (t) => Number(parts.find((p) => p.type === t).value);
-  return { day: get('day'), month: get('month'), year: get('year'), hour: get('hour') };
+  const day = get('day');
+  const month = get('month');
+  const year = get('year');
+  return { day, month, year, hour: get('hour'), weekday: new Date(year, month - 1, day).getDay() };
 }
-
-/* ---- Garde-fou minuit ----
- * Le cron tourne à 22h ET 23h UTC (pour couvrir heure d'été/hiver).
- * Sur un run planifié, on ne continue que si c'est bien 00h à Paris :
- * un seul des deux runs passe ce filtre selon la saison. */
 
 /* ---- Chargement de la liste ---- */
 const dataPath = path.join(__dirname, '..', 'birthdays.json');
@@ -56,6 +74,7 @@ const users = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 const today = getTodayParis();
 
+/* ---- Garde-fou minuit ---- */
 if (process.env.STRICT_MIDNIGHT === 'true' && !process.env.TEST_DATE && today.hour !== 0) {
   console.log(`⏭️  Il est ${today.hour}h à Paris (pas minuit) — ce run se retire, l'autre horaire prendra le relais.`);
   process.exit(0);
@@ -68,42 +87,100 @@ if (celebrants.length === 0) {
   process.exit(0);
 }
 
-/* ---- Construction du message ---- */
+/* ============================================================
+ * CONSTRUCTION DU MESSAGE
+ * ============================================================ */
 const WEEKDAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-function ordinal(n) {
-  return n === 1 ? '1er' : `${n}`;
+/* Vœux tirés au sort : le message change d'une personne à l'autre
+   et d'une année sur l'autre. Ajoute les tiens librement. */
+const VOEUX = [
+  "Qu'elle t'apporte réussite, santé et plein de beaux moments 🌟",
+  "Profite bien de ta journée, tu le mérites 🥂",
+  "Une nouvelle année qui commence — qu'elle soit à la hauteur 🎯",
+  "Que cette année t'apporte tout ce que tu espères ✨",
+  "Passe une excellente journée, entouré comme il se doit 🎈",
+];
+
+function pickVoeu(seed) {
+  return VOEUX[Math.abs(seed) % VOEUX.length];
 }
 
-function buildEmbed(user, weekdayIndex) {
-  const age = user.birthday.year != null ? today.year - user.birthday.year : null;
-  const dateStr = `${WEEKDAYS[weekdayIndex]} ${ordinal(today.day)} ${MONTHS[today.month - 1]} ${today.year}`;
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
-  return {
-    author: {
-      name: '誕生日スペシャル · Anniversaires',
-    },
+function formatDateLongue() {
+  const jour = today.day === 1 ? '1er' : today.day;
+  return capitalize(`${WEEKDAYS[today.weekday]} ${jour} ${MONTHS[today.month - 1]} ${today.year}`);
+}
+
+/* Vignette : photo homme.jpg / femme.jpg hébergée sur le site */
+function thumbnailFor(user) {
+  if (!CONFIG.siteUrl || !user.genre) return undefined;
+  const file = user.genre === 'femme' ? 'femme.jpg' : 'homme.jpg';
+  return { url: `${CONFIG.siteUrl}/${file}` };
+}
+
+function buildEmbed(user) {
+  const age = user.birthday.year != null ? today.year - user.birthday.year : null;
+
+  const fields = [];
+  if (age !== null) {
+    fields.push({ name: '🎈 Âge', value: `**${age} ans**`, inline: true });
+  }
+  fields.push({ name: '📅 Date', value: `${today.day} ${MONTHS[today.month - 1]}`, inline: true });
+
+  const voeu = pickVoeu(today.day + today.month + user.prenom.length);
+
+  const description = [
+    age !== null
+      ? `**${user.prenom}** souffle sa **${age}ᵉ bougie** aujourd'hui !`
+      : `C'est le grand jour de **${user.prenom}** !`,
+    '',
+    voeu,
+    '',
+    '*Toute la communauté te souhaite un très bon anniversaire* ❤️',
+  ].join('\n');
+
+  const embed = {
+    author: { name: 'Anniversaire du jour' },
     title: `🎂  Joyeux anniversaire, ${user.prenom} !`,
-    description:
-      age !== null
-        ? `${user.prenom} fête ses **${age} ans** aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`
-        : `C'est l'anniversaire de ${user.prenom} aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`,
-    color: 0xe8332e,
-    fields:
-      age !== null
-        ? [{ name: 'Âge', value: `${age} ans`, inline: true }]
-        : [],
-    footer: {
-      text: dateStr.charAt(0).toUpperCase() + dateStr.slice(1),
-    },
+    description,
+    color: CONFIG.couleur,
+    fields,
+    footer: { text: formatDateLongue() },
     timestamp: new Date().toISOString(),
   };
+
+  const thumb = thumbnailFor(user);
+  if (thumb) embed.thumbnail = thumb;
+  if (CONFIG.lienSite) embed.url = CONFIG.lienSite;
+
+  return embed;
+}
+
+/* Ligne d'accroche au-dessus des embeds */
+function buildContent() {
+  const noms = celebrants.map((u) => `**${u.prenom}**`);
+  const liste =
+    noms.length === 1
+      ? noms[0]
+      : `${noms.slice(0, -1).join(', ')} et ${noms[noms.length - 1]}`;
+
+  const intro =
+    celebrants.length === 1
+      ? `🎉 Aujourd'hui, on fête l'anniversaire de ${liste} !`
+      : `🎉 Aujourd'hui, on fête les anniversaires de ${liste} !`;
+
+  return CONFIG.mention ? `${CONFIG.mention} ${intro}` : intro;
 }
 
 const payload = {
-  content: `🎉 C'est l'anniversaire de **${celebrants.map((u) => u.prenom).join(' et de ')}** aujourd'hui !`,
-  embeds: celebrants.map((u) => buildEmbed(u, new Date().getDay())),
+  content: buildContent(),
+  embeds: celebrants.map(buildEmbed),
 };
 
 /* ---- Envoi ---- */
