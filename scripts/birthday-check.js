@@ -61,7 +61,7 @@ if (process.env.STRICT_MIDNIGHT === 'true' && !process.env.TEST_DATE && today.ho
   process.exit(0);
 }
 
-const celebrants = users.filter((u) => u.day === today.day && u.month === today.month);
+const celebrants = users.filter((u) => u.birthday.day === today.day && u.birthday.month === today.month);
 
 if (celebrants.length === 0) {
   console.log(`✅ ${String(today.day).padStart(2, '0')}/${String(today.month).padStart(2, '0')} — aucun anniversaire aujourd'hui. Rien à envoyer.`);
@@ -70,7 +70,7 @@ if (celebrants.length === 0) {
 
 /* ---- Construction du message ---- */
 function buildEmbed(user) {
-  const age = user.year != null ? today.year - user.year : null;
+  const age = user.birthday.year != null ? today.year - user.birthday.year : null;
   return {
     title: `🎂 誕生日スペシャル — ${user.prenom.toUpperCase()} !!`,
     description:
