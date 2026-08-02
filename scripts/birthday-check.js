@@ -82,9 +82,9 @@ function buildEmbed(user, weekdayIndex) {
 
   return {
     author: {
-      name: '誕生日スペシャル · Anniversaires',
+      name: 'Anniversaires · 誕生日スペシャル',
     },
-    title: `🎂  Joyeux anniversaire, ${user.prenom} !`,
+    title: `Joyeux anniversaire, ${user.prenom} 🎂 !`,
     description:
       age !== null
         ? `${user.prenom} fête ses **${age} ans** aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`
@@ -102,7 +102,7 @@ function buildEmbed(user, weekdayIndex) {
 }
 
 const payload = {
-  content: `🎉 C'est l'anniversaire de **${celebrants.map((u) => u.prenom).join(' et de ')}** aujourd'hui !`,
+  content: `## C'est l'anniversaire de **${celebrants.map((u) => u.prenom).join(' et de ')}** aujourd'hui !`,
   embeds: celebrants.map((u) => buildEmbed(u, new Date().getDay())),
 };
 
