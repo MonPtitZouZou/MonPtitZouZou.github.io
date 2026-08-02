@@ -126,33 +126,23 @@ function thumbnailFor(user) {
 
 function buildEmbed(user) {
   const age = user.birthday.year != null ? today.year - user.birthday.year : null;
-
-  const fields = [];
-  if (age !== null) {
-    fields.push({ name: '🎈 Âge', value: `**${age} ans**`, inline: true });
-  }
-  fields.push({ name: '📅 Date', value: `${today.day} ${MONTHS[today.month - 1]}`, inline: true });
-
   const voeu = pickVoeu(today.day + today.month + user.prenom.length);
 
   const description = [
     age !== null
-      ? `**${user.prenom}** souffle sa **${age}ᵉ bougie** aujourd'hui !`
-      : `C'est le grand jour de **${user.prenom}** !`,
+      ? `**${user.prenom}** souffle sa **${age}ᵉ bougie** aujourd'hui 🕯️`
+      : `C'est le grand jour de **${user.prenom}** 🕯️`,
     '',
     voeu,
     '',
-    '*Toute la communauté te souhaite un très bon anniversaire* ❤️',
+    '*Toute la communauté pense à toi* ❤️',
   ].join('\n');
 
   const embed = {
-    author: { name: 'Anniversaire du jour' },
     title: `🎂  Joyeux anniversaire, ${user.prenom} !`,
     description,
     color: CONFIG.couleur,
-    fields,
     footer: { text: formatDateLongue() },
-    timestamp: new Date().toISOString(),
   };
 
   const thumb = thumbnailFor(user);
@@ -162,20 +152,9 @@ function buildEmbed(user) {
   return embed;
 }
 
-/* Ligne d'accroche au-dessus des embeds */
+/* Ligne au-dessus des embeds : uniquement la mention, si elle est configurée */
 function buildContent() {
-  const noms = celebrants.map((u) => `**${u.prenom}**`);
-  const liste =
-    noms.length === 1
-      ? noms[0]
-      : `${noms.slice(0, -1).join(', ')} et ${noms[noms.length - 1]}`;
-
-  const intro =
-    celebrants.length === 1
-      ? `🎉 Aujourd'hui, on fête l'anniversaire de ${liste} !`
-      : `🎉 Aujourd'hui, on fête les anniversaires de ${liste} !`;
-
-  return CONFIG.mention ? `${CONFIG.mention} ${intro}` : intro;
+  return CONFIG.mention || '';
 }
 
 const payload = {
