@@ -1373,32 +1373,14 @@
             femme: 'femme.jpg'
         };
 
-        /* discordId : facultatif. Mode développeur Discord → clic droit sur
-           la personne → « Copier l'identifiant ». Elle doit avoir rejoint
-           discord.gg/lanyard pour que la photo se synchronise. */
-        const users = [
-            //{ nom: "", prenom: "User test", genre: "homme", discordId: "", birthday: { day: 2, month: 8, year: 2002 } },
-            { nom: "", prenom: "MonPtitZouZou", genre: "homme", discordId: "", birthday: { day: 10, month: 11, year: 2002 } },
-            { nom: "", prenom: "Meckael", genre: "homme", discordId: "", birthday: { day: 20, month: 8, year: 2004 } },
-            { nom: "", prenom: "Amra", genre: "femme", discordId: "", birthday: { day: 5, month: 8, year: null } },
-            { nom: "", prenom: "Anaïs", genre: "femme", discordId: "", birthday: { day: 31, month: 12, year: 2005 } },
-            { nom: "", prenom: "Marc", genre: "homme", discordId: "", birthday: { day: 20, month: 4, year: 2004 } },
-            { nom: "", prenom: "Roxana", genre: "femme", discordId: "", birthday: { day: 31, month: 8, year: 2009 } },
-            { nom: "", prenom: "Roro", genre: "femme", discordId: "", birthday: { day: 1, month: 9, year: 2008 } },
-            { nom: "", prenom: "Samuel", genre: "homme", discordId: "", birthday: { day: 24, month: 2, year: 2007 } },
-            { nom: "", prenom: "Clementine", genre: "femme", discordId: "", birthday: { day: 14, month: 2, year: 2007 } },
-            { nom: "", prenom: "Printillie", genre: "femme", discordId: "", birthday: { day: 21, month: 3, year: 2005 } },
-            //{ nom: "", prenom: "", genre: "", discordId: "", birthday: { day: , month: , year:  } },
-        ];
+        /* ★ SOURCE UNIQUE : la liste vit dans birthdays.json (à la racine du repo).
+           Le site ET le bot Discord lisent le même fichier.
+           Pour ajouter quelqu'un → éditer birthdays.json, rien d'autre. */
+        let users = [];
 
         /* ============================================================
          * AVATARS — repli genre immédiat, puis synchro Discord (Lanyard)
          * ============================================================ */
-        users.forEach(u => {
-            u.avatarFallback = avatarsParGenre[u.genre] || null;
-            u.avatar = u.avatarFallback;
-        });
-
         const DISCORD_CACHE_KEY = 'discordAvatars';
         const DISCORD_CACHE_TTL = 3600000; // 1 h
 
@@ -2339,16 +2321,45 @@
         sortBy.addEventListener('change', renderBirthdays);
 
         /* ============================================================
-         * INIT
+         * INIT — charge birthdays.json puis affiche tout
          * ============================================================ */
-        setHeaderMeta();
-        setInterval(setHeaderMeta, 10000);
-        renderToday();
-        renderTop3();
-        renderBirthdays();
-        renderStats();
-        syncDiscordAvatars();
+        async function init() {
+            setHeaderMeta();
+            setInterval(setHeaderMeta, 10000);
 
+            try {
+                const res = await fetch('birthdays.json', { cache: 'no-cache' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                users = await res.json();
+            } catch (e) {
+                console.error('Impossible de charger birthdays.json :', e);
+                document.getElementById('birthdays-container').innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-mark">∅</div>
+                        <p>Impossible de charger birthdays.json.<br>
+                        Vérifie que le fichier est à la racine du site.<br>
+                        (Note : en local, ouvre le site via un petit serveur,<br>
+                        pas en double-cliquant sur le fichier.)</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Avatars de repli homme/femme
+            users.forEach(u => {
+                u.avatarFallback = avatarsParGenre[u.genre] || null;
+                u.avatar = u.avatarFallback;
+            });
+
+            setHeaderMeta();
+            renderToday();
+            renderTop3();
+            renderBirthdays();
+            renderStats();
+            syncDiscordAvatars();
+        }
+
+        init();
         setInterval(updateVisibleCountdowns, 1000);
 
         if ('serviceWorker' in navigator) {
