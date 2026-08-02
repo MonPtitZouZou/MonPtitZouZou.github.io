@@ -1,790 +1,2361 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anniversaire</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANNIVERSAIRES — 誕生日スペシャル</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0c">
+    <meta name="description" content="Suivez les anniversaires de l'équipe — édition manga.">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@500;700;900&family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette manga — encre profonde + rouge shōnen */
+            --bg: #0a0a0c;
+            --bg-elev: #131318;
+            --bg-elev-2: #1b1b22;
+            --ink: #f2efe9;
+            --ink-dim: #a5a29b;
+            --ink-mute: #5b5952;
+            --line: rgba(242, 239, 233, 0.1);
+            --line-strong: rgba(242, 239, 233, 0.25);
+            --border-ink: rgba(242, 239, 233, 0.85);
+            --accent: #e8332e;
+            --accent-dark: #a31d1a;
+            --accent-glow: rgba(232, 51, 46, 0.35);
+            --yellow: #ffd23f;
+            --radius: 0px;
+            --cut: 14px; /* coin coupé des panels */
+        }
 
-    /* VARIABLES */
-    :root {
-        --bg-deep: #050508;
-        --card-bg-base: #141219;
-        --primary-gradient: linear-gradient(135deg, #ff0000, #ffc800);
-        --avatar-glow-color: rgba(255, 168, 0, 0.6);
-        --crimson-glow: rgba(255, 0, 0, 0.4);
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        *:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+        }
 
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: radial-gradient(circle at 50% 0%, #460f0f 0%, #050508 80%);
-        color: #e0e0e0;
-        min-height: 100vh;
-        overflow-x: hidden;
-        padding-top: 20px;
-    }
+        html { scroll-behavior: smooth; }
 
-    /* HEADER AVEC STATS */
-    .header {
-        text-align: center;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+        body {
+            font-family: 'Inter Tight', 'Noto Sans JP', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
 
-    .header h1 {
-        font-size: 2.5em;
-        font-weight: 800;
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 20px;
-        filter: drop-shadow(0 4px 5px rgba(255, 168, 0, 0.4));
-    }
+        /* SCREENTONE — trame de points façon manga */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(242,239,233,0.05) 1px, transparent 1.2px);
+            background-size: 7px 7px;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: overlay;
+        }
 
-    .stats-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
+        /* Vignette + halo rouge */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%),
+                radial-gradient(circle at 12% 15%, rgba(232, 51, 46, 0.09), transparent 45%),
+                radial-gradient(circle at 88% 85%, rgba(232, 51, 46, 0.05), transparent 45%);
+            pointer-events: none;
+            z-index: 1;
+        }
 
-    .stat-box {
-        background: var(--card-bg-base);
-        padding: 15px 30px;
-        border-radius: 15px;
-        border: 1px solid rgba(250, 250, 250, 0.3);
-        min-width: 120px;
-    }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
 
-    .stat-number {
-        font-size: 2em;
-        font-weight: 800;
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
+        #confetti-canvas {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 1000;
+        }
 
-    .stat-label {
-        font-size: 0.85em;
-        color: #b0b0c0;
-        margin-top: 5px;
-    }
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 48px 24px 100px;
+        }
 
-    /* BARRE DE RECHERCHE */
-    .search-container {
-        max-width: 500px;
-        margin: 0 auto 30px;
-        padding: 0 20px;
-    }
+        /* Panel manga générique : coin coupé + bord encré */
+        .manga-panel {
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+        }
 
-    .search-box {
-        position: relative;
-        width: 100%;
-    }
+        /* ============================================================
+         * HEADER — Couverture de tome
+         * ============================================================ */
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            padding: 60px 0 40px;
+            position: relative;
+            animation: fadeInDown 1s ease-out;
+        }
 
-    .search-box input {
-        width: 100%;
-        padding: 15px 50px 15px 20px;
-        background: var(--card-bg-base);
-        border: 1px solid rgba(250, 250, 250, 0.3);
-        border-radius: 50px;
-        color: #e0e0e0;
-        font-size: 1em;
-        font-family: 'Poppins', sans-serif;
-        transition: all 0.3s ease;
-    }
+        /* Burst de vitesse derrière le titre */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: min(120vw, 900px);
+            aspect-ratio: 1;
+            transform: translate(-50%, -55%);
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(242,239,233,0.05) 0deg 2deg,
+                transparent 2deg 9deg
+            );
+            -webkit-mask-image: radial-gradient(circle, transparent 18%, black 40%, transparent 72%);
+            mask-image: radial-gradient(circle, transparent 18%, black 40%, transparent 72%);
+            pointer-events: none;
+            z-index: -1;
+        }
 
-    .search-box input:focus {
-        outline: none;
-        border-color: #ff9f43;
-        box-shadow: 0 0 20px var(--avatar-glow-color);
-    }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .search-box::after {
-        content: "🔍";
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.2em;
-    }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    /* FILTRES PAR MOIS */
-    .filters-container {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        padding: 0 20px 20px;
-    }
+        .header-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--ink-mute);
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
 
-    /* BOUTONS DE TRI */
-.sort-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    padding: 0 20px 15px;
-}
+        .header-tag::before, .header-tag::after {
+            content: '';
+            width: 32px;
+            height: 2px;
+            background: var(--accent);
+            transform: skewX(-20deg);
+        }
 
-.sort-btn {
-    padding: 8px 16px;
-    background: var(--card-bg-base);
-    border: 1px solid rgba(250, 250, 250, 0.3);
-    border-radius: 20px;
-    color: #b0b0c0;
-    font-size: 0.85em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-}
+        .title {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-size: clamp(2.8rem, 9vw, 6.4rem);
+            font-weight: 400;
+            color: var(--ink);
+            letter-spacing: clamp(1px, 0.4vw, 4px);
+            line-height: 0.95;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            transform: skewX(-4deg);
+            text-shadow:
+                4px 4px 0 var(--accent),
+                8px 8px 0 rgba(163, 29, 26, 0.4);
+        }
 
-.sort-btn:hover,
-.sort-btn.active {
-    background: var(--primary-gradient);
-    color: white;
-    /* On garde la bordure pour ne pas changer la taille du bouton, mais on la rend transparente */
-    border: 1px solid transparent; 
-    /* LE FIX EST ICI : On oblige le fond à aller jusque sous la bordure */
-    background-origin: border-box; 
-    background-clip: padding-box, border-box;
-    transform: translateY(-2px);
-}
+        .title-jp {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            font-size: clamp(0.85rem, 1.8vw, 1.2rem);
+            letter-spacing: 10px;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
 
-    .month-filter {
-        padding: 8px 16px;
-        background: var(--card-bg-base);
-        border: 1px solid rgba(250, 250, 250, 0.3);
-        border-radius: 20px;
-        color: #b0b0c0;
-        font-size: 0.85em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+        .subtitle {
+            font-family: 'Inter Tight', sans-serif;
+            font-style: italic;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--ink-dim);
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-top: 8px;
+        }
 
-    .month-filter:hover,
-    .month-filter.active {
-        background: var(--primary-gradient);
-        color: white;
-border: 1px solid transparent;
-    /* LE FIX EST ICI */
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    transform: translateY(-2px);
-    }
+        .header-meta {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-mute);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
 
-    /* CONTAINER */
-    #users-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 30px;
-        padding: 30px;
-    }
+        .header-meta span { display: inline-flex; align-items: center; gap: 8px; }
+        .header-meta .dot {
+            width: 7px; height: 7px;
+            background: var(--accent);
+            transform: rotate(45deg);
+        }
 
-    /* CARTE UTILISATEUR */
-    .user-container {
-        width: 280px;
-        min-height: 450px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        text-align: center;
-        background: radial-gradient(circle at 1px 1px, var(--card-bg-base) 1px, transparent 0) var(--card-bg-base), 
-                    linear-gradient(rgba(20, 18, 25, 0.95), rgba(20, 18, 25, 0.95));
-        background-size: 4px 4px, 100% 100%;
-        padding: 30px 20px;
-        border-radius: 24px;
-        border: 1px solid rgba(250, 250, 250, 0.521);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        position: relative;
-        z-index: 1;
-        transition: all 0.3s ease;
-    }
+        /* ============================================================
+         * SECTIONS — En-têtes façon épisode
+         * ============================================================ */
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            display: block;
+            padding: 3px 10px;
+            border: 1px solid var(--accent);
+            transform: skewX(-12deg);
+        }
 
-    .user-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 
-                    0 0 25px var(--avatar-glow-color), 
-                    0 0 50px var(--crimson-glow);
-        border-color: #ff9f43;
-    }
+        .section-title {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-weight: 400;
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ink);
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
 
-    /* BADGE PROXIMITÉ */
-    .proximity-badge {
-        position: absolute;
-        z-index: 1000;
-        top: 15px;
-        right: 15px;
-        padding: 6px 12px;
-        border-radius: 15px;
-        font-size: 0.7em;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+        .section-jp {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--ink-mute);
+            letter-spacing: 4px;
+        }
 
-    .badge-today {
-        background: linear-gradient(135deg, #ff0000, #ff6b00);
-        color: white;
-        animation: badgePulse 1.5s infinite;
-    }
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--line-strong);
+        }
 
-    .badge-week {
-        background: linear-gradient(135deg, #ffc800, #ff9f43);
-        color: white;
-    }
+        .section-divider .line {
+            flex: 1;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--line-strong) 0 12px, transparent 12px 20px);
+        }
 
-    .badge-month {
-        background: rgba(255, 200, 0, 0.2);
-        color: #ffc800;
-        border: 1px solid #ffc800;
-    }
+        .count-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--bg);
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            background: var(--yellow);
+            transform: skewX(-12deg);
+        }
 
-    @keyframes badgePulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-    }
+        /* ============================================================
+         * TODAY — Page de couverture
+         * ============================================================ */
+        .today-section {
+            margin-bottom: 80px;
+            animation: fadeInUp 1s 0.1s ease-out backwards;
+        }
 
-    /* AVATAR */
-    .avatar {
-        width: 125px;
-        height: 125px;
-        border-radius: 50%;
-        border: 1px solid #ffffff;
-        box-shadow: 0 0 55px rgb(255, 0, 0);
-        margin-bottom: 15px;
-        display: block;
-    }
+        .today-poster {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            background: var(--bg-elev);
+            border: 2px solid var(--border-ink);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+        }
 
-          /* AVATAR FALLBACK avec initiales */
-      .avatar-fallback {
-          width: 125px;
-          height: 125px;
-          border-radius: 50%;
-          border: 1px solid #ffffff;
-          box-shadow: 0 0 55px rgb(255, 0, 0);
-          margin-bottom: 15px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2.5em;
-          font-weight: 800;
-          background: var(--primary-gradient);
-          color: white;
-      }
+        /* Burst de vitesse derrière l'avatar */
+        .today-poster::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 200px;
+            width: 700px;
+            aspect-ratio: 1;
+            transform: translate(-50%, -50%);
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(232, 51, 46, 0.12) 0deg 3deg,
+                transparent 3deg 11deg
+            );
+            -webkit-mask-image: radial-gradient(circle, black 0%, transparent 65%);
+            mask-image: radial-gradient(circle, black 0%, transparent 65%);
+            pointer-events: none;
+        }
 
-    /* PSEUDO */
-    .user-container h1 {
-        width: 100%;
-        text-align: center;
-        font-size: 1.8em;
-        margin: 10px 0;
-        font-weight: 800;
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        filter: drop-shadow(0 4px 5px rgba(255, 168, 0, 0.4)) drop-shadow(0 0 2px rgba(255, 0, 0, 0.8));
-    }
+        .today-poster::after {
+            content: '誕生日';
+            position: absolute;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            writing-mode: vertical-rl;
+            font-size: clamp(4rem, 10vw, 8rem);
+            top: 50%; right: 8px;
+            transform: translateY(-50%);
+            color: var(--ink);
+            opacity: 0.05;
+            letter-spacing: 12px;
+            pointer-events: none;
+        }
 
-    /* DATE DE NAISSANCE */
-    .birth-date {
-        font-size: 0.9em;
-        color: #b0b0c0;
-        margin-bottom: 5px;
-    }
+        .today-image-wrap {
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-elev-2);
+            border: 2px solid var(--border-ink);
+            z-index: 1;
+        }
 
-    /* ÂGE */
-    .age {
-        font-size: 15px;
-        font-weight: 700;
-        color: #f7e39e;
-        margin: 10px 0;
-    }
+        .today-image-wrap .avatar,
+        .today-image-wrap .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-    /* TITRE SECTION */
-    .user-container h2 {
-        width: 100%;
-        text-align: center;
-        font-weight: 500;
-        color: #b0b0c0;
-        font-size: 0.95em;
-        margin: 10px 0 -10px;
-    }
+        .today-image-wrap .avatar-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 6rem;
+            color: var(--accent);
+            background:
+                radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 8px 8px,
+                linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
+        }
 
-    /* COMPTE À REBOURS */
-    .birthday-countdown {
-        font-size: 0.95em;
-        font-weight: 700;
-        text-align: center;
-        width: 100%;
-        background: linear-gradient(to right, #ff0000, #eeff00);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        padding: 10px;
-    }
+        .today-image-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 50%);
+            pointer-events: none;
+        }
 
-/* =========================================
-   NOUVEAU STYLE "JOUR J" (À REMPLACER/AJOUTER)
-   ========================================= */
+        .today-info { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; }
 
-/* La carte elle-même : Fond animé + Bordure RGB */
-.user-container.birthday {
-    background: linear-gradient(135deg, #2a0808, #1a1a2e);
-    position: relative;
-    z-index: 10;
-    /* Animation de bordure arc-en-ciel */
-    animation: partyBorder 3s linear infinite, cardFloat 3s ease-in-out infinite;
-    border: 2px solid transparent;
-}
+        .today-feature-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-/* L'avatar qui "bat" comme un cœur ou une enceinte */
-.user-container.birthday .avatar {
-    animation: avatarBeat 0.8s infinite alternate cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
-                0 0 60px #ff00de, 
-                0 0 90px #00ffff;
-    border-color: #fff;
-}
+        .today-feature-tag::before {
+            content: '';
+            width: 24px; height: 2px;
+            background: var(--accent);
+            transform: skewX(-20deg);
+        }
 
-/* Le texte "Joyeux Anniversaire" en arc-en-ciel */
-.user-container.birthday .birthday-countdown {
-    font-size: 1.2em;
-    font-weight: 900;
-    background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-    background-size: 400%;
-    
-    /* === CORRECTION ICI === */
-    background-clip: text;         /* Version standard (pour le futur) */
-    -webkit-background-clip: text; /* Version actuelle (nécessaire pour Chrome/Safari) */
-    
-    -webkit-text-fill-color: transparent;
-    animation: rainbowText 5s linear infinite;
-    text-shadow: 0 0 10px rgba(255,255,255,0.3);
-}
+        .today-name {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-weight: 400;
+            font-size: clamp(2rem, 4.5vw, 3.6rem);
+            line-height: 1;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            transform: skewX(-3deg);
+            text-shadow: 3px 3px 0 var(--accent);
+        }
 
+        .today-tagline {
+            font-size: 1.1rem;
+            color: var(--ink-dim);
+            font-style: italic;
+            margin-bottom: 24px;
+        }
 
+        .age-highlight {
+            color: var(--yellow);
+            font-weight: 700;
+            font-style: normal;
+        }
 
-/* === LES KEYFRAMES (ANIMATIONS) === */
+        .today-credits {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 28px;
+            padding: 20px 0;
+            border-top: 2px solid var(--line-strong);
+            border-bottom: 2px solid var(--line-strong);
+        }
 
-/* 1. Bordure RGB rotative */
-@keyframes partyBorder {
-    0% { 
-        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-        border-color: #ff0000;
-    }
-    20% { 
-        box-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00;
-        border-color: #ffff00;
-    }
-    40% { 
-        box-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
-        border-color: #00ff00;
-    }
-    60% { 
-        box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
-        border-color: #00ffff;
-    }
-    80% { 
-        box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
-        border-color: #ff00ff;
-    }
-    100% { 
-        box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-        border-color: #ff0000;
-    }
-}
+        .credit-label {
+            color: var(--ink-mute);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
 
-/* 2. Avatar qui pulse */
-@keyframes avatarBeat {
-    0% { transform: scale(1); filter: brightness(1); }
-    100% { transform: scale(1.1); filter: brightness(1.3); }
-}
+        .credit-value { color: var(--ink); }
 
-/* 3. Texte arc-en-ciel qui coule */
-@keyframes rainbowText {
-    0% { background-position: 0%; }
-    100% { background-position: 400%; }
-}
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 30px;
+            background: var(--accent);
+            color: var(--ink);
+            border: none;
+            font-family: 'Anton', sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+            align-self: flex-start;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        }
 
-/* 4. La carte qui flotte un peu plus haut */
-@keyframes cardFloat {
-    0%, 100% { transform: translateY(-10px); }
-    50% { transform: translateY(-20px); }
-}
+        .share-btn:hover {
+            background: var(--accent-dark);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
 
-/* 5. Petit saut du titre */
-@keyframes textBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
+        .share-btn:active { transform: translateY(1px); }
 
-    /* CONFETTIS */
-    .confetti {
-        position: fixed;
-        top: -50px;
-        z-index: -1;
-        opacity: 0.9;
-        animation: fall 4s linear infinite;
-    }
+        /* ============================================================
+         * TOOLBAR
+         * ============================================================ */
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 0;
+            margin-bottom: 48px;
+            border: 2px solid var(--line-strong);
+            background: var(--bg-elev);
+            animation: fadeInUp 1s 0.2s ease-out backwards;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
 
-    @keyframes fall {
-        100% { transform: translateY(100vh); opacity: 0; }
-    }
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border-right: 1px solid var(--line);
+        }
 
-    @media (max-width: 768px) {
-        .header h1 { font-size: 1.8em; }
-        .stats-container { gap: 10px; }
-        .user-container { width: 100%; max-width: 320px; }
-    }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            color: var(--ink-mute);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
 
+        .search-input {
+            width: 100%;
+            padding: 16px 44px 16px 44px;
+            background: transparent;
+            border: none;
+            color: var(--ink);
+            font-family: 'Inter Tight', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
 
-  </style>
+        .search-input:focus { outline: none; }
+        .search-input::placeholder { color: var(--ink-mute); font-style: italic; }
+
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            background: var(--line);
+            border: none;
+            color: var(--ink-dim);
+            width: 22px; height: 22px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            transition: background 0.2s;
+        }
+
+        .search-clear.visible { display: flex; }
+        .search-clear:hover { background: var(--accent); color: var(--ink); }
+
+        .toolbar-select {
+            padding: 16px 36px 16px 18px;
+            background: transparent;
+            border: none;
+            border-left: 1px solid var(--line);
+            color: var(--ink);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a5a29b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 8px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .toolbar-select:hover {
+            background-color: rgba(232, 51, 46, 0.1);
+            color: var(--accent);
+        }
+
+        .toolbar-select:focus {
+            outline: none;
+            background-color: rgba(232, 51, 46, 0.15);
+        }
+
+        .toolbar-select option { background: var(--bg-elev); color: var(--ink); }
+
+        /* ============================================================
+         * TOP 3 — Prochains épisodes
+         * ============================================================ */
+        .top3-section {
+            margin-bottom: 80px;
+            animation: fadeInUp 1s 0.3s ease-out backwards;
+        }
+
+        .top3-list {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding: 8px 4px 24px;
+            scrollbar-width: none;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .top3-list::-webkit-scrollbar { display: none; }
+
+        .top3-tile {
+            position: relative;
+            flex-shrink: 0;
+            width: 280px;
+            scroll-snap-align: start;
+            transition: transform 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
+            color: inherit;
+            display: block;
+        }
+
+        .top3-tile:hover { transform: translateY(-8px) rotate(-0.5deg); }
+
+        .top3-rank-overlay {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            z-index: 5;
+            font-family: 'Anton', sans-serif;
+            font-size: 4.5rem;
+            line-height: 0.9;
+            color: var(--ink);
+            text-shadow:
+                3px 3px 0 var(--accent),
+                6px 6px 12px rgba(0,0,0,0.8);
+            transform: skewX(-6deg);
+        }
+
+        .top3-rank-overlay::before {
+            content: 'NEXT';
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--yellow);
+            text-shadow: none;
+            margin-bottom: -2px;
+            transform: skewX(6deg);
+        }
+
+        .top3-image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+            background: var(--bg-elev);
+            border: 2px solid var(--line-strong);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+        }
+
+        .top3-tile:hover .top3-image-container {
+            border-color: var(--border-ink);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
+        }
+
+        .top3-tile-image,
+        .top3-tile-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .top3-tile:hover .top3-tile-image {
+            transform: scale(1.05);
+        }
+
+        .top3-tile-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 7rem;
+            color: var(--accent);
+            background:
+                radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 8px 8px,
+                linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
+        }
+
+        .top3-tile-overlays {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 60px 18px 18px;
+            background: linear-gradient(to top, rgba(10, 10, 12, 0.98), rgba(10, 10, 12, 0.85) 40%, transparent);
+        }
+
+        .top3-tile-name {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top3-tile-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .top3-countdown { display: flex; gap: 4px; }
+
+        .top3-countdown-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            padding: 6px 0;
+            text-align: center;
+            flex: 1;
+        }
+
+        .top3-countdown-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+        }
+
+        .top3-countdown-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.5rem;
+            color: var(--ink-mute);
+            text-transform: uppercase;
+            margin-top: 2px;
+            letter-spacing: 1.5px;
+        }
+
+        .top3-age-corner {
+            position: absolute;
+            top: 12px;
+            right: -6px;
+            background: var(--yellow);
+            color: var(--bg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            letter-spacing: 1px;
+            z-index: 5;
+            transform: skewX(-12deg);
+        }
+
+        /* ============================================================
+         * MONTH GROUPS
+         * ============================================================ */
+        .month-section {
+            margin-bottom: 56px;
+            animation: fadeInUp 1s 0.4s ease-out backwards;
+        }
+
+        .month-header {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .month-name {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-weight: 400;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+
+        .month-name.current { color: var(--accent); text-shadow: 2px 2px 0 rgba(232,51,46,0.25); }
+
+        .month-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-mute);
+            letter-spacing: 2px;
+        }
+
+        .month-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+            letter-spacing: 2px;
+            margin-left: auto;
+        }
+
+        /* ============================================================
+         * BIRTHDAY CARDS — Cases de manga
+         * ============================================================ */
+        .birthday-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .birthday-card {
+            position: relative;
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-elev);
+            border: 1px solid var(--line-strong);
+            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+
+        /* Barre d'action diagonale au hover */
+        .birthday-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 0;
+            background: var(--accent);
+            transform: skewY(-8deg);
+            transform-origin: top;
+            transition: height 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
+        }
+
+        .birthday-card:hover {
+            border-color: var(--border-ink);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .birthday-card:hover::before { height: 130%; }
+
+        .birthday-card.imminent { border-color: rgba(232, 51, 46, 0.5); }
+        .birthday-card.imminent::before { height: 130%; opacity: 0.7; }
+
+        .avatar-container {
+            position: relative;
+            flex-shrink: 0;
+            width: 64px;
+            height: 96px;
+            overflow: hidden;
+            background: var(--bg-elev-2);
+            border: 1px solid var(--line-strong);
+        }
+
+        .avatar {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .birthday-card:hover .avatar { transform: scale(1.05); }
+
+        .avatar-placeholder {
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Anton', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent);
+            background:
+                radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 6px 6px,
+                linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
+        }
+
+        .card-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .user-name {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+
+        .birthday-date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .countdown-mini {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .countdown-mini-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            background: rgba(232, 51, 46, 0.06);
+            border: 1px solid var(--line);
+            padding: 3px 7px;
+            color: var(--ink);
+            min-width: 32px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .countdown-mini-item .unit {
+            color: var(--ink-mute);
+            margin-left: 2px;
+        }
+
+        .imminent .countdown-mini-item {
+            background: rgba(232, 51, 46, 0.15);
+            border-color: rgba(232, 51, 46, 0.4);
+        }
+
+        .age-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .current-age { color: var(--ink-mute); }
+        .arrow { color: var(--ink-mute); }
+        .upcoming-age { color: var(--yellow); font-weight: 700; }
+
+        /* ============================================================
+         * STATS — Fiche technique
+         * ============================================================ */
+        .stats-section {
+            margin-top: 80px;
+            padding-top: 48px;
+            border-top: 2px solid var(--line-strong);
+            animation: fadeInUp 1s 0.5s ease-out backwards;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0;
+            border: 2px solid var(--line-strong);
+            background: var(--bg-elev);
+        }
+
+        .stat-card {
+            padding: 28px 24px;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            background: rgba(232, 51, 46, 0.05);
+        }
+
+        .stat-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-value {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.4rem;
+            line-height: 1;
+            color: var(--ink);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .stat-value.numeric {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ink-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Casting par âge */
+        .casting-scroll-container {
+            margin-top: 40px;
+            border: 2px solid var(--line-strong);
+            background: var(--bg-elev);
+            padding: 32px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+        }
+
+        .casting-title {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            letter-spacing: 3px;
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .casting-title .jp {
+            display: block;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            color: var(--ink-mute);
+            letter-spacing: 6px;
+            margin-top: 6px;
+        }
+
+        #casting-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .casting-item {
+            border-left: 3px solid var(--accent);
+            padding-left: 12px;
+            margin-bottom: 10px;
+        }
+
+        .casting-age {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--yellow);
+            font-weight: 700;
+        }
+
+        .casting-name {
+            font-family: 'Inter Tight', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--ink);
+        }
+
+        .casting-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--ink-mute);
+        }
+
+        /* ============================================================
+         * NO RESULTS
+         * ============================================================ */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--ink-mute);
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .no-results-mark {
+            font-family: 'Anton', sans-serif;
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* ============================================================
+         * MODAL PARTAGE
+         * ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: var(--bg-elev);
+            border: 2px solid var(--border-ink);
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+        }
+
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .modal-close {
+            position: absolute;
+            top: 14px; right: 14px;
+            background: transparent;
+            border: 1px solid var(--line-strong);
+            color: var(--ink);
+            width: 32px; height: 32px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .modal-close:hover { background: var(--accent); border-color: var(--accent); }
+
+        .modal-title {
+            font-family: 'Anton', 'Noto Sans JP', sans-serif;
+            font-weight: 400;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .share-card-preview {
+            width: 300px; height: 450px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            background: var(--bg);
+            border: 1px solid var(--line);
+        }
+
+        .share-card-canvas { display: block; width: 100%; height: 100%; }
+
+        .generating-text {
+            text-align: center;
+            padding: 10px;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            display: none;
+        }
+
+        .generating-text.active { display: block; }
+
+        .share-action-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--accent);
+            color: var(--ink);
+            border: none;
+            font-family: 'Anton', sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        }
+
+        .share-action-btn:hover {
+            background: var(--accent-dark);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* ============================================================
+         * TOAST
+         * ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-elev);
+            border: 2px solid var(--accent);
+            color: var(--ink);
+            padding: 14px 28px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 3000;
+            opacity: 0;
+            transition: transform 0.4s, opacity 0.4s;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        }
+
+        .toast.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ============================================================
+         * SCROLL TO TOP
+         * ============================================================ */
+        .scroll-top {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            width: 48px; height: 48px;
+            background: var(--bg-elev);
+            border: 2px solid var(--line-strong);
+            color: var(--ink);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(12px);
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s, background 0.3s;
+            z-index: 999;
+        }
+
+        .scroll-top.visible {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+
+        .scroll-top:hover { background: var(--accent); border-color: var(--accent); }
+
+        /* ============================================================
+         * MOBILE
+         * ============================================================ */
+        @media (max-width: 900px) {
+            .today-poster {
+                grid-template-columns: 1fr;
+                padding: 28px;
+                gap: 28px;
+            }
+
+            .today-poster::before { left: 50%; top: 180px; }
+
+            .today-image-wrap {
+                max-width: 240px;
+                margin: 0 auto;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .search-wrapper { border-right: none; border-bottom: 1px solid var(--line); }
+            .toolbar-select {
+                border-left: none;
+                border-bottom: 1px solid var(--line);
+            }
+            .toolbar > *:last-child { border-bottom: none; }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 32px 16px 80px; }
+            .header-meta { flex-direction: column; gap: 8px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .top3-tile { width: 240px; }
+            .today-poster::after { display: none; }
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Anniversaire</h1>
-    <div class="stats-container">
-      <div class="stat-box">
-        <div class="stat-number" id="total-count">0</div>
-        <div class="stat-label">Personnes</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="today-count">0</div>
-        <div class="stat-label">🎂 Aujourd'hui</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="week-count">0</div>
-        <div class="stat-label">🎂 7J à venir</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-number" id="avg-age">0</div>
-        <div class="stat-label">Âge moyen</div>
-      </div>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <p class="header-tag" id="header-tag">— OPENING —</p>
+            <p class="title-jp">誕生日スペシャル</p>
+            <h1 class="title">Anniversaires</h1>
+            <p class="subtitle">— Chaque personnage a son arc —</p>
+            <div class="header-meta">
+                <span><span class="dot"></span><span id="header-date"></span></span>
+                <span><span class="dot"></span><span id="header-time-now"></span></span>
+                <span><span class="dot"></span><span id="header-total"></span></span>
+            </div>
+        </header>
+
+        <!-- TODAY -->
+        <div id="today-container" aria-live="polite"></div>
+
+        <!-- TOOLBAR -->
+        <section class="toolbar" role="search" aria-label="Filtres">
+            <div class="search-wrapper">
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input type="text" id="search-input" class="search-input"
+                       placeholder="Rechercher un personnage..."
+                       aria-label="Rechercher">
+                <button type="button" class="search-clear" id="search-clear" aria-label="Effacer">✕</button>
+            </div>
+            <select id="filter-month" class="toolbar-select" aria-label="Filtrer par mois">
+                <option value="all">— Tous les mois —</option>
+                <option value="0">Janvier</option>
+                <option value="1">Février</option>
+                <option value="2">Mars</option>
+                <option value="3">Avril</option>
+                <option value="4">Mai</option>
+                <option value="5">Juin</option>
+                <option value="6">Juillet</option>
+                <option value="7">Août</option>
+                <option value="8">Septembre</option>
+                <option value="9">Octobre</option>
+                <option value="10">Novembre</option>
+                <option value="11">Décembre</option>
+            </select>
+            <select id="sort-by" class="toolbar-select" aria-label="Trier">
+                <option value="upcoming">À venir</option>
+                <option value="name">Nom</option>
+                <option value="age-desc">Âge ↓</option>
+                <option value="age-asc">Âge ↑</option>
+            </select>
+        </section>
+
+        <!-- TOP 3 -->
+        <section class="top3-section">
+            <div class="section-divider">
+                <span class="section-num">EP. 01</span>
+                <h2 class="section-title">Prochains épisodes <span class="section-jp">次回予告</span></h2>
+                <span class="line"></span>
+            </div>
+            <div class="top3-list" id="top3-list"></div>
+        </section>
+
+        <!-- ALL BIRTHDAYS -->
+        <section aria-label="Tous les anniversaires">
+            <div class="section-divider">
+                <span class="section-num">EP. 02</span>
+                <h2 class="section-title">Tous les personnages <span class="section-jp">登場人物</span></h2>
+                <span class="count-badge" id="total-count"></span>
+                <span class="line"></span>
+            </div>
+            <div id="birthdays-container"></div>
+        </section>
+
+        <!-- STATS -->
+        <section class="stats-section">
+            <div class="section-divider">
+                <span class="section-num">EP. 03</span>
+                <h2 class="section-title">Fiche technique <span class="section-jp">データ</span></h2>
+                <span class="line"></span>
+            </div>
+            <div class="stats-grid" id="stats-grid"></div>
+
+            <div class="casting-scroll-container">
+                <h3 class="casting-title">— Ordre de puissance (par âge) —<span class="jp">パワーランキング</span></h3>
+                <div id="casting-list"></div>
+            </div>
+        </section>
     </div>
-  </div>
 
-  <div class="search-container">
-    <div class="search-box">
-      <input type="text" id="search-input" placeholder="Rechercher une personne...">
+    <button type="button" class="scroll-top" id="scroll-top" aria-label="Remonter">↑</button>
+
+    <!-- SHARE MODAL -->
+    <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <button type="button" class="modal-close" onclick="closeShareModal()" aria-label="Fermer">✕</button>
+            <h2 id="modal-title" class="modal-title">Carte de vœux</h2>
+            <div class="share-card-preview">
+                <canvas class="share-card-canvas" id="card-confetti-canvas"></canvas>
+            </div>
+            <div class="generating-text" id="generating-text">— Génération du GIF —</div>
+            <button type="button" class="share-action-btn" onclick="downloadGif()">
+                Télécharger le GIF
+            </button>
+        </div>
     </div>
-  </div>
 
-  <!-- NOUVEAU : Boutons de tri -->
-<div class="sort-container">
-  <button class="sort-btn active" data-sort="proximity">📅 Proximité</button>
-  <button class="sort-btn" data-sort="name">🔤 Nom (A-Z)</button>
-  <button class="sort-btn" data-sort="age">🎂 Âge</button>
-  <button class="sort-btn" data-sort="month">📆 Mois</button>
-</div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <div class="filters-container">
-    <button class="month-filter active" data-month="all">Tous</button>
-    <button class="month-filter" data-month="0">Janvier</button>
-    <button class="month-filter" data-month="1">Février</button>
-    <button class="month-filter" data-month="2">Mars</button>
-    <button class="month-filter" data-month="3">Avril</button>
-    <button class="month-filter" data-month="4">Mai</button>
-    <button class="month-filter" data-month="5">Juin</button>
-    <button class="month-filter" data-month="6">Juillet</button>
-    <button class="month-filter" data-month="7">Août</button>
-    <button class="month-filter" data-month="8">Septembre</button>
-    <button class="month-filter" data-month="9">Octobre</button>
-    <button class="month-filter" data-month="10">Novembre</button>
-    <button class="month-filter" data-month="11">Décembre</button>
-  </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script>
+        'use strict';
 
-  <div id="users-container"></div>
+        /* ============================================================
+         * DONNÉES
+         * ============================================================ */
+        const today = new Date();
+        const monthNames = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        const monthNamesShort = ['JANVIER', 'FÉVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN',
+            'JUILLET', 'AOÛT', 'SEPTEMBRE', 'OCTOBRE', 'NOVEMBRE', 'DÉCEMBRE'];
 
-  <script>
-    const users = [
-  { pseudo: "MonPtitZouZou", avatar: "https://cdn.discordapp.com/avatars/763055060678213652/ef9ec4dca25e52aaffa43cff08f21564.png?size=1024", birthday: { day: 10, month: 10, hour:0, minute:0, second:0, year:2002 } },
-  { pseudo: "MecKaeL", avatar: "https://cdn.discordapp.com/avatars/644934592901414932/7d6a2a813a353a6ba09c0df263b8f61a.png?size=1024", birthday: { day: 25, month: 7, hour:0, minute:0, second:0, year:2004 } },
-  { pseudo: "Printillie", avatar: "https://cdn.discordapp.com/avatars/689781399661838347/69c0bb311a7baab4f82cd260b8ebab3b.webp", birthday: { day: 21, month: 2, hour:0, minute:0, second:0, year:2005 } },
-  { pseudo: "Anaïs", avatar: "https://cdn.discordapp.com/avatars/459373865932685324/fd079e443979b0979e03cf0b44ab40e1.webp", birthday: { day: 31, month: 11, hour:0, minute:0, second:0, year:2005 } },
-  { pseudo: "Marie", avatar: "https://cdn.discordapp.com/avatars/760428505149997056/61e4defc2121796de1d11886e1b41947.webp", birthday: { day: 22, month: 9, hour:0, minute:0, second:0, year:2005 } },
-  { pseudo: "Timo", avatar: "https://m.media-amazon.com/images/M/MV5BMzgyOTIyNTY3MV5BMl5BanBnXkFtZTgwNDkzODIxMzE@._V1_FMjpg_UX1000_.jpg", birthday: { day: 19, month: 10, hour:0, minute:0, second:0, year:2005 } },
-  { pseudo: "Rocco", avatar: "https://cdn.discordapp.com/avatars/706514911643172884/0fb4b0fd6b244df4dfcdc6b4ba9a724a.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2008 } },
-  { pseudo: "Mathys", avatar: "https://cdn.discordapp.com/avatars/836362324532658257/0b8b2d16f61c370962618ca46e03698c.webp", birthday: { day: 24, month: 4, hour:0, minute:0, second:0, year:2008 } },
-  { pseudo: "Ramata", avatar: "https://cdn.discordapp.com/avatars/689561679364620361/6f3e4f3110ed14ad87fd80c8f8f33a7e.webp", birthday: { day: 16, month: 5, hour:0, minute:0, second:0, year:2005 } },
-  { pseudo: "Thibault", avatar: "data:image/jpeg;base64,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", birthday: { day: 23, month: 8, hour:0, minute:0, second:0, year:2004 } },
-  { pseudo: "Mitrion", avatar: "https://i.pinimg.com/1200x/f0/52/c6/f052c6f1f8e46c095d070b38401520ad.jpg", birthday: { day: 20, month: 3, hour:0, minute:0, second:0, year:2004 } },
+        /* Images de repli, utilisées quand il n'y a pas d'ID Discord
+           (ou que la personne n'est pas sur le serveur Lanyard). */
+        const avatarsParGenre = {
+            homme: 'homme.jpg',
+            femme: 'femme.jpg'
+        };
 
-];
+        /* discordId : facultatif. Mode développeur Discord → clic droit sur
+           la personne → « Copier l'identifiant ». Elle doit avoir rejoint
+           discord.gg/lanyard pour que la photo se synchronise. */
+        const users = [
+            { nom: "", prenom: "User test", genre: "homme", discordId: "", birthday: { day: 2, month: 8, year: 2002 } },
+            { nom: "", prenom: "MonPtitZouZou", genre: "homme", discordId: "", birthday: { day: 10, month: 11, year: 2002 } },
+            { nom: "", prenom: "Meckael", genre: "homme", discordId: "", birthday: { day: 20, month: 8, year: 2004 } },
+            { nom: "", prenom: "Amra", genre: "femme", discordId: "", birthday: { day: 5, month: 8, year: null } },
+            { nom: "", prenom: "Anaïs", genre: "femme", discordId: "", birthday: { day: 31, month: 12, year: 2005 } },
+            { nom: "", prenom: "Marc", genre: "homme", discordId: "", birthday: { day: 20, month: 4, year: 2004 } },
+            { nom: "", prenom: "Roxana", genre: "femme", discordId: "", birthday: { day: 31, month: 8, year: 2009 } },
+            { nom: "", prenom: "Roro", genre: "femme", discordId: "", birthday: { day: 1, month: 9, year: 2008 } },
+            { nom: "", prenom: "Samuel", genre: "homme", discordId: "", birthday: { day: 24, month: 2, year: 2007 } },
+            { nom: "", prenom: "Clementine", genre: "femme", discordId: "", birthday: { day: 14, month: 2, year: 2007 } },
+            { nom: "", prenom: "Printillie", genre: "femme", discordId: "", birthday: { day: 21, month: 3, year: 2005 } },
+            //{ nom: "", prenom: "", genre: "", discordId: "", birthday: { day: , month: , year:  } },
+        ];
 
-    // Confettis optimisés - Actifs en permanence
-    const emojis = ['🎉','✨','🥳','🎊','🍀','🌟'];
-
-    function createConfetti() {
-      const confettiCount = 45; // Réduit pour meilleures performances
-      for(let i = 0; i < confettiCount; i++){
-        const div = document.createElement('div');
-        div.className = 'confetti';
-        div.style.left = Math.random() * 100 + 'vw';
-        div.style.fontSize = (12 + Math.random() * 18) + 'px';
-        div.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        const duration = 3 + Math.random() * 4;
-        div.style.animationDuration = duration + 's';
-        div.style.animationIterationCount = '1'; // Une seule fois
-        document.body.appendChild(div);
-        
-        // Détruire après animation
-        setTimeout(() => div.remove(), duration * 1000);
-      }
-    }
-
-    // Démarrer les confettis en continu
-    createConfetti();
-    setInterval(createConfetti, 3000); // Nouvelles vagues toutes les 6s
-
-
-
-function timeUntilBirthday(birthday){
-  const now = new Date();
-  const parisNow = new Date(now.toLocaleString("en-US",{timeZone:"Europe/Paris"}));
-  let nextBirthday = new Date(parisNow.getFullYear(), birthday.month, birthday.day, 0, 0, 0);
-  
-  // Si c'est aujourd'hui mais pas encore l'heure
-  if(parisNow.getDate() === birthday.day && parisNow.getMonth() === birthday.month) {
-    return 0;
-  }
-  
-  // Si la date est déjà passée cette année, passer à l'année prochaine
-  if(parisNow > nextBirthday) {
-    nextBirthday.setFullYear(nextBirthday.getFullYear()+1);
-  }
-   
-  return nextBirthday - parisNow;
-}
-
-    users.sort((a,b)=>timeUntilBirthday(a.birthday)-timeUntilBirthday(b.birthday));
-
-    const container = document.getElementById("users-container");
-    const monthNames = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-
-    users.forEach((user, index) => {
-      const div = document.createElement("div");
-      div.className = "user-container";
-      div.dataset.name = user.pseudo.toLowerCase();
-      div.dataset.month = user.birthday.month;
-
-      const b = user.birthday;
-const now = new Date();
-const parisNow = new Date(now.toLocaleString("en-US", { timeZone: "Europe/Paris" }));
-
-// Vérifier si c'est VRAIMENT aujourd'hui (même jour, même mois, même année)
-const isToday = parisNow.getDate() === b.day && parisNow.getMonth() === b.month;
-
-const msUntil = timeUntilBirthday(b);
-const daysUntil = Math.floor(msUntil / (1000 * 60 * 60 * 24));
-const hoursUntil = Math.floor(msUntil / (1000 * 60 * 60));
-
-let badge = '';
-if (isToday) {
-  badge = '<div class="proximity-badge badge-today">AUJOURD\'HUI 🎉</div>';
-} else if (hoursUntil < 24) {
-  badge = '<div class="proximity-badge badge-today">Dans quelques heures ⏰</div>';
-} else if (daysUntil < 7) {
-  badge = '<div class="proximity-badge badge-week">Moins de 7j</div>';
-} else if (daysUntil < 30) {
-  badge = '<div class="proximity-badge badge-month">Moins de 30j</div>';
-}
-
-      const birthDateHtml = `<div class="birth-date">${b.day} ${monthNames[b.month] || ''} ${b.year || 'X'}</div>`;
-      
-      let ageTextHtml = '';
-if (b.year) {
-  let currentAge = parisNow.getFullYear() - b.year;
-  if (parisNow.getMonth() < b.month || (parisNow.getMonth() === b.month && parisNow.getDate() < b.day)) {
-    currentAge--;
-  }
-  ageTextHtml = `<p class="age">${currentAge} ans</p>`;
-} else {
-  ageTextHtml = `<p class="age">Âge inconnu</p>`;
-}
-
-
-div.innerHTML = `
-  ${badge}
-  <img id="avatar${index}" class="avatar" src="${user.avatar}" alt="Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="display:block;"/>
-  <div class="avatar-fallback" style="display:none;">${user.pseudo.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
-  <h1 id="username${index}">${user.pseudo}</h1>
-  ${birthDateHtml}
-  ${ageTextHtml}
-  <h2>Prochain anniversaire</h2>
-  <div id="birthday-countdown${index}" class="birthday-countdown">0 jours 0 h 0 min 0 s</div>
-`;
-      container.appendChild(div);
-    });
-
-    function updateCountdowns(){
-  const now=new Date();
-  const parisNow=new Date(now.toLocaleString("en-US",{timeZone:"Europe/Paris"}));
-  let todayCount = 0;
-  let weekCount = 0;
-
-  users.forEach((user,index)=>{
-    const b = user.birthday;
-    const countdown = document.getElementById(`birthday-countdown${index}`);
-    const ageElem = document.querySelectorAll('.age')[index];
-    const h2 = countdown.previousElementSibling;
-    const userBox = document.getElementById(`avatar${index}`).parentElement;
-
-    if(parisNow.getDate() === b.day && parisNow.getMonth() === b.month){
-      todayCount++;
-      if(h2) h2.style.visibility='hidden';
-      if(countdown) countdown.textContent="Joyeux anniversaire 🎉";
-      if(ageElem && b.year){
-        ageElem.textContent = `Fête son ${parisNow.getFullYear()-b.year}ème anniversaire 🎉`;
-      }
-      userBox.classList.add('birthday');
-      return;
-    } else {
-      userBox.classList.remove('birthday');
-    }
-
-    let nextBirthday=new Date(parisNow.getFullYear(),b.month,b.day,0,0,0);
-    if(parisNow>nextBirthday) nextBirthday.setFullYear(nextBirthday.getFullYear()+1);
-    const diff=nextBirthday-parisNow;
-    const totalSeconds=Math.floor(diff/1000);
-    const days=Math.floor(totalSeconds/86400);
-    
-    if(days <= 7) weekCount++;
-    
-    const hours=Math.floor(totalSeconds/3600)%24;
-    const minutes=Math.floor(totalSeconds/60)%60;
-    const seconds=totalSeconds%60;
-
-    if(countdown) countdown.textContent=`${days} jours ${hours} h ${minutes} min ${seconds} s`;
-  });
-
-  // ========== AJOUTE CE BLOC ICI (PARTIE 2) ==========
-  // Calculer l'âge moyen
-  let totalAge = 0;
-  let countWithYear = 0;
-  users.forEach(user => {
-    if(user.birthday.year) {
-      let age = parisNow.getFullYear() - user.birthday.year;
-      if(parisNow.getMonth() < user.birthday.month || 
-         (parisNow.getMonth() === user.birthday.month && parisNow.getDate() < user.birthday.day)) {
-        age--;
-      }
-      totalAge += age;
-      countWithYear++;
-    }
-  });
-
-
-  const avgAge = countWithYear > 0 ? Math.round(totalAge / countWithYear) : 0;
-  // ========== FIN DU BLOC ==========
-
-  document.getElementById('total-count').textContent = users.length;
-  document.getElementById('today-count').textContent = todayCount;
-  document.getElementById('week-count').textContent = weekCount;
-  document.getElementById('avg-age').textContent = avgAge; // ← AJOUTE CETTE LIGNE (PARTIE 3)
-}
-
-    // Recherche
-    document.getElementById('search-input').addEventListener('input', function(e) {
-      const search = e.target.value.toLowerCase();
-      document.querySelectorAll('.user-container').forEach(card => {
-        const name = card.dataset.name;
-        const monthFilter = document.querySelector('.month-filter.active').dataset.month;
-        const matchesSearch = name.includes(search);
-        const matchesMonth = monthFilter === 'all' || card.dataset.month === monthFilter;
-        card.style.display = (matchesSearch && matchesMonth) ? 'flex' : 'none';
-      });
-    });
-
-    // Filtres mois
-    document.querySelectorAll('.month-filter').forEach(btn => {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.month-filter').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        const selectedMonth = this.dataset.month;
-        const searchValue = document.getElementById('search-input').value.toLowerCase();
-        
-        document.querySelectorAll('.user-container').forEach(card => {
-          const matchesMonth = selectedMonth === 'all' || card.dataset.month === selectedMonth;
-          const matchesSearch = card.dataset.name.includes(searchValue);
-          card.style.display = (matchesMonth && matchesSearch) ? 'flex' : 'none';
+        /* ============================================================
+         * AVATARS — repli genre immédiat, puis synchro Discord (Lanyard)
+         * ============================================================ */
+        users.forEach(u => {
+            u.avatarFallback = avatarsParGenre[u.genre] || null;
+            u.avatar = u.avatarFallback;
         });
-      });
-    });
 
-    // Fonction de tri
-function sortUsers(sortType) {
-  const container = document.getElementById("users-container");
-  const cards = Array.from(container.children);
-  
-  cards.sort((a, b) => {
-    const userA = users.find(u => u.pseudo.toLowerCase() === a.dataset.name);
-    const userB = users.find(u => u.pseudo.toLowerCase() === b.dataset.name);
-    
-    switch(sortType) {
-      case 'name':
-        return userA.pseudo.localeCompare(userB.pseudo);
-      
-      case 'age':
-        if (!userA.birthday.year || !userB.birthday.year) return 0;
-        return userB.birthday.year - userA.birthday.year; // Plus jeune en premier
-      
-      case 'month':
-        if (userA.birthday.month !== userB.birthday.month) {
-          return userA.birthday.month - userB.birthday.month;
+        const DISCORD_CACHE_KEY = 'discordAvatars';
+        const DISCORD_CACHE_TTL = 3600000; // 1 h
+
+        function readDiscordCache() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(DISCORD_CACHE_KEY) || '{}');
+                if (Date.now() - (raw.t || 0) > DISCORD_CACHE_TTL) return null;
+                return raw.map || null;
+            } catch (e) { return null; }
         }
-        return userA.birthday.day - userB.birthday.day;
-      
-      case 'proximity':
-      default:
-        return timeUntilBirthday(userA.birthday) - timeUntilBirthday(userB.birthday);
-    }
-  });
-  
-  // Réorganiser les cartes dans le DOM
-  cards.forEach(card => container.appendChild(card));
-}
 
-// Gestionnaire de clic sur les boutons de tri
-document.querySelectorAll('.sort-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    sortUsers(this.dataset.sort);
-  });
-});
+        function writeDiscordCache(map) {
+            try {
+                localStorage.setItem(DISCORD_CACHE_KEY, JSON.stringify({ t: Date.now(), map }));
+            } catch (e) { /* quota ou navigation privée : on ignore */ }
+        }
 
-    updateCountdowns();
-    setInterval(updateCountdowns,1000);
-  </script>
+        async function fetchDiscordAvatar(id) {
+            const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
+            if (!res.ok) throw new Error('lanyard');
+            const json = await res.json();
+            const du = json && json.data && json.data.discord_user;
+            if (!du || !du.avatar) throw new Error('no avatar');
+            const ext = du.avatar.startsWith('a_') ? 'gif' : 'png';
+            return `https://cdn.discordapp.com/avatars/${id}/${du.avatar}.${ext}?size=256`;
+        }
+
+        async function syncDiscordAvatars() {
+            const withId = users.filter(u => u.discordId);
+            if (withId.length === 0) return;
+
+            const cached = readDiscordCache();
+            if (cached) {
+                let hit = false;
+                withId.forEach(u => {
+                    if (cached[u.discordId]) { u.avatar = cached[u.discordId]; hit = true; }
+                });
+                if (hit) refreshAvatars();
+                return;
+            }
+
+            const map = {};
+            await Promise.all(withId.map(async u => {
+                try {
+                    const url = await fetchDiscordAvatar(u.discordId);
+                    u.avatar = url;
+                    map[u.discordId] = url;
+                } catch (e) { /* pas sur Lanyard → on garde l'image homme/femme */ }
+            }));
+
+            if (Object.keys(map).length > 0) {
+                writeDiscordCache(map);
+                refreshAvatars();
+            }
+        }
+
+        function refreshAvatars() {
+            renderToday();
+            renderTop3();
+            renderBirthdays();
+        }
+
+        function handleAvatarError(img) {
+            if (img.dataset.fb) {            // Discord injoignable → image homme/femme
+                const fb = img.dataset.fb;
+                delete img.dataset.fb;
+                img.src = fb;
+                return;
+            }
+            img.style.display = 'none';      // toujours rien → initiale
+            const ph = img.nextElementSibling;
+            if (ph) ph.style.display = 'flex';
+        }
+
+        function createAvatarHTML(user, options = {}) {
+            const safeName = escapeHtml(getFullName(user));
+            const initial = escapeHtml(user.prenom.charAt(0));
+            const cls = options.placeholderClass || 'avatar-placeholder';
+            if (user.avatar) {
+                const fb = (user.avatarFallback && user.avatarFallback !== user.avatar)
+                    ? ` data-fb="${escapeHtml(user.avatarFallback)}"` : '';
+                return `<img src="${escapeHtml(user.avatar)}" alt="${safeName}" class="avatar" loading="lazy"${fb} onerror="handleAvatarError(this)"><div class="${cls}" style="display:none;">${initial}</div>`;
+            }
+            return `<div class="${cls}">${initial}</div>`;
+        }
+
+        /* ============================================================
+         * UTILS
+         * ============================================================ */
+        function getFullName(user) { return `${user.prenom} ${user.nom}`.trim(); }
+        function getShortName(user) { return user.nom ? `${user.prenom} ${user.nom.charAt(0)}.` : user.prenom; }
+
+        function getNextBirthday(birthday) {
+            const now = new Date();
+            const thisYear = now.getFullYear();
+            const todayMidnight = new Date(thisYear, now.getMonth(), now.getDate());
+            let next = new Date(thisYear, birthday.month - 1, birthday.day);
+            if (next < todayMidnight) next = new Date(thisYear + 1, birthday.month - 1, birthday.day);
+            return next;
+        }
+
+        function getAge(birthday) {
+            if (birthday.year == null) return null; // année non renseignée
+            const now = new Date();
+            let age = now.getFullYear() - birthday.year;
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            if (m < birthday.month || (m === birthday.month && d < birthday.day)) age--;
+            return age;
+        }
+
+        function isBirthdayToday(birthday) {
+            const now = new Date();
+            return birthday.day === now.getDate() && birthday.month === now.getMonth() + 1;
+        }
+
+        function getCountdown(targetDate) {
+            const diff = targetDate - new Date();
+            if (diff < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            return {
+                days: Math.floor(diff / 86400000),
+                hours: Math.floor((diff % 86400000) / 3600000),
+                minutes: Math.floor((diff % 3600000) / 60000),
+                seconds: Math.floor((diff % 60000) / 1000)
+            };
+        }
+
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function formatNum(n) { return n.toLocaleString('fr-FR'); }
+
+        /* ============================================================
+         * LIFETIME (utilisé par la carte du jour uniquement)
+         * ============================================================ */
+        function getLifetimeStats(birthday) {
+            if (birthday.year == null) return null;
+            const birthDate = new Date(birthday.year, birthday.month - 1, birthday.day);
+            const now = new Date();
+            const diffMs = now - birthDate;
+            const totalMinutes = Math.floor(diffMs / 60000);
+            const totalHours = Math.floor(diffMs / 3600000);
+            const totalDays = Math.floor(diffMs / 86400000);
+            const totalWeeks = Math.floor(totalDays / 7);
+
+            const heartbeatsMin = Math.floor(totalMinutes * 60);
+            const heartbeatsMax = Math.floor(totalMinutes * 100);
+
+            return {
+                hours: totalHours,
+                days: totalDays,
+                weeks: totalWeeks,
+                heartbeatsMin,
+                heartbeatsMax
+            };
+        }
+
+        /* ============================================================
+         * CONFETTIS
+         * ============================================================ */
+        class Confetti {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.colors = ['#e8332e', '#a31d1a', '#f2efe9', '#ffd23f', '#a5a29b'];
+                this.running = false;
+                this.resize();
+                this._resizeHandler = () => this.resize();
+                window.addEventListener('resize', this._resizeHandler);
+            }
+            resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+            createParticle(x, y, isExplosion = false) {
+                const shapes = ['square', 'circle', 'ribbon'];
+                return {
+                    x: x !== undefined ? x : Math.random() * this.canvas.width,
+                    y: y !== undefined ? y : -20,
+                    width: Math.random() * 12 + 6,
+                    height: Math.random() * 8 + 4,
+                    color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                    shape: shapes[Math.floor(Math.random() * shapes.length)],
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 15,
+                    velocityX: isExplosion ? (Math.random() - 0.5) * 25 : (Math.random() - 0.5) * 4,
+                    velocityY: isExplosion ? Math.random() * -18 - 8 : Math.random() * 3 + 2,
+                    gravity: 0.12, drag: 0.99, opacity: 1,
+                    wobble: Math.random() * 10,
+                    wobbleSpeed: Math.random() * 0.15 + 0.05,
+                    scale: isExplosion ? Math.random() * 0.5 + 0.8 : 1,
+                    tilt: Math.random() * Math.PI
+                };
+            }
+            drawParticle(p) {
+                this.ctx.save();
+                this.ctx.translate(p.x, p.y);
+                this.ctx.rotate(p.rotation * Math.PI / 180);
+                this.ctx.scale(p.scale, p.scale * Math.cos(p.tilt));
+                this.ctx.globalAlpha = p.opacity;
+                this.ctx.fillStyle = p.color;
+                if (p.shape === 'square') this.ctx.fillRect(-p.width/2, -p.height/2, p.width, p.height);
+                else if (p.shape === 'circle') { this.ctx.beginPath(); this.ctx.arc(0, 0, p.width/2, 0, Math.PI*2); this.ctx.fill(); }
+                else { this.ctx.beginPath(); this.ctx.moveTo(-p.width/2, -p.height/2); this.ctx.lineTo(p.width/2, -p.height/4); this.ctx.lineTo(p.width/2, p.height/2); this.ctx.lineTo(-p.width/2, p.height/4); this.ctx.closePath(); this.ctx.fill(); }
+                this.ctx.restore();
+            }
+            updateParticle(p) {
+                p.velocityY += p.gravity;
+                p.velocityX *= p.drag;
+                p.velocityY *= p.drag;
+                p.x += p.velocityX + Math.sin(p.wobble) * 2;
+                p.y += p.velocityY;
+                p.rotation += p.rotationSpeed;
+                p.wobble += p.wobbleSpeed;
+                p.tilt += 0.05;
+                if (p.y > this.canvas.height - 150) p.opacity -= 0.015;
+                return p.y < this.canvas.height + 50 && p.opacity > 0;
+            }
+            burst(x, y, count = 60) {
+                for (let i = 0; i < count; i++) this.particles.push(this.createParticle(x, y, true));
+            }
+            startContinuous() {
+                this.continuousInterval = setInterval(() => {
+                    if (this.running && this.particles.length < 200) this.particles.push(this.createParticle());
+                }, 80);
+            }
+            stop() {
+                this.running = false;
+                clearInterval(this.continuousInterval);
+                clearInterval(this.burstInterval);
+                window.removeEventListener('resize', this._resizeHandler);
+            }
+            animate() {
+                if (!this.running) return;
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.particles = this.particles.filter(p => { this.drawParticle(p); return this.updateParticle(p); });
+                requestAnimationFrame(() => this.animate());
+            }
+            start() {
+                this.running = true;
+                this.animate();
+                this.startContinuous();
+                this.burstInterval = setInterval(() => {
+                    if (this.running) {
+                        const x = Math.random() > 0.5 ? this.canvas.width * 0.1 : this.canvas.width * 0.9;
+                        this.burst(x, this.canvas.height * 0.3, 40);
+                    }
+                }, 4000);
+                setTimeout(() => this.burst(this.canvas.width * 0.3, this.canvas.height * 0.2, 70), 300);
+                setTimeout(() => this.burst(this.canvas.width * 0.7, this.canvas.height * 0.25, 70), 600);
+            }
+        }
+
+        /* ============================================================
+         * CARD RENDERER (modal partage GIF)
+         * ============================================================ */
+        let cardConfetti = null;
+        let cardAnimationId = null;
+        let currentShareUser = null;
+
+        class CardRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.particles = [];
+                this.colors = ['#e8332e', '#a31d1a', '#f2efe9', '#ffd23f'];
+                this.running = false;
+                this.image = null;
+                this.imageLoaded = false;
+                this.userName = '';
+                this.userAge = 0;
+                this.userInitial = '';
+                this.width = 300; this.height = 450;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+            }
+            setUser(user) {
+                this.userName = getFullName(user);
+                this.userAge = getAge(user.birthday);
+                this.userInitial = user.prenom.charAt(0).toUpperCase();
+                this.imageLoaded = false;
+                if (user.avatar) {
+                    const fallback = user.avatarFallback;
+                    this.image = new Image();
+                    this.image.crossOrigin = 'anonymous';
+                    this.image.onload = () => { this.imageLoaded = true; };
+                    this.image.onerror = () => {
+                        if (fallback && this.image && this.image.src.indexOf(fallback) === -1) {
+                            this.image.src = fallback;
+                        } else {
+                            this.imageLoaded = false;
+                            this.image = null;
+                        }
+                    };
+                    this.image.src = user.avatar;
+                }
+            }
+            createParticle(fromTop = true) {
+                return {
+                    x: Math.random() * this.width,
+                    y: fromTop ? -10 : Math.random() * this.height * 0.6,
+                    width: Math.random() * 10 + 5,
+                    height: Math.random() * 8 + 4,
+                    color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                    shape: ['square', 'circle', 'ribbon'][Math.floor(Math.random() * 3)],
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 6,
+                    velocityX: (Math.random() - 0.5) * 1,
+                    velocityY: Math.random() * 0.4 + 0.15,
+                    gravity: 0.015, drag: 0.998, opacity: 1,
+                    wobble: Math.random() * 10,
+                    wobbleSpeed: Math.random() * 0.04 + 0.01,
+                    tilt: Math.random() * Math.PI
+                };
+            }
+            drawSpeedLines(ctx, cx, cy, radius) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.strokeStyle = 'rgba(232, 51, 46, 0.18)';
+                ctx.lineWidth = 2;
+                for (let a = 0; a < 360; a += 9) {
+                    const rad = a * Math.PI / 180;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.cos(rad) * radius * 0.35, Math.sin(rad) * radius * 0.35);
+                    ctx.lineTo(Math.cos(rad) * radius, Math.sin(rad) * radius);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+            drawCard() {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.width, this.height);
+                ctx.fillStyle = '#0a0a0c';
+                ctx.fillRect(0, 0, this.width, this.height);
+
+                // Image
+                const imageHeight = 290;
+                if (this.image && this.imageLoaded) {
+                    const imgRatio = this.image.width / this.image.height;
+                    const cardRatio = this.width / imageHeight;
+                    let dW, dH, dX, dY;
+                    if (imgRatio > cardRatio) { dH = imageHeight; dW = this.image.width * (imageHeight / this.image.height); dX = (this.width - dW) / 2; dY = 0; }
+                    else { dW = this.width; dH = this.image.height * (this.width / this.image.width); dX = 0; dY = 0; }
+                    ctx.drawImage(this.image, dX, dY, dW, dH);
+                    // Vignette
+                    const grd = ctx.createLinearGradient(0, imageHeight - 80, 0, imageHeight);
+                    grd.addColorStop(0, 'rgba(10,10,12,0)');
+                    grd.addColorStop(1, 'rgba(10,10,12,0.85)');
+                    ctx.fillStyle = grd;
+                    ctx.fillRect(0, imageHeight - 80, this.width, 80);
+                } else {
+                    ctx.fillStyle = '#131318';
+                    ctx.fillRect(0, 0, this.width, imageHeight);
+                    this.drawSpeedLines(ctx, this.width / 2, imageHeight / 2, 200);
+                    ctx.fillStyle = '#e8332e';
+                    ctx.font = '120px Anton, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.userInitial, this.width / 2, imageHeight / 2);
+                }
+
+                this.particles.forEach(p => this.drawParticle(p));
+
+                // Info zone
+                const infoY = imageHeight;
+                ctx.fillStyle = '#131318';
+                ctx.fillRect(0, infoY, this.width, this.height - infoY);
+
+                // Barre diagonale rouge
+                ctx.save();
+                ctx.fillStyle = '#e8332e';
+                ctx.transform(1, 0, -0.3, 1, 0, 0);
+                ctx.fillRect(28, infoY + 16, 34, 3);
+                ctx.restore();
+
+                // Tagline
+                ctx.fillStyle = '#e8332e';
+                ctx.font = '10px JetBrains Mono, monospace';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'alphabetic';
+                ctx.fillText('— 誕生日スペシャル —', 60, infoY + 22);
+
+                // Name
+                ctx.fillStyle = '#f2efe9';
+                let fontSize = 24;
+                ctx.font = `${fontSize}px Anton, sans-serif`;
+                while (ctx.measureText(this.userName.toUpperCase()).width > this.width - 40 && fontSize > 12) {
+                    fontSize -= 1;
+                    ctx.font = `${fontSize}px Anton, sans-serif`;
+                }
+                ctx.fillText(this.userName.toUpperCase(), 20, infoY + 56);
+
+                // Age badge (haut droite, jaune, skewé)
+                const badgeText = this.userAge !== null ? `${this.userAge} ANS` : '🎂 !!';
+                ctx.font = 'bold 11px JetBrains Mono, monospace';
+                const badgeW = ctx.measureText(badgeText).width + 18;
+                ctx.save();
+                ctx.transform(1, 0, -0.2, 1, 0, 0);
+                ctx.fillStyle = '#ffd23f';
+                ctx.fillRect(this.width - badgeW - 8, 12, badgeW, 22);
+                ctx.fillStyle = '#0a0a0c';
+                ctx.textAlign = 'center';
+                ctx.fillText(badgeText, this.width - badgeW/2 - 8, 27);
+                ctx.restore();
+
+                // Date
+                ctx.textAlign = 'left';
+                const dateStr = `${today.getDate().toString().padStart(2,'0')} · ${monthNamesShort[today.getMonth()]} · ${today.getFullYear()}`;
+                ctx.fillStyle = '#a5a29b';
+                ctx.font = '10px JetBrains Mono, monospace';
+                ctx.fillText(dateStr, 20, infoY + 80);
+
+                // Tagline italic
+                ctx.fillStyle = '#a5a29b';
+                ctx.font = 'italic 11px Inter Tight, sans-serif';
+                ctx.fillText(`Joyeux anniversaire !!`, 20, infoY + 100);
+
+                // Border
+                ctx.strokeStyle = 'rgba(242, 239, 233, 0.85)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
+            }
+            drawParticle(p) {
+                const ctx = this.ctx;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.scale(1, Math.cos(p.tilt));
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                if (p.shape === 'square') ctx.fillRect(-p.width/2, -p.height/2, p.width, p.height);
+                else if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.width/2, 0, Math.PI*2); ctx.fill(); }
+                else { ctx.beginPath(); ctx.moveTo(-p.width/2, -p.height/2); ctx.lineTo(p.width/2, -p.height/4); ctx.lineTo(p.width/2, p.height/2); ctx.lineTo(-p.width/2, p.height/4); ctx.closePath(); ctx.fill(); }
+                ctx.restore();
+            }
+            updateParticle(p) {
+                p.velocityY += p.gravity;
+                p.velocityX *= p.drag;
+                p.velocityY *= p.drag;
+                p.x += p.velocityX + Math.sin(p.wobble) * 0.6;
+                p.y += p.velocityY;
+                p.rotation += p.rotationSpeed;
+                p.wobble += p.wobbleSpeed;
+                p.tilt += 0.01;
+                if (p.y > this.height - 80) p.opacity -= 0.02;
+                return p.y < this.height + 20 && p.opacity > 0;
+            }
+            animate() {
+                if (!this.running) return;
+                if (this.particles.length < 50 && Math.random() > 0.75) this.particles.push(this.createParticle(true));
+                this.particles = this.particles.filter(p => this.updateParticle(p));
+                this.drawCard();
+                cardAnimationId = requestAnimationFrame(() => this.animate());
+            }
+            start() {
+                this.running = true;
+                for (let i = 0; i < 20; i++) this.particles.push(this.createParticle(false));
+                this.animate();
+            }
+            stop() { this.running = false; if (cardAnimationId) cancelAnimationFrame(cardAnimationId); }
+            clear() { this.particles = []; this.ctx.clearRect(0, 0, this.width, this.height); }
+        }
+
+        function openShareModal(user) {
+            currentShareUser = user;
+            document.getElementById('share-modal').classList.add('active');
+            setTimeout(() => {
+                const cardCanvas = document.getElementById('card-confetti-canvas');
+                if (cardConfetti) { cardConfetti.stop(); cardConfetti.clear(); }
+                cardConfetti = new CardRenderer(cardCanvas);
+                cardConfetti.setUser(user);
+                setTimeout(() => cardConfetti.start(), 200);
+            }, 100);
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.remove('active');
+            if (cardConfetti) { cardConfetti.stop(); cardConfetti.clear(); }
+            currentShareUser = null;
+        }
+
+        async function downloadGif() {
+            const generatingText = document.getElementById('generating-text');
+            generatingText.classList.add('active');
+            showToast('Capture en cours');
+            try {
+                await new Promise(r => setTimeout(r, 2000));
+                const frames = [];
+                for (let i = 0; i < 90; i++) {
+                    await new Promise(r => setTimeout(r, 44));
+                    const fc = document.createElement('canvas');
+                    fc.width = cardConfetti.width;
+                    fc.height = cardConfetti.height;
+                    fc.getContext('2d').drawImage(cardConfetti.canvas, 0, 0);
+                    frames.push(fc);
+                }
+                showToast('Création du GIF');
+                const workerCode = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js').then(r => r.text());
+                const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+                const workerUrl = URL.createObjectURL(workerBlob);
+                const gif = new GIF({ workers: 4, quality: 1, width: cardConfetti.width, height: cardConfetti.height, workerScript: workerUrl });
+                frames.forEach(f => gif.addFrame(f, { delay: 44, copy: true }));
+                gif.on('finished', function(blob) {
+                    URL.revokeObjectURL(workerUrl);
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `anniversaire-${getShortName(currentShareUser).replace(/\s+/g, '-')}.gif`;
+                    link.href = url;
+                    link.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    generatingText.classList.remove('active');
+                    showToast('GIF téléchargé');
+                });
+                gif.on('error', function() { URL.revokeObjectURL(workerUrl); fallbackToPng(); });
+                gif.render();
+            } catch (e) { fallbackToPng(); }
+        }
+
+        async function fallbackToPng() {
+            document.getElementById('generating-text').classList.remove('active');
+            showToast('Téléchargement PNG');
+            const link = document.createElement('a');
+            link.download = `anniversaire-${getShortName(currentShareUser).replace(/\s+/g, '-')}.png`;
+            link.href = cardConfetti.canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        document.getElementById('share-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'share-modal') closeShareModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('share-modal').classList.contains('active')) {
+                closeShareModal();
+            }
+        });
+
+        /* ============================================================
+         * RENDERS
+         * ============================================================ */
+        function setHeaderMeta() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+
+            document.getElementById('header-date').textContent = now.toLocaleDateString('fr-FR', dateOptions).toUpperCase();
+            document.getElementById('header-time-now').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            document.getElementById('header-total').textContent = `${users.length} PERSONNAGES`;
+
+            const h = now.getHours();
+            const tagEl = document.getElementById('header-tag');
+            if (h < 5) { tagEl.textContent = '— ARC NOCTURNE —'; }
+            else if (h < 12) { tagEl.textContent = '— OPENING —'; }
+            else if (h < 18) { tagEl.textContent = '— ARC PRINCIPAL —'; }
+            else if (h < 22) { tagEl.textContent = '— ENDING —'; }
+            else { tagEl.textContent = '— ÉPISODE DE MINUIT —'; }
+        }
+
+        function createTodayCard(user) {
+            const age = getAge(user.birthday);
+            const stats = getLifetimeStats(user.birthday);
+            const userIndex = users.indexOf(user);
+            const now = new Date();
+
+            return `
+                <section class="today-section">
+                    <div class="section-divider">
+                        <span class="section-num">EN VEDETTE · ${pad(now.getDate())} ${monthNamesShort[now.getMonth()]}</span>
+                        <h2 class="section-title">À l'honneur <span class="section-jp">主人公</span></h2>
+                        <span class="line"></span>
+                    </div>
+                    <div class="today-poster">
+                        <div class="today-image-wrap">
+                            ${createAvatarHTML(user)}
+                        </div>
+                        <div class="today-info">
+                            <p class="today-feature-tag">LEVEL UP !! · ÉPISODE SPÉCIAL</p>
+                            <h3 class="today-name">${escapeHtml(getFullName(user))}</h3>
+                            <p class="today-tagline">${age !== null
+                                ? `Passe au niveau <span class="age-highlight">${age}</span> aujourd'hui.`
+                                : `Fête son anniversaire aujourd'hui — <span class="age-highlight">niveau secret</span>.`}</p>
+
+                            <div class="today-credits">
+                                <span class="credit-label">Né(e) le</span>
+                                <span class="credit-value">${user.birthday.day} ${monthNames[user.birthday.month - 1]}${user.birthday.year != null ? ' ' + user.birthday.year : ' · année inconnue'}</span>
+
+                                <span class="credit-label">Niveau</span>
+                                <span class="credit-value">${age !== null ? `${age} ans révolus` : '??? — non renseigné'}</span>
+                                ${stats ? `
+                                <span class="credit-label">Jours vécus</span>
+                                <span class="credit-value">${formatNum(stats.days)}</span>
+
+                                <span class="credit-label">Heures vécues</span>
+                                <span class="credit-value">${formatNum(stats.hours)}</span>
+
+                                <span class="credit-label">Semaines vécues</span>
+                                <span class="credit-value">${formatNum(stats.weeks)}</span>
+
+                                <span class="credit-label">Battements de coeur (est.)</span>
+                                <span class="credit-value">${formatNum(stats.heartbeatsMin)} à ${formatNum(stats.heartbeatsMax)}</span>` : ''}
+                            </div>
+
+                            <button type="button" class="share-btn" onclick="openShareModal(users[${userIndex}])">
+                                <span>Créer une carte</span>
+                                <span>→</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function createTop3Tile(user, rank) {
+            const next = getNextBirthday(user.birthday);
+            const currentAge = getAge(user.birthday);
+            const upcomingAge = currentAge !== null ? currentAge + 1 : null;
+            const cd = getCountdown(next);
+            const initial = escapeHtml(user.prenom.charAt(0));
+            const fb = (user.avatarFallback && user.avatarFallback !== user.avatar)
+                ? ` data-fb="${escapeHtml(user.avatarFallback)}"` : '';
+            const imageHTML = user.avatar
+                ? `<img src="${escapeHtml(user.avatar)}" class="top3-tile-image" alt="${escapeHtml(getFullName(user))}" loading="lazy"${fb} onerror="handleAvatarError(this)"><div class="top3-tile-placeholder" style="display:none;">${initial}</div>`
+                : `<div class="top3-tile-placeholder">${initial}</div>`;
+
+            return `
+                <div class="top3-tile">
+                    <span class="top3-rank-overlay">${rank}</span>
+                    <span class="top3-age-corner">${upcomingAge !== null ? `${upcomingAge} ans` : '??? ans'}</span>
+                    <div class="top3-image-container">
+                        ${imageHTML}
+                        <div class="top3-tile-overlays">
+                            <p class="top3-tile-name">${escapeHtml(getShortName(user))}</p>
+                            <p class="top3-tile-date">${pad(user.birthday.day)} ${monthNamesShort[user.birthday.month - 1]}</p>
+                            <div class="top3-countdown" data-countdown="${next.toISOString()}">
+                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-d">${cd.days}</div><div class="top3-countdown-label">JRS</div></div>
+                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-h">${pad(cd.hours)}</div><div class="top3-countdown-label">HRS</div></div>
+                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-m">${pad(cd.minutes)}</div><div class="top3-countdown-label">MIN</div></div>
+                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-s">${pad(cd.seconds)}</div><div class="top3-countdown-label">SEC</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createBirthdayCard(user, index) {
+            const nextBirthday = getNextBirthday(user.birthday);
+            const currentAge = getAge(user.birthday);
+            const upcomingAge = currentAge !== null ? currentAge + 1 : null;
+            const cd = getCountdown(nextBirthday);
+            const isImminent = cd.days <= 7;
+            const ageInfoHTML = currentAge !== null
+                ? `<span class="current-age">LVL ${currentAge}</span>
+                                <span class="arrow">→</span>
+                                <span class="upcoming-age">LVL ${upcomingAge}</span>`
+                : `<span class="upcoming-age">LVL ???</span>`;
+
+            return `
+                <div class="birthday-card${isImminent ? ' imminent' : ''}" data-countdown="${nextBirthday.toISOString()}">
+                    <div class="avatar-container">${createAvatarHTML(user)}</div>
+                    <div class="card-content">
+                        <div>
+                            <h3 class="user-name">${escapeHtml(getFullName(user))}</h3>
+                            <p class="birthday-date">${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}</p>
+                        </div>
+                        <div>
+                            <div class="countdown-mini">
+                                <div class="countdown-mini-item"><span class="cd-d">${cd.days}</span><span class="unit">j</span></div>
+                                <div class="countdown-mini-item"><span class="cd-h">${pad(cd.hours)}</span><span class="unit">h</span></div>
+                                <div class="countdown-mini-item"><span class="cd-m">${pad(cd.minutes)}</span><span class="unit">m</span></div>
+                            </div>
+                            <div class="age-info">
+                                ${ageInfoHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* ============================================================
+         * STATS
+         * ============================================================ */
+        function renderStats() {
+            const ages = users.map(u => getAge(u.birthday)).filter(a => a !== null);
+            const total = users.length;
+            const avg = ages.length > 0 ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : '—';
+
+            const upcoming = users.filter(u => !isBirthdayToday(u.birthday))
+                .sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday))[0];
+            const daysUntil = upcoming ? Math.ceil((getNextBirthday(upcoming.birthday) - new Date()) / 86400000) : 0;
+
+            const monthCounts = new Array(12).fill(0);
+            users.forEach(u => monthCounts[u.birthday.month - 1]++);
+            let busiestMonth = 0;
+            for (let i = 1; i < 12; i++) if (monthCounts[i] > monthCounts[busiestMonth]) busiestMonth = i;
+
+            const currentMonth = new Date().getMonth();
+            const thisMonthCount = users.filter(u => u.birthday.month - 1 === currentMonth).length;
+
+            const stats = [
+                { tag: '— TOTAL —', value: total, label: 'PERSONNAGES' },
+                { tag: '— MOYENNE —', value: avg, label: 'NIVEAU MOYEN' },
+                { tag: '— EN COURS —', value: thisMonthCount, label: `${monthNamesShort[currentMonth]} · CE MOIS-CI` },
+                { tag: '— APOGÉE —', value: monthCounts[busiestMonth], label: monthNamesShort[busiestMonth] + ' · ARC LE PLUS CHARGÉ' },
+                { tag: '— PROCHAINEMENT —', value: `${daysUntil}`, label: `JRS · ${escapeHtml(upcoming?.prenom || '')}` },
+            ];
+
+            document.getElementById('stats-grid').innerHTML = stats.map(s => `
+                <div class="stat-card">
+                    <span class="stat-icon">${escapeHtml(s.tag)}</span>
+                    <div class="stat-value numeric">${escapeHtml(String(s.value))}</div>
+                    <span class="stat-label">${s.label}</span>
+                </div>
+            `).join('');
+
+            const sortedCasting = [...users].sort((a, b) => {
+                const ageA = getAge(a.birthday), ageB = getAge(b.birthday);
+                if (ageA === null && ageB === null) return 0;
+                if (ageA === null) return 1;  // inconnus à la fin
+                if (ageB === null) return -1;
+                return ageB - ageA;
+            });
+
+            document.getElementById('casting-list').innerHTML = sortedCasting.map(u => {
+                const a = getAge(u.birthday);
+                return `
+                <div class="casting-item">
+                    <div class="casting-age">LVL ${a !== null ? a : '???'}</div>
+                    <div class="casting-name">${escapeHtml(getShortName(u))}</div>
+                    <div class="casting-year">${u.birthday.year != null ? 'GÉNÉRATION ' + u.birthday.year : 'GÉNÉRATION ????'}</div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        /* ============================================================
+         * COUNTDOWN OBSERVER
+         * ============================================================ */
+        const visibleCountdowns = new Set();
+        let countdownObserver = null;
+
+        function initCountdownObserver() {
+            if (countdownObserver) countdownObserver.disconnect();
+            visibleCountdowns.clear();
+            countdownObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) visibleCountdowns.add(entry.target);
+                    else visibleCountdowns.delete(entry.target);
+                });
+            }, { rootMargin: '100px' });
+            document.querySelectorAll('[data-countdown]').forEach(el => countdownObserver.observe(el));
+        }
+
+        function updateVisibleCountdowns() {
+            visibleCountdowns.forEach(el => {
+                const target = new Date(el.dataset.countdown);
+                const cd = getCountdown(target);
+                const d = el.querySelector('.cd-d');
+                const h = el.querySelector('.cd-h');
+                const m = el.querySelector('.cd-m');
+                const s = el.querySelector('.cd-s');
+                if (d) d.textContent = cd.days;
+                if (h) h.textContent = pad(cd.hours);
+                if (m) m.textContent = pad(cd.minutes);
+                if (s) s.textContent = pad(cd.seconds);
+            });
+        }
+
+        /* ============================================================
+         * MAIN RENDER
+         * ============================================================ */
+        let mainConfetti = null;
+
+        function renderToday() {
+            const todayBirthdays = users.filter(u => isBirthdayToday(u.birthday));
+            const container = document.getElementById('today-container');
+            if (todayBirthdays.length > 0) {
+                container.innerHTML = todayBirthdays.map(createTodayCard).join('');
+                if (!mainConfetti) {
+                    mainConfetti = new Confetti(document.getElementById('confetti-canvas'));
+                    mainConfetti.start();
+                }
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        function renderTop3() {
+            const upcoming = users.filter(u => !isBirthdayToday(u.birthday))
+                .sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday));
+            const list = document.getElementById('top3-list');
+            list.innerHTML = upcoming.slice(0, 3).map((u, i) => createTop3Tile(u, i + 1)).join('');
+        }
+
+        function renderBirthdays() {
+            const search = document.getElementById('search-input').value.trim().toLowerCase();
+            const monthFilter = document.getElementById('filter-month').value;
+            const sortBy = document.getElementById('sort-by').value;
+
+            let filtered = users.filter(u => !isBirthdayToday(u.birthday));
+
+            if (search) {
+                filtered = filtered.filter(u =>
+                    getFullName(u).toLowerCase().includes(search) ||
+                    u.prenom.toLowerCase().includes(search) ||
+                    u.nom.toLowerCase().includes(search)
+                );
+            }
+
+            if (monthFilter !== 'all') {
+                filtered = filtered.filter(u => u.birthday.month - 1 === parseInt(monthFilter));
+            }
+
+            document.getElementById('total-count').textContent =
+                `${filtered.length} ${filtered.length > 1 ? 'PERSONNAGES' : 'PERSONNAGE'}`;
+
+            const container = document.getElementById('birthdays-container');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-mark">∅</div>
+                        <p>Aucun personnage ne correspond.</p>
+                    </div>
+                `;
+                initCountdownObserver();
+                return;
+            }
+
+            if (sortBy === 'name') {
+                filtered.sort((a, b) => getFullName(a).localeCompare(getFullName(b), 'fr'));
+            } else if (sortBy === 'age-desc' || sortBy === 'age-asc') {
+                filtered.sort((a, b) => {
+                    const ageA = getAge(a.birthday), ageB = getAge(b.birthday);
+                    if (ageA === null && ageB === null) return 0;
+                    if (ageA === null) return 1;  // inconnus toujours à la fin
+                    if (ageB === null) return -1;
+                    return sortBy === 'age-desc' ? ageB - ageA : ageA - ageB;
+                });
+            } else {
+                filtered.sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday));
+            }
+
+            const groupByMonth = sortBy === 'upcoming' && !search && monthFilter === 'all';
+
+            if (groupByMonth) {
+                const groups = new Map();
+                filtered.forEach(u => {
+                    const m = u.birthday.month - 1;
+                    if (!groups.has(m)) groups.set(m, []);
+                    groups.get(m).push(u);
+                });
+
+                let html = '';
+                let cardIndex = 0;
+                const currentMonth = today.getMonth();
+                groups.forEach((monthUsers, monthIdx) => {
+                    const isCurrent = monthIdx === currentMonth;
+                    html += `
+                        <div class="month-section">
+                            <div class="month-header">
+                                <span class="month-num">VOL. ${pad(monthIdx + 1)}</span>
+                                <h3 class="month-name${isCurrent ? ' current' : ''}">${monthNames[monthIdx]}</h3>
+                                <span class="month-count">${monthUsers.length} ${monthUsers.length > 1 ? 'personnages' : 'personnage'}</span>
+                            </div>
+                            <div class="birthday-grid">
+                                ${monthUsers.map(u => createBirthdayCard(u, cardIndex++)).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<div class="birthday-grid">${filtered.map((u, i) => createBirthdayCard(u, i)).join('')}</div>`;
+            }
+
+            initCountdownObserver();
+        }
+
+        /* ============================================================
+         * SCROLL TO TOP
+         * ============================================================ */
+        const scrollTopBtn = document.getElementById('scroll-top');
+        let scrollTicking = false;
+        window.addEventListener('scroll', () => {
+            if (!scrollTicking) {
+                requestAnimationFrame(() => {
+                    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
+        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        /* ============================================================
+         * TOOLBAR EVENTS
+         * ============================================================ */
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
+        const filterMonth = document.getElementById('filter-month');
+        const sortBy = document.getElementById('sort-by');
+
+        const debouncedRender = debounce(renderBirthdays, 200);
+
+        searchInput.addEventListener('input', () => {
+            searchClear.classList.toggle('visible', searchInput.value.length > 0);
+            debouncedRender();
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchClear.classList.remove('visible');
+            renderBirthdays();
+            searchInput.focus();
+        });
+
+        filterMonth.addEventListener('change', renderBirthdays);
+        sortBy.addEventListener('change', renderBirthdays);
+
+        /* ============================================================
+         * INIT
+         * ============================================================ */
+        setHeaderMeta();
+        setInterval(setHeaderMeta, 10000);
+        renderToday();
+        renderTop3();
+        renderBirthdays();
+        renderStats();
+        syncDiscordAvatars();
+
+        setInterval(updateVisibleCountdowns, 1000);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
