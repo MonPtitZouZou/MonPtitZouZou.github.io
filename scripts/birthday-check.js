@@ -69,25 +69,41 @@ if (celebrants.length === 0) {
 }
 
 /* ---- Construction du message ---- */
-function buildEmbed(user) {
+const WEEKDAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+
+function ordinal(n) {
+  return n === 1 ? '1er' : `${n}`;
+}
+
+function buildEmbed(user, weekdayIndex) {
   const age = user.birthday.year != null ? today.year - user.birthday.year : null;
+  const dateStr = `${WEEKDAYS[weekdayIndex]} ${ordinal(today.day)} ${MONTHS[today.month - 1]} ${today.year}`;
+
   return {
-    title: `🎂 誕生日スペシャル — ${user.prenom.toUpperCase()} !!`,
+    author: {
+      name: '誕生日スペシャル · Anniversaires',
+    },
+    title: `🎂  Joyeux anniversaire, ${user.prenom} !`,
     description:
       age !== null
-        ? `**LEVEL UP !!** ${user.prenom} passe au niveau **${age}** aujourd'hui ! 🎉\n\n*— Chaque personnage a son arc —*`
-        : `**ÉPISODE SPÉCIAL !!** C'est l'anniversaire de ${user.prenom} aujourd'hui ! 🎉\n*(niveau secret 🤫)*\n\n*— Chaque personnage a son arc —*`,
-    color: 0xe8332e, // rouge shōnen, comme le site
+        ? `${user.prenom} fête ses **${age} ans** aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`
+        : `C'est l'anniversaire de ${user.prenom} aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`,
+    color: 0xe8332e,
+    fields:
+      age !== null
+        ? [{ name: 'Âge', value: `${age} ans`, inline: true }]
+        : [],
     footer: {
-      text: `${String(today.day).padStart(2, '0')}/${String(today.month).padStart(2, '0')}/${today.year} · ANNIVERSAIRES`,
+      text: dateStr.charAt(0).toUpperCase() + dateStr.slice(1),
     },
+    timestamp: new Date().toISOString(),
   };
 }
 
 const payload = {
-  username: '誕生日 Bot',
-  content: `🎉 **C'est l'anniversaire de ${celebrants.map((u) => u.prenom).join(' et de ')} !!**`,
-  embeds: celebrants.map(buildEmbed),
+  content: `🎉 C'est l'anniversaire de **${celebrants.map((u) => u.prenom).join(' et de ')}** aujourd'hui !`,
+  embeds: celebrants.map((u) => buildEmbed(u, new Date().getDay())),
 };
 
 /* ---- Envoi ---- */
