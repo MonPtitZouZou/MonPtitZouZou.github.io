@@ -45,17 +45,13 @@ function getTodayParis() {
   return { day: get('day'), month: get('month'), year: get('year'), hour: get('hour') };
 }
 
-/* ---- Garde-fou minuit ----
- * Le cron tourne à 22h ET 23h UTC (pour couvrir heure d'été/hiver).
- * Sur un run planifié, on ne continue que si c'est bien 00h à Paris :
- * un seul des deux runs passe ce filtre selon la saison. */
-
 /* ---- Chargement de la liste ---- */
 const dataPath = path.join(__dirname, '..', 'birthdays.json');
 const users = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 const today = getTodayParis();
 
+/* ---- Garde-fou minuit ---- */
 if (process.env.STRICT_MIDNIGHT === 'true' && !process.env.TEST_DATE && today.hour !== 0) {
   console.log(`⏭️  Il est ${today.hour}h à Paris (pas minuit) — ce run se retire, l'autre horaire prendra le relais.`);
   process.exit(0);
@@ -81,19 +77,12 @@ function buildEmbed(user, weekdayIndex) {
   const dateStr = `${WEEKDAYS[weekdayIndex]} ${ordinal(today.day)} ${MONTHS[today.month - 1]} ${today.year}`;
 
   return {
-    author: {
-      name: '',
-    },
-    title: `Joyeux anniversaire, ${user.prenom} 🎂 !`,
+    title: `🎂 Joyeux anniversaire ${user.prenom} !`,
     description:
       age !== null
-        ? `${user.prenom} fête ses **${age} ans** aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`
-        : `C'est l'anniversaire de ${user.prenom} aujourd'hui ! 🎉\nPassez lui souhaiter un bon anniversaire 💌`,
-    color: 0xe8332e,
-    fields:
-      age !== null
-        ? [{ name: 'Âge', value: `${age} ans`, inline: true }]
-        : [],
+        ? `Aujourd'hui, **${user.prenom}** fête ses **${age} ans** ! 🎉\n\n💬 N'hésitez pas à lui laisser un petit mot !`
+        : `C'est le grand jour pour **${user.prenom}** ! 🎉\n\n💬 N'hésitez pas à lui laisser un petit mot !`,
+    color: 0xfee75c,
     footer: {
       text: dateStr.charAt(0).toUpperCase() + dateStr.slice(1),
     },
@@ -102,7 +91,7 @@ function buildEmbed(user, weekdayIndex) {
 }
 
 const payload = {
-  content: `## C'est l'anniversaire de **${celebrants.map((u) => u.prenom).join(' et de ')}** aujourd'hui !`,
+  content: `🎉 **Un anniversaire à fêter aujourd'hui !**`,
   embeds: celebrants.map((u) => buildEmbed(u, new Date().getDay())),
 };
 
