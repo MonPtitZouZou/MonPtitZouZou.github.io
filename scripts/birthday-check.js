@@ -82,7 +82,7 @@ function buildEmbed(user, weekdayIndex) {
 
   return {
     author: {
-      name: 'Anniversaires · 誕生日スペシャル',
+      name: '',
     },
     title: `Joyeux anniversaire, ${user.prenom} 🎂 !`,
     description:
