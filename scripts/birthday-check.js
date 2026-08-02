@@ -77,11 +77,11 @@ function buildEmbed(user, weekdayIndex) {
   const dateStr = `${WEEKDAYS[weekdayIndex]} ${ordinal(today.day)} ${MONTHS[today.month - 1]} ${today.year}`;
 
   return {
-    title: `🎂 Joyeux anniversaire ${user.prenom} !`,
+    title: `Joyeux anniversaire ${user.prenom} !`,
     description:
       age !== null
-        ? `Aujourd'hui, **${user.prenom}** fête ses **${age} ans** ! 🎉\n\n💬 N'hésitez pas à lui laisser un petit mot !`
-        : `C'est le grand jour pour **${user.prenom}** ! 🎉\n\n💬 N'hésitez pas à lui laisser un petit mot !`,
+        ? `\nAujourd'hui, **${user.prenom}** fête ses **${age} ans** ! 🎉\n\n💬 Toute la communauté pense à toi aujourd'hui ❤️`
+        : `C'est le grand jour pour **${user.prenom}** ! 🎉\n\nQue cette nouvelle année t'apporte réussite, santé, bonheur et plein de bons souvenirs.\n\n`,
     color: 0xfee75c,
     footer: {
       text: dateStr.charAt(0).toUpperCase() + dateStr.slice(1),
@@ -91,7 +91,7 @@ function buildEmbed(user, weekdayIndex) {
 }
 
 const payload = {
-  content: `🎉 **Un anniversaire à fêter aujourd'hui !**`,
+  content: ``,
   embeds: celebrants.map((u) => buildEmbed(u, new Date().getDay())),
 };
 
