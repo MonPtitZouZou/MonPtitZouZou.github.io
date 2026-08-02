@@ -80,8 +80,8 @@ function buildEmbed(user, weekdayIndex) {
     title: `Joyeux anniversaire ${user.prenom} !`,
     description:
       age !== null
-        ? `\nAujourd'hui, **${user.prenom}** fête ses **${age} ans** ! 🎉\n\n💬 Toute la communauté pense à toi aujourd'hui ❤️`
-        : `C'est le grand jour pour **${user.prenom}** ! 🎉\n\nQue cette nouvelle année t'apporte réussite, santé, bonheur et plein de bons souvenirs.\n\n`,
+        ? `\nAujourd'hui, **${user.prenom}** fête ses **${age} ans** ! 🎉\n\n Toute la communauté pense à toi aujourd'hui ❤️`
+        : `C'est le grand jour pour **${user.prenom}** ! 🎉\n\nQue cette nouvelle année t'apporte réussite, santé, bonheur et plein de bons souvenirs.`,
     color: 0xfee75c,
     footer: {
       text: dateStr.charAt(0).toUpperCase() + dateStr.slice(1),
