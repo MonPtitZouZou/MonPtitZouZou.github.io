@@ -1,12 +1,14 @@
 [
-  { "prenom": "MonPtitZouZou", "day": 10, "month": 11, "year": 2002 },
-  { "prenom": "Meckael",       "day": 20, "month": 8,  "year": 2004 },
-  { "prenom": "Amra",          "day": 5,  "month": 8,  "year": null },
-  { "prenom": "Anaïs",         "day": 31, "month": 12, "year": 2005 },
-  { "prenom": "Marc",          "day": 20, "month": 4,  "year": 2004 },
-  { "prenom": "Roxana",        "day": 31, "month": 8,  "year": 2009 },
-  { "prenom": "Roro",          "day": 1,  "month": 9,  "year": 2008 },
-  { "prenom": "Samuel",        "day": 24, "month": 2,  "year": 2007 },
-  { "prenom": "Clementine",    "day": 14, "month": 2,  "year": 2007 },
-  { "prenom": "Printillie",    "day": 21, "month": 3,  "year": 2005 }
+  { "nom": "", "prenom": "user test 1", "genre": "homme", "discordId": "", "birthday": { "day": 3, "month": 8, "year": 2002 } },
+  { "nom": "", "prenom": "user test 2", "genre": "homme", "discordId": "", "birthday": { "day": 3, "month": 8, "year": 2002 } },
+  { "nom": "", "prenom": "MonPtitZouZou", "genre": "homme", "discordId": "", "birthday": { "day": 10, "month": 11, "year": 2002 } },
+  { "nom": "", "prenom": "Meckael",       "genre": "homme", "discordId": "", "birthday": { "day": 20, "month": 8,  "year": 2004 } },
+  { "nom": "", "prenom": "Amra",          "genre": "femme", "discordId": "", "birthday": { "day": 5,  "month": 8,  "year": null } },
+  { "nom": "", "prenom": "Anaïs",         "genre": "femme", "discordId": "", "birthday": { "day": 31, "month": 12, "year": 2005 } },
+  { "nom": "", "prenom": "Marc",          "genre": "homme", "discordId": "", "birthday": { "day": 20, "month": 4,  "year": 2004 } },
+  { "nom": "", "prenom": "Roxana",        "genre": "femme", "discordId": "", "birthday": { "day": 31, "month": 8,  "year": 2009 } },
+  { "nom": "", "prenom": "Roro",          "genre": "femme", "discordId": "", "birthday": { "day": 1,  "month": 9,  "year": 2008 } },
+  { "nom": "", "prenom": "Samuel",        "genre": "homme", "discordId": "", "birthday": { "day": 24, "month": 2,  "year": 2007 } },
+  { "nom": "", "prenom": "Clementine",    "genre": "femme", "discordId": "", "birthday": { "day": 14, "month": 2,  "year": 2007 } },
+  { "nom": "", "prenom": "Printillie",    "genre": "femme", "discordId": "", "birthday": { "day": 21, "month": 3,  "year": 2005 } }
 ]
