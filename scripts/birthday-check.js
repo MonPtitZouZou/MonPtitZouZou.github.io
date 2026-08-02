@@ -97,11 +97,16 @@ const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
 /* Vœux tirés au sort : le message change d'une personne à l'autre
    et d'une année sur l'autre. Ajoute les tiens librement. */
 const VOEUX = [
-  "Qu'elle t'apporte réussite, santé et plein de beaux moments 🌟",
-  "Profite bien de ta journée, tu le mérites 🥂",
-  "Une nouvelle année qui commence — qu'elle soit à la hauteur 🎯",
-  "Que cette année t'apporte tout ce que tu espères ✨",
-  "Passe une excellente journée, entouré comme il se doit 🎈",
+  "Que cette nouvelle année soit synonyme de sérénité, d'épanouissement et de réussites durables.",
+  "Une pensée sincère en ce jour particulier. Que l'année à venir soit à la hauteur de tes aspirations.",
+  "Santé, clarté d'esprit et beaux accomplissements pour ce nouveau chapitre.",
+  "Un an de plus, et une belle assurance qui s'affirme. Que cette journée te soit douce.",
+  "Que les mois à venir t'apportent la réussite dans tes projets et la quiétude au quotidien.",
+  "À la célébration du chemin parcouru et aux belles perspectives qui s'ouvrent à toi.",
+  "Que cette année soit riche en moments rares, en belles rencontres et en projets porteurs de sens.",
+  "Passe une excellente journée. Que la sérénité et le succès guident cette nouvelle étape.",
+  "Que chaque initiative entreprise cette année trouve un écho à la hauteur de ton engagement.",
+  "Un très bon anniversaire — que la suite soit inspirante, équilibrée et féconde.",
 ];
 
 function pickVoeu(seed) {
@@ -130,16 +135,16 @@ function buildEmbed(user) {
 
   const description = [
     age !== null
-      ? `**${user.prenom}** souffle sa **${age}ᵉ bougie** aujourd'hui 🕯️`
+      ? `Les années filent et l'histoire s'écrit : **${user.prenom}** célèbre aujourd'hui ses **${age} ans**`
       : `C'est le grand jour de **${user.prenom}** 🕯️`,
     '',
     voeu,
     '',
-    '*Toute la communauté pense à toi* ❤️',
+    '*Toute la communauté pense à toi*  ❤️',
   ].join('\n');
 
   const embed = {
-    title: `🎂  Joyeux anniversaire, ${user.prenom} !`,
+    title: `Joyeux anniversaire, ${user.prenom} !`,
     description,
     color: CONFIG.couleur,
     footer: { text: formatDateLongue() },
