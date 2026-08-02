@@ -1,9 +1,9 @@
 [
   { "nom": "", "prenom": "user test 1", "genre": "homme", "discordId": "", "birthday": { "day": 3, "month": 8, "year": 2002 } },
-  { "nom": "", "prenom": "user test 2", "genre": "homme", "discordId": "", "birthday": { "day": 3, "month": 8, "year": 2002 } },
+  { "nom": "", "prenom": "user test 2", "genre": "homme", "discordId": "", "birthday": { "day": 4, "month": 8, "year": 2002 } },
   { "nom": "", "prenom": "MonPtitZouZou", "genre": "homme", "discordId": "", "birthday": { "day": 10, "month": 11, "year": 2002 } },
   { "nom": "", "prenom": "Meckael",       "genre": "homme", "discordId": "", "birthday": { "day": 20, "month": 8,  "year": 2004 } },
-  { "nom": "", "prenom": "Amra",          "genre": "femme", "discordId": "", "birthday": { "day": 5,  "month": 8,  "year": null } },
+  { "nom": "", "prenom": "Amra",          "genre": "femme", "discordId": "", "birthday": { "day": 5,  "month": 8,  "year": 2012 } },
   { "nom": "", "prenom": "Anaïs",         "genre": "femme", "discordId": "", "birthday": { "day": 31, "month": 12, "year": 2005 } },
   { "nom": "", "prenom": "Marc",          "genre": "homme", "discordId": "", "birthday": { "day": 20, "month": 4,  "year": 2004 } },
   { "nom": "", "prenom": "Roxana",        "genre": "femme", "discordId": "", "birthday": { "day": 31, "month": 8,  "year": 2009 } },
