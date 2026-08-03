@@ -2,16 +2,15 @@ name: 🎂 Anniversaires
 
 on:
   schedule:
-    # Objectif : 00h00 heure de Paris.
-    # Le cron GitHub est en UTC et ignore l'heure d'été, donc on lance
-    # aux DEUX horaires possibles (22h UTC = minuit en été, 23h UTC = minuit en hiver).
-    # Le script vérifie ensuite qu'il est bien 00h à Paris et ne poste qu'une seule fois.
-    - cron: '0 22,23 * * *'
-  # Permet de lancer le workflow à la main depuis l'onglet Actions (pratique pour tester)
+    # 23h17 UTC = 01h17 à Paris en été, 00h17 en hiver.
+    # Dans les deux cas on est déjà passé au jour suivant côté Paris,
+    # donc la date reste correcte même avec du retard.
+    - cron: '17 23 * * *'
+
   workflow_dispatch:
     inputs:
       test_date:
-        description: 'Date de test au format JJ/MM (ex: 05/08). Laisser vide pour la vraie date du jour.'
+        description: 'Date de test au format JJ/MM. Laisser vide pour la date du jour.'
         required: false
         default: ''
 
@@ -31,6 +30,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           TEST_DATE: ${{ github.event.inputs.test_date }}
-          # true uniquement pour les runs planifiés → le script exige qu'il soit 00h à Paris
-          STRICT_MIDNIGHT: ${{ github.event_name == 'schedule' }}
         run: node scripts/birthday-check.js
