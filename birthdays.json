@@ -8,5 +8,6 @@
   { "nom": "", "prenom": "Roro",          "genre": "femme", "discordId": "", "birthday": { "day": 1,  "month": 9,  "year": 2008 } },
   { "nom": "", "prenom": "Samuel",        "genre": "homme", "discordId": "", "birthday": { "day": 24, "month": 2,  "year": 2007 } },
   { "nom": "", "prenom": "Clementine",    "genre": "femme", "discordId": "", "birthday": { "day": 14, "month": 2,  "year": 2007 } },
-  { "nom": "", "prenom": "Printillie",    "genre": "femme", "discordId": "", "birthday": { "day": 21, "month": 3,  "year": 2005 } }
+  { "nom": "", "prenom": "Printillie",    "genre": "femme", "discordId": "", "birthday": { "day": 21, "month": 3,  "year": 2005 } },
+  { "nom": "", "prenom": "Gabin",    "genre": "homme", "discordId": "", "birthday": { "day": 3, "month": 1,  "year": 2002 } }
 ]
