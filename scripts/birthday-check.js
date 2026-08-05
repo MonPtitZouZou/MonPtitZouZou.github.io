@@ -33,12 +33,23 @@ const CONFIG = {
   couleur: 0xfee75c,
 };
 
-const WEBHOOK_URL = process.env.DISCORD_WEBHOOK;
-if (!WEBHOOK_URL) {
-  console.error('❌ La variable DISCORD_WEBHOOK est manquante.');
+/* Un ou plusieurs salons de destination.
+   DISCORD_WEBHOOK est obligatoire, les suivants sont facultatifs :
+   il suffit de créer le secret correspondant pour qu'un salon
+   s'ajoute automatiquement. */
+const WEBHOOKS = [
+  { nom: 'principal', url: process.env.DISCORD_WEBHOOK },
+  { nom: 'secondaire', url: process.env.DISCORD_WEBHOOK_2 },
+  { nom: 'tertiaire', url: process.env.DISCORD_WEBHOOK_3 },
+].filter((w) => w.url && w.url.trim() !== '');
+
+if (WEBHOOKS.length === 0) {
+  console.error('❌ Aucun webhook configuré (DISCORD_WEBHOOK est manquant).');
   console.error('   Sur GitHub : Settings → Secrets and variables → Actions → New repository secret');
   process.exit(1);
 }
+
+console.log(`📡 ${WEBHOOKS.length} salon(s) de destination : ${WEBHOOKS.map((w) => w.nom).join(', ')}`);
 
 /* ---- Date du jour, fuseau Europe/Paris ---- */
 function getTodayParis() {
@@ -189,22 +200,37 @@ const payload = {
   embeds: celebrants.map(buildEmbed),
 };
 
-/* ---- Envoi ---- */
+/* ---- Envoi ----
+ * Chaque salon est traité indépendamment : si l'un échoue,
+ * les autres reçoivent quand même le message. Le script ne
+ * signale une erreur que si AUCUN envoi n'a abouti. */
 (async () => {
-  try {
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(`❌ Discord a répondu ${res.status} : ${text}`);
-      process.exit(1);
+  const prenoms = celebrants.map((u) => u.prenom).join(', ');
+  let reussites = 0;
+
+  for (const wh of WEBHOOKS) {
+    try {
+      const res = await fetch(wh.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error(`❌ [${wh.nom}] Discord a répondu ${res.status} : ${text}`);
+        continue;
+      }
+      reussites++;
+      console.log(`🎂 [${wh.nom}] Message envoyé pour : ${prenoms}`);
+    } catch (err) {
+      console.error(`❌ [${wh.nom}] Échec de l'envoi :`, err.message);
     }
-    console.log(`🎂 Message envoyé pour : ${celebrants.map((u) => u.prenom).join(', ')}`);
-  } catch (err) {
-    console.error('❌ Échec de l\'envoi :', err.message);
+  }
+
+  if (reussites === 0) {
+    console.error('❌ Aucun message n\'a pu être envoyé.');
     process.exit(1);
   }
+
+  console.log(`✅ ${reussites}/${WEBHOOKS.length} salon(s) servis.`);
 })();
