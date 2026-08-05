@@ -73,6 +73,32 @@ const dataPath = path.join(__dirname, '..', 'birthdays.json');
 const users = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 const today = getTodayParis();
+const todayKey = `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
+
+/* ---- Anti-doublon ----
+ * GitHub saute régulièrement des créneaux planifiés. Le workflow en
+ * déclenche donc plusieurs par jour, et c'est ce fichier d'état qui
+ * garantit qu'un seul message part : le premier créneau qui réussit
+ * inscrit la date, les suivants voient qu'elle correspond et s'arrêtent.
+ */
+const statePath = path.join(__dirname, '..', 'last-sent.json');
+
+function readState() {
+  try { return JSON.parse(fs.readFileSync(statePath, 'utf8')); }
+  catch (e) { return {}; }
+}
+
+function writeState(obj) {
+  fs.writeFileSync(statePath, JSON.stringify(obj, null, 2) + '\n', 'utf8');
+}
+
+const state = readState();
+const forced = String(process.env.FORCE_SEND || '').toLowerCase() === 'oui';
+
+if (!process.env.TEST_DATE && !forced && state.date === todayKey) {
+  console.log(`⏭️  Message déjà envoyé aujourd'hui (${todayKey}). Rien à faire.`);
+  process.exit(0);
+}
 
 const celebrants = users.filter((u) => u.birthday.day === today.day && u.birthday.month === today.month);
 
@@ -80,6 +106,8 @@ if (celebrants.length === 0) {
   console.log(`✅ ${String(today.day).padStart(2, '0')}/${String(today.month).padStart(2, '0')} — aucun anniversaire aujourd'hui. Rien à envoyer.`);
   process.exit(0);
 }
+
+console.log(`🔎 ${celebrants.length} anniversaire(s) détecté(s) : ${celebrants.map((u) => u.prenom).join(', ')}`);
 
 /* ============================================================
  * CONSTRUCTION DU MESSAGE
@@ -170,6 +198,11 @@ const payload = {
       process.exit(1);
     }
     console.log(`🎂 Message envoyé pour : ${celebrants.map((u) => u.prenom).join(', ')}`);
+
+    if (!process.env.TEST_DATE) {
+      writeState({ date: todayKey, prenoms: celebrants.map((u) => u.prenom) });
+      console.log(`📌 État enregistré : ${todayKey}`);
+    }
   } catch (err) {
     console.error('❌ Échec de l\'envoi :', err.message);
     process.exit(1);
