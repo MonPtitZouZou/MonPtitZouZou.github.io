@@ -1206,6 +1206,65 @@
         }
 
         .scroll-top:hover { background: var(--accent); border-color: var(--accent); }
+/*__ZAP_CSS__*/
+
+        /* ============================================================
+         * FOUDRE — carte « À l'honneur » uniquement.
+         * Purement additif : la bordure, le fond et la mise en page
+         * du poster ne sont pas touchés. Deux calques en overlay.
+         * ============================================================ */
+        .zap-hero {
+            /* Teintes du plasma. Pour rester dans le thème manga :
+               --volt: #ffd23f; --volt-hot: #fff3c4; --volt-deep: #e8332e; */
+            --volt: #8fc2ff;
+            --volt-hot: #d8ecff;
+            --volt-deep: #2f6dff;
+        }
+
+        .zap-hero .zap-svg {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            pointer-events: none;
+            overflow: visible;
+            z-index: 4;
+        }
+
+        /* Lueur des bords, synchronisée avec les décharges.
+           En « inset » car le clip-path du poster découperait
+           une ombre extérieure classique. */
+        .zap-hero .zap-glow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 2;
+            box-shadow:
+                inset 0 0 26px 2px var(--volt),
+                inset 0 0 60px 6px var(--volt-deep);
+            transition: opacity 45ms linear;
+        }
+
+        .zap-hero .zap-flash {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(143, 194, 255, 0.32), rgba(143, 194, 255, 0.03) 60%, transparent),
+                radial-gradient(ellipse at 50% -10%, rgba(255, 255, 255, 0.4), transparent 65%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 3;
+            transition: opacity 40ms linear;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .zap-hero .zap-svg,
+            .zap-hero .zap-glow,
+            .zap-hero .zap-flash { display: none !important; }
+        }
 
         /* ============================================================
          * MOBILE
@@ -1377,6 +1436,352 @@
            Le site ET le bot Discord lisent le même fichier.
            Pour ajouter quelqu'un → éditer birthdays.json, rien d'autre. */
         let users = [];
+
+        /* ============================================================
+         * ⚡ MOTEUR DE FOUDRE — piloté en JS, jamais deux fois pareil
+         *
+         * Contrairement à une animation CSS qui boucle, chaque décharge
+         * régénère sa géométrie, son intensité, son nombre d'arcs de
+         * retour et son délai d'attente. Rien ne se répète.
+         * ============================================================ */
+
+        (function (global) {
+            'use strict';
+
+            const SVG_NS = 'http://www.w3.org/2000/svg';
+            const rand = (a, b) => a + Math.random() * (b - a);
+            const randInt = (a, b) => Math.floor(rand(a, b + 1));
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+            /* --- Géométrie fractale (déplacement de point médian) --- */
+            function fractal(x1, y1, x2, y2, cfg) {
+                let segs = [[{ x: x1, y: y1 }, { x: x2, y: y2 }]];
+                const branches = [];
+                let off = cfg.offset;
+
+                for (let lvl = 0; lvl < cfg.detail; lvl++) {
+                    const next = [];
+                    for (const [a, b] of segs) {
+                        const dx = b.x - a.x, dy = b.y - a.y;
+                        const len = Math.hypot(dx, dy) || 1;
+                        const px = -dy / len, py = dx / len;
+                        const d = rand(-off, off);
+                        const mid = { x: (a.x + b.x) / 2 + px * d, y: (a.y + b.y) / 2 + py * d };
+                        next.push([a, mid], [mid, b]);
+
+                        if (lvl > 1 && lvl < cfg.detail - 1 && Math.random() < cfg.branch) {
+                            const ang = Math.atan2(b.y - mid.y, b.x - mid.x)
+                                      + (Math.random() < 0.5 ? -1 : 1) * rand(0.3, 0.95);
+                            const bl = len * rand(0.35, 1.3);
+                            branches.push(fractal(mid.x, mid.y,
+                                mid.x + Math.cos(ang) * bl, mid.y + Math.sin(ang) * bl,
+                                { detail: randInt(2, 4), offset: off * 0.7, branch: 0.12 }).main);
+                        }
+                    }
+                    segs = next;
+                    off *= cfg.decay;
+                }
+                return { main: [segs[0][0], ...segs.map(s => s[1])], branches };
+            }
+
+            const toD = pts => 'M' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L');
+
+            /* --- Un canal de foudre : plusieurs couches sur le même tracé --- */
+            class Channel {
+                constructor(svg, paths, scale) {
+                    this.g = document.createElementNS(SVG_NS, 'g');
+                    this.layers = [];
+
+                    const specs = [
+                        { stroke: 'var(--volt-deep)', w: 24 * scale, blur: 11,  op: 0.26 },
+                        { stroke: 'var(--volt)',      w: 9 * scale,  blur: 3.5, op: 0.68 },
+                        { stroke: 'var(--volt-hot)',  w: 4 * scale,  blur: 1.2, op: 0.9 },
+                        { stroke: '#ffffff',          w: 2 * scale,  blur: 0,   op: 1 },
+                    ];
+
+                    for (const s of specs) {
+                        const lg = document.createElementNS(SVG_NS, 'g');
+                        lg.setAttribute('filter', s.blur ? `blur(${s.blur}px)` : '');
+                        lg.style.filter = s.blur ? `blur(${s.blur}px)` : 'none';
+                        lg.dataset.op = s.op;
+                        for (const d of paths) {
+                            const p = document.createElementNS(SVG_NS, 'path');
+                            p.setAttribute('d', d);
+                            p.setAttribute('fill', 'none');
+                            p.setAttribute('stroke', s.stroke);
+                            p.setAttribute('stroke-width', s.w);
+                            p.setAttribute('stroke-linecap', 'round');
+                            p.setAttribute('stroke-linejoin', 'round');
+                            p.setAttribute('vector-effect', 'non-scaling-stroke');
+                            lg.appendChild(p);
+                        }
+                        this.g.appendChild(lg);
+                        this.layers.push(lg);
+                    }
+
+                    this.g.style.opacity = '0';
+                    svg.appendChild(this.g);
+                }
+                setOpacity(v) { this.g.style.opacity = String(v); }
+                destroy() { this.g.remove(); }
+            }
+
+            /* --- Le moteur --- */
+            class Lightning {
+                constructor(el, opts) {
+                    this.el = el;
+                    this.o = Object.assign({
+                        intensity: 0.5,   // 0 = lointain, 1 = surcharge
+                        mode: 'strike',   // 'strike' (tombe du haut) | 'border' (longe le cadre)
+                        corona: false,    // micro-arcs permanents sur le cadre
+                        flash: false,     // embrasement de la carte
+                        shake: 0,         // amplitude de la secousse en px
+                        w: 200, h: 300,
+                    }, opts || {});
+
+                    this.svg = document.createElementNS(SVG_NS, 'svg');
+                    this.svg.setAttribute('viewBox', `0 0 ${this.o.w} ${this.o.h}`);
+                    this.svg.setAttribute('preserveAspectRatio', 'none');
+                    this.svg.setAttribute('aria-hidden', 'true');
+                    this.svg.className.baseVal = 'zap-svg';
+                    el.appendChild(this.svg);
+
+                    if (this.o.flash) {
+                        this.flashEl = document.createElement('div');
+                        this.flashEl.className = 'zap-flash';
+                        this.flashEl.setAttribute('aria-hidden', 'true');
+                        el.appendChild(this.flashEl);
+                    }
+
+                    if (this.o.glow) {
+                        this.glowEl = document.createElement('div');
+                        this.glowEl.className = 'zap-glow';
+                        this.glowEl.setAttribute('aria-hidden', 'true');
+                        el.appendChild(this.glowEl);
+                    }
+
+                    this.alive = true;
+                    this.timers = [];
+                    this.visible = true;
+
+                    if ('IntersectionObserver' in window) {
+                        this.io = new IntersectionObserver(e => { this.visible = e[0].isIntersecting; },
+                            { rootMargin: '120px' });
+                        this.io.observe(el);
+                    }
+
+                    this.scheduleStrike(rand(200, 2000));
+                    if (this.o.corona) this.scheduleCorona(rand(100, 800));
+                }
+
+                after(fn, ms) {
+                    const t = setTimeout(() => { if (this.alive) fn(); }, ms);
+                    this.timers.push(t);
+                    return t;
+                }
+
+                /* Délai jusqu'au prochain coup : distribution à queue longue,
+                   donc parfois deux coups collés, parfois un long silence. */
+                nextDelay() {
+                    const i = this.o.intensity;
+                    const base = 5000 - i * 3400;          // 5,0 s → 1,6 s
+                    const u = Math.random();
+                    return base * (0.3 + Math.pow(u, 2.2) * 2.4);
+                }
+
+                makeGeometry() {
+                    const { w, h, mode } = this.o;
+                    const i = this.o.intensity;
+
+                    if (mode === 'border') {
+                        const side = randInt(0, 3);
+                        const t = rand(0.02, 0.5), span = rand(0.4, 0.95);
+                        let a, b;
+                        if (side === 0)      { a = { x: w * t, y: 0 };        b = { x: w * Math.min(1, t + span), y: 0 }; }
+                        else if (side === 1) { a = { x: w, y: h * t };        b = { x: w, y: h * Math.min(1, t + span) }; }
+                        else if (side === 2) { a = { x: w * Math.min(1, t + span), y: h }; b = { x: w * t, y: h }; }
+                        else                 { a = { x: 0, y: h * Math.min(1, t + span) }; b = { x: 0, y: h * t }; }
+                        return fractal(a.x, a.y, b.x, b.y, {
+                            detail: randInt(5, 6), offset: Math.min(w, h) * rand(0.05, 0.13),
+                            decay: rand(0.48, 0.6), branch: 0.15 + i * 0.3,
+                        });
+                    }
+
+                    // mode strike : tombe du haut, longueur et inclinaison variables
+                    const x1 = rand(-w * 0.1, w * 1.1);
+                    const x2 = x1 + rand(-w * 0.45, w * 0.45);
+                    const y2 = h * rand(0.45, 1.15);
+                    return fractal(x1, -h * rand(0.15, 0.35), x2, y2, {
+                        detail: randInt(6, 7), offset: w * rand(0.15, 0.28),
+                        decay: rand(0.55, 0.65), branch: 0.18 + i * 0.22,
+                    });
+                }
+
+                /* Un coup = un canal + N arcs de retour qui réempruntent le
+                   même canal (comme la foudre réelle), chacun avec son propre
+                   scintillement. */
+                strike() {
+                    if (!this.visible) { this.scheduleStrike(this.nextDelay()); return; }
+
+                    const i = this.o.intensity;
+                    const geo = this.makeGeometry();
+                    const paths = [toD(geo.main), ...geo.branches.map(toD)];
+                    const scale = rand(0.95, 1.5) * (0.8 + i * 0.6);
+                    const ch = new Channel(this.svg, paths, scale);
+
+                    const power = rand(0.7, 1) * (0.6 + i * 0.5);
+                    let t = 0;
+
+                    // 1. Précurseur : faible, il descend
+                    ch.setOpacity(0);
+                    this.after(() => ch.setOpacity(0.18 * power), t += rand(0, 30));
+                    this.after(() => ch.setOpacity(0.3 * power), t += rand(25, 60));
+
+                    // 2. Arcs de retour : 1 à 4, intensités inégales
+                    const returns = randInt(1, 2 + Math.round(i * 2));
+                    for (let r = 0; r < returns; r++) {
+                        const peak = Math.min(1, power * rand(0.55, 1.15));
+                        this.after(() => ch.setOpacity(peak), t += rand(15, 45));
+                        this.after(() => ch.setOpacity(peak * rand(0.05, 0.3)), t += rand(18, 50));
+                        this.after(() => ch.setOpacity(peak * rand(0.6, 1)), t += rand(20, 55));
+
+                        if (r === 0 && this.o.flash) this.flash(peak);
+                        if (r === 0 && this.o.glow) this.glow(peak);
+                        if (r === 0 && this.o.shake) this.shake(power);
+                    }
+
+                    // 3. Rémanence puis extinction
+                    this.after(() => ch.setOpacity(0.22 * power), t += rand(30, 70));
+                    this.after(() => ch.setOpacity(0.09 * power), t += rand(60, 140));
+                    this.after(() => { ch.setOpacity(0); ch.destroy(); }, t += rand(90, 220));
+
+                    // Parfois, un second canal frappe juste après, ailleurs
+                    if (Math.random() < 0.12 + i * 0.2) {
+                        this.after(() => this.strike(), rand(90, 400));
+                        return;
+                    }
+                    this.scheduleStrike(this.nextDelay());
+                }
+
+                scheduleStrike(ms) { this.after(() => this.strike(), ms); }
+
+                /* La lueur des bords suit la décharge : montée immédiate,
+                   creux, rebond, puis extinction lente (rémanence). */
+                glow(power) {
+                    if (!this.glowEl) return;
+                    const g = this.glowEl;
+                    const seq = [
+                        [0, 0.55 * power], [rand(25, 55), 0.1], [rand(20, 50), 0.42 * power],
+                        [rand(30, 65), 0.06], [rand(40, 90), 0.24 * power],
+                        [rand(80, 150), 0.1 * power], [rand(150, 320), 0],
+                    ];
+                    let acc = 0;
+                    for (const [d, v] of seq) { acc += d; this.after(() => { g.style.opacity = v; }, acc); }
+                }
+
+                flash(power) {
+                    if (!this.flashEl) return;
+                    const f = this.flashEl;
+                    const seq = [
+                        [0, 0.5 * power], [rand(20, 45), 0.06], [rand(20, 50), 0.34 * power],
+                        [rand(30, 60), 0.03], [rand(40, 90), 0.16 * power], [rand(90, 180), 0],
+                    ];
+                    let acc = 0;
+                    for (const [d, v] of seq) { acc += d; this.after(() => { f.style.opacity = v; }, acc); }
+                }
+
+                shake(power) {
+                    const el = this.el;
+                    const amp = this.o.shake * power;
+                    const steps = randInt(4, 7);
+                    let acc = 0;
+                    for (let s = 0; s < steps; s++) {
+                        const k = 1 - s / steps;
+                        acc += rand(18, 45);
+                        this.after(() => {
+                            el.style.transform =
+                                `translate(${rand(-amp, amp) * k}px, ${rand(-amp, amp) * k}px) skewX(${rand(-0.9, 0.9) * k}deg)`;
+                        }, acc);
+                    }
+                    this.after(() => { el.style.transform = ''; }, acc + 40);
+                }
+
+                /* Micro-arcs qui grésillent sur le cadre, régénérés en continu */
+                scheduleCorona(ms) {
+                    this.after(() => {
+                        if (this.visible) this.corona();
+                        this.scheduleCorona(rand(200, 950) * (1.6 - this.o.intensity));
+                    }, ms);
+                }
+
+                corona() {
+                    const { w, h } = this.o;
+                    const side = randInt(0, 3);
+                    const t = rand(0.05, 0.8), span = rand(0.06, 0.22);
+                    let a, b;
+                    if (side === 0)      { a = { x: w * t, y: 0 };            b = { x: w * (t + span), y: 0 }; }
+                    else if (side === 1) { a = { x: w, y: h * t };            b = { x: w, y: h * (t + span) }; }
+                    else if (side === 2) { a = { x: w * (t + span), y: h };   b = { x: w * t, y: h }; }
+                    else                 { a = { x: 0, y: h * (t + span) };   b = { x: 0, y: h * t }; }
+
+                    const geo = fractal(a.x, a.y, b.x, b.y, {
+                        detail: randInt(4, 5), offset: Math.min(w, h) * rand(0.04, 0.11),
+                        decay: 0.52, branch: 0.45,
+                    });
+                    const ch = new Channel(this.svg, [toD(geo.main), ...geo.branches.map(toD)], rand(0.3, 0.55));
+
+                    let t2 = 0;
+                    const p = rand(0.35, 0.9);
+                    this.after(() => ch.setOpacity(p), t2 += rand(0, 20));
+                    this.after(() => ch.setOpacity(p * 0.15), t2 += rand(20, 50));
+                    this.after(() => ch.setOpacity(p * 0.8), t2 += rand(20, 60));
+                    this.after(() => { ch.setOpacity(0); ch.destroy(); }, t2 += rand(50, 130));
+                }
+
+                destroy() {
+                    this.alive = false;
+                    this.timers.forEach(clearTimeout);
+                    if (this.io) this.io.disconnect();
+                    this.svg.remove();
+                    if (this.flashEl) this.flashEl.remove();
+                    if (this.glowEl) this.glowEl.remove();
+                    this.el.style.transform = '';
+                }
+            }
+
+            /* --- API : active la carte « À l'honneur » (.zap-hero) --- */
+            const registry = [];
+
+            function activateZaps(root) {
+                (root || document).querySelectorAll('.zap-hero').forEach(el => {
+                    if (el._zap) return;
+                    const rect = el.getBoundingClientRect();
+                    const ratio = rect.width && rect.height ? rect.height / rect.width : 0.65;
+
+                    el._zap = new Lightning(el, {
+                        intensity: 1,
+                        mode: 'strike',
+                        corona: true,
+                        flash: true,
+                        glow: true,
+                        shake: 2.5, // amplitude du tremblement en px (0 pour désactiver)
+                        w: 200,
+                        h: Math.round(200 * ratio),
+                    });
+                    registry.push(el._zap);
+                });
+            }
+
+            function destroyZaps() {
+                registry.splice(0).forEach(z => z.destroy());
+                document.querySelectorAll('.zap-hero').forEach(el => { delete el._zap; });
+            }
+
+            global.activateZaps = activateZaps;
+            global.destroyZaps = destroyZaps;
+            global.Lightning = Lightning;
+
+        })(window);
 
         /* ============================================================
          * AVATARS — repli genre immédiat, puis synchro Discord (Lanyard)
@@ -1937,6 +2342,8 @@
             }
         });
 
+/*__ZAP_JS__*/
+
         /* ============================================================
          * RENDERS
          * ============================================================ */
@@ -1970,7 +2377,7 @@
                         <h2 class="section-title">À l'honneur <span class="section-jp">主人公</span></h2>
                         <span class="line"></span>
                     </div>
-                    <div class="today-poster">
+                    <div class="today-poster zap-hero">
                         <div class="today-image-wrap">
                             ${createAvatarHTML(user)}
                         </div>
@@ -2176,8 +2583,12 @@
         function renderToday() {
             const todayBirthdays = users.filter(u => isBirthdayToday(u.birthday));
             const container = document.getElementById('today-container');
+
+            if (typeof destroyZaps === 'function') destroyZaps();   // coupe l'ancien rendu
+
             if (todayBirthdays.length > 0) {
                 container.innerHTML = todayBirthdays.map(createTodayCard).join('');
+                if (typeof activateZaps === 'function') activateZaps();   // ⚡ foudre
                 if (!mainConfetti) {
                     mainConfetti = new Confetti(document.getElementById('confetti-canvas'));
                     mainConfetti.start();
