@@ -73,32 +73,6 @@ const dataPath = path.join(__dirname, '..', 'birthdays.json');
 const users = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 const today = getTodayParis();
-const todayKey = `${today.year}-${String(today.month).padStart(2, '0')}-${String(today.day).padStart(2, '0')}`;
-
-/* ---- Anti-doublon ----
- * GitHub saute régulièrement des créneaux planifiés. Le workflow en
- * déclenche donc plusieurs par jour, et c'est ce fichier d'état qui
- * garantit qu'un seul message part : le premier créneau qui réussit
- * inscrit la date, les suivants voient qu'elle correspond et s'arrêtent.
- */
-const statePath = path.join(__dirname, '..', 'last-sent.json');
-
-function readState() {
-  try { return JSON.parse(fs.readFileSync(statePath, 'utf8')); }
-  catch (e) { return {}; }
-}
-
-function writeState(obj) {
-  fs.writeFileSync(statePath, JSON.stringify(obj, null, 2) + '\n', 'utf8');
-}
-
-const state = readState();
-const forced = String(process.env.FORCE_SEND || '').toLowerCase() === 'oui';
-
-if (!process.env.TEST_DATE && !forced && state.date === todayKey) {
-  console.log(`⏭️  Message déjà envoyé aujourd'hui (${todayKey}). Rien à faire.`);
-  process.exit(0);
-}
 
 const celebrants = users.filter((u) => u.birthday.day === today.day && u.birthday.month === today.month);
 
@@ -107,8 +81,6 @@ if (celebrants.length === 0) {
   process.exit(0);
 }
 
-console.log(`🔎 ${celebrants.length} anniversaire(s) détecté(s) : ${celebrants.map((u) => u.prenom).join(', ')}`);
-
 /* ============================================================
  * CONSTRUCTION DU MESSAGE
  * ============================================================ */
@@ -116,18 +88,51 @@ const WEEKDAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi',
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
   'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-/* Vœux tirés au sort : le message change d'une personne à l'autre
-   et d'une année sur l'autre. Ajoute les tiens librement. */
+/* Vœux tirés au hasard à chaque envoi. Ajoute les tiens librement. */
 const VOEUX = [
-  "Qu'elle t'apporte réussite, santé et plein de beaux moments 🌟",
-  "Profite bien de ta journée, tu le mérites 🥂",
-  "Une nouvelle année qui commence — qu'elle soit à la hauteur 🎯",
-  "Que cette année t'apporte tout ce que tu espères ✨",
-  "Passe une excellente journée, entouré comme il se doit 🎈",
+  "Que cette année t'apporte tout le bonheur que tu mérites 🌟",
+  "Une bougie de plus, et toujours autant de belles choses devant toi ✨",
+  "Que les douze prochains mois te comblent, simplement 💛",
+  "Qu'elle soit douce, lumineuse, et pleine de ce qui te rend heureux 🌅",
+  "Que cette journée soit à ton image : rayonnante ☀️",
+  "Tout le bonheur du monde pour cette nouvelle année 🌈",
+  "Que chaque jour de cette année te donne une raison de sourire 😊",
+  "Qu'elle t'apporte la santé, la sérénité et de beaux moments 🍀",
+  "Que cette année dépasse tout ce que tu imagines 🌠",
+  "Profite pleinement de ta journée, elle n'appartient qu'à toi 🎂",
+  "Que le bonheur t'accompagne à chaque page de cette nouvelle année 📖",
+  "Une année entière de belles choses t'attend 🌻",
+  "Que tes rêves de cette année deviennent tes plus beaux souvenirs 🌙",
+  "Qu'elle soit remplie de rires, de douceur et de belles surprises 🎁",
+  "Que cette année t'offre exactement ce que ton cœur espère 💫",
+  "Beaucoup de bonheur, beaucoup d'amour, et une très belle année ❤️",
+  "Que rien ne vienne troubler la douceur de cette nouvelle année 🕊️",
+  "Souffle tes bougies — que tous tes vœux se réalisent 🕯️",
+  "Que cette année soit la plus belle jusqu'ici 🥂",
+  "Qu'elle t'apporte la paix, la joie et tout ce qui compte pour toi 🌸",
+  "Une nouvelle année s'ouvre à toi, qu'elle soit magnifique 🌤️",
+  "Que le bonheur soit ton compagnon de route toute l'année 🍃",
+  "Prends soin de toi, et savoure chaque instant de cette journée 💐",
+  "Que cette année t'apporte réussite, tendresse et beaux projets 🌱",
+  "Tu mérites tout le meilleur — que cette année te le donne 💎",
+  "Qu'elle soit à la hauteur de la belle personne que tu es 🌷",
+  "Que cette journée marque le début d'une année merveilleuse 🎊",
+  "Plein de bonheur, de santé et de douceur pour cette nouvelle année 🌼",
+  "Que chaque mois de cette année t'apporte sa part de joie 🌞",
+  "Un très bel anniversaire, et une année à la mesure de tes espoirs ✨",
 ];
 
-function pickVoeu(seed) {
-  return VOEUX[Math.abs(seed) % VOEUX.length];
+/* Tirage au hasard. Si plusieurs personnes fêtent leur anniversaire
+   le même jour, chacune reçoit un vœu différent : les phrases déjà
+   utilisées dans ce message sont écartées. */
+const dejaUtilises = new Set();
+
+function pickVoeu() {
+  const dispo = VOEUX.filter((v) => !dejaUtilises.has(v));
+  const pool = dispo.length > 0 ? dispo : VOEUX;
+  const choix = pool[Math.floor(Math.random() * pool.length)];
+  dejaUtilises.add(choix);
+  return choix;
 }
 
 function capitalize(s) {
@@ -148,7 +153,7 @@ function thumbnailFor(user) {
 
 function buildEmbed(user) {
   const age = user.birthday.year != null ? today.year - user.birthday.year : null;
-  const voeu = pickVoeu(today.day + today.month + user.prenom.length);
+  const voeu = pickVoeu();
 
   const description = [
     age !== null
@@ -198,11 +203,6 @@ const payload = {
       process.exit(1);
     }
     console.log(`🎂 Message envoyé pour : ${celebrants.map((u) => u.prenom).join(', ')}`);
-
-    if (!process.env.TEST_DATE) {
-      writeState({ date: todayKey, prenoms: celebrants.map((u) => u.prenom) });
-      console.log(`📌 État enregistré : ${todayKey}`);
-    }
   } catch (err) {
     console.error('❌ Échec de l\'envoi :', err.message);
     process.exit(1);
