@@ -7,6 +7,7 @@ on:
     # donc la date reste correcte même avec du retard.
     - cron: '17 23 * * *'
 
+  # Lancement manuel depuis l'onglet Actions (pratique pour tester)
   workflow_dispatch:
     inputs:
       test_date:
@@ -24,10 +25,13 @@ jobs:
       - name: Installer Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Vérifier les anniversaires du jour
         env:
+          # Salon principal (obligatoire)
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          # Salons supplémentaires (facultatifs : crée le secret et ça marche)
+          DISCORD_WEBHOOK_2: ${{ secrets.DISCORD_WEBHOOK_2 }}
           TEST_DATE: ${{ github.event.inputs.test_date }}
         run: node scripts/birthday-check.js
