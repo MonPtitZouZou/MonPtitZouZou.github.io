@@ -264,7 +264,7 @@
         .hero-cord {
             position: absolute;
             z-index: 4;
-            top: -6px; left: 50%;
+            top: -20px; left: 50%;
             width: 132px;
             transform: translateX(-50%);
         }
@@ -597,7 +597,7 @@
             display: block;
             position: relative;
             z-index: 4;
-            margin-bottom: -28px;           /* les brins retombent sur le tissu */
+            margin-bottom: -20px;           /* les brins retombent sur le tissu */
         }
         .omamori-cord .knot { width: 132px; margin: 0 auto; }
         .omamori-body {
@@ -629,30 +629,39 @@
             background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
             border-top: 1px solid rgba(255, 210, 63, 0.28);
         }
-        .top3-rank-overlay {
+        /* Le rang devient un sceau (印), tamponné de travers sur le
+           coin du cartouche — un temple marque le papier, il n'y
+           colle pas un badge. */
+        .omamori-seal {
             position: absolute;
-            top: 4px;
-            left: 8px;
-            z-index: 5;
+            z-index: 6;
+            top: 13px; left: 11px;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 38% 34%, #d8302a, #a81713 70%);
+            border: 2px solid rgba(255, 245, 236, 0.8);
+            color: #fff5ec;
             font-family: 'Anton', sans-serif;
-            font-size: 3.4rem;
-            line-height: 0.9;
-            color: var(--ink);
-            text-shadow:
-                3px 3px 0 var(--accent),
-                6px 6px 12px rgba(0,0,0,0.8);
-            transform: skewX(-6deg);
+            font-size: 1.4rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-9deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
         }
-        .top3-rank-overlay::before {
-            content: 'NEXT';
+        .omamori-text {
+            text-align: center;
+            padding: 15px 2px 12px;
+        }
+        .omamori-age {
             display: block;
+            margin-top: 5px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            letter-spacing: 3px;
-            color: var(--yellow);
-            text-shadow: none;
-            margin-bottom: -2px;
-            transform: skewX(6deg);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--brocart);
         }
         /* Le portrait tient lieu de cartouche : sur les vraies
            omamori, c'est ce panneau clair au centre qui porte le
@@ -660,7 +669,7 @@
         .top3-image-container {
             position: relative;
             width: 100%;
-            aspect-ratio: 2 / 3;
+            aspect-ratio: 3 / 4;
             overflow: hidden;
             background: var(--bg-elev);
             border: 2px solid rgba(239, 231, 215, 0.78);
@@ -691,37 +700,33 @@
                 radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 8px 8px,
                 linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
         }
-        .top3-tile-overlays {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 60px 18px 18px;
-            background: linear-gradient(to top, rgba(10, 10, 12, 0.98), rgba(10, 10, 12, 0.85) 40%, transparent);
-        }
         .top3-tile-name {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            color: #f9f5ec;
+            margin-bottom: 5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
         }
         .top3-tile-date {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.66rem;
+            font-size: 0.64rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: var(--ink-dim);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
+            color: rgba(249, 245, 236, 0.62);
+            letter-spacing: 1.6px;
+            margin: 0;
             text-transform: uppercase;
         }
         .top3-countdown { display: flex; gap: 4px; }
         .top3-countdown-item {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--line);
+            background: rgba(0, 0, 0, 0.34);
+            border: 1px solid rgba(255, 210, 63, 0.24);
             padding: 6px 0;
             text-align: center;
             flex: 1;
@@ -730,29 +735,15 @@
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
             font-size: 1rem;
-            color: var(--ink);
+            color: #f9f5ec;
         }
         .top3-countdown-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.5rem;
-            color: var(--ink-mute);
+            color: rgba(255, 210, 63, 0.55);
             text-transform: uppercase;
             margin-top: 2px;
             letter-spacing: 1.5px;
-        }
-        .top3-age-corner {
-            position: absolute;
-            top: 10px;
-            right: 0;
-            background: var(--yellow);
-            color: var(--bg);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 4px 14px;
-            letter-spacing: 1px;
-            z-index: 5;
-            transform: skewX(-12deg);
         }
         /* ============================================================
          * MONTH GROUPS
@@ -819,21 +810,45 @@
         .birthday-card {
             position: relative;
             padding-top: 20px;
-            transform-origin: 50% 6px;
         }
-        .birthday-card:hover { animation: emaSway 2.2s cubic-bezier(0.2, 0.7, 0.3, 1); }
+        /* La traverse du portique. Chaque carte porte son bout de
+           poutre, qui déborde des deux côtés pour rejoindre celui de
+           sa voisine : la rangée se recompose d'elle-même, quel que
+           soit le nombre de colonnes que la grille décide. */
+        .ema-rail {
+            position: absolute;
+            z-index: 0;
+            top: 19px;
+            left: -14px; right: -14px;
+            height: 6px;
+            background: linear-gradient(180deg, #5c4733 0%, #3d2e1f 45%, #1b130d 100%);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        /* On fait pivoter ce qui pend, jamais la poutre. */
+        .ema-hang {
+            position: relative;
+            transform-origin: 50% 0;
+            /* Aucune plaquette n'est d'aplomb sur un vrai portique.
+               L'inclinaison vient de la position dans la rangée : elle
+               ne bouge donc pas d'un rendu à l'autre. */
+            transform: rotate(var(--tilt, 0deg));
+        }
+        .birthday-card:hover .ema-hang { animation: emaSway 2.2s cubic-bezier(0.2, 0.7, 0.3, 1); }
+        /* Le balancement repart de l'inclinaison de repos et y
+           revient, sinon la plaquette se redresserait d'un coup au
+           survol puis retomberait. */
         @keyframes emaSway {
-            0%   { transform: rotate(0deg); }
-            20%  { transform: rotate(1.7deg); }
-            45%  { transform: rotate(-1.1deg); }
-            68%  { transform: rotate(0.55deg); }
-            86%  { transform: rotate(-0.22deg); }
-            100% { transform: rotate(0deg); }
+            0%   { transform: rotate(var(--tilt, 0deg)); }
+            20%  { transform: rotate(calc(var(--tilt, 0deg) + 1.7deg)); }
+            45%  { transform: rotate(calc(var(--tilt, 0deg) - 1.1deg)); }
+            68%  { transform: rotate(calc(var(--tilt, 0deg) + 0.55deg)); }
+            86%  { transform: rotate(calc(var(--tilt, 0deg) - 0.22deg)); }
+            100% { transform: rotate(var(--tilt, 0deg)); }
         }
         .ema-cord {
             position: absolute;
             z-index: 3;
-            top: 2px; left: 50%;
+            top: -35px; left: 50%;
             width: 74px;
             transform: translateX(-50%);
             transition: filter 0.3s;
@@ -841,10 +856,12 @@
         .ema-cord .knot { width: 100%; }
         .ema-plaque {
             position: relative;
+            z-index: 2;
             display: flex;
             gap: 16px;
             padding: 36px 16px 16px;
             background:
+                radial-gradient(ellipse 15px 9px at 84% 74%, rgba(0,0,0,0.3), transparent 72%),
                 repeating-linear-gradient(91deg, rgba(255,238,214,0.022) 0 1px, transparent 1px 6px),
                 repeating-linear-gradient(89deg, rgba(0,0,0,0.16) 0 2px, transparent 2px 11px),
                 linear-gradient(168deg, #2a2019 0%, #191310 58%, var(--wood) 100%);
@@ -1942,9 +1959,9 @@
            le CSS selon qu'il coiffe une pochette, un ema ou
            l'affiche du jour. */
         function knotSVG() {
-            return `<svg class="knot" viewBox="0 0 140 96" aria-hidden="true" focusable="false">
+            return `<svg class="knot" viewBox="0 -10 140 106" aria-hidden="true" focusable="false">
                 <g class="knot-cord">
-                    <path d="M65 54 C 48 20, 92 20, 75 54"/>
+                    <path d="M65 54 C 44 -3, 96 -3, 75 54"/>
                     <path d="M64 58 C 33 59, 19 39, 39 33 C 55 28, 63 47, 64 58"/>
                     <path d="M76 58 C 107 59, 121 39, 101 33 C 85 28, 77 47, 76 58"/>
                     <path d="M66 71 C 59 80, 48 87, 34 93"/>
@@ -2212,7 +2229,7 @@
              * ============================================================ */
             drawKnot(ctx, cx, cy, scale) {
                 const paths = [
-                    'M65 54 C 48 20, 92 20, 75 54',
+                    'M65 54 C 44 -3, 96 -3, 75 54',
                     'M64 58 C 33 59, 19 39, 39 33 C 55 28, 63 47, 64 58',
                     'M76 58 C 107 59, 121 39, 101 33 C 85 28, 77 47, 76 58',
                     'M66 71 C 59 80, 48 87, 34 93',
@@ -2578,22 +2595,22 @@
                      aria-label="Carte de vœux pour ${escapeHtml(getFullName(user))}">
                     <span class="omamori-cord" aria-hidden="true">${knotSVG()}</span>
                     <div class="omamori-body">
-                    <div class="top3-image-container">
-                        <span class="top3-rank-overlay">${rank}</span>
-                        <span class="top3-age-corner">${upcomingAge !== null ? `${upcomingAge} ans` : '??? ans'}</span>
-                        ${imageHTML}
-                        <div class="top3-tile-overlays">
-                            <p class="top3-tile-name">${escapeHtml(getShortName(user))}</p>
-                            <p class="top3-tile-date">${capitalize(dayNames[next.getDay()])} · ${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}</p>
-                            <div class="top3-countdown" data-countdown="${next.toISOString()}">
-                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-d">${cd.days}</div><div class="top3-countdown-label">JRS</div></div>
-                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-h">${pad(cd.hours)}</div><div class="top3-countdown-label">HRS</div></div>
-                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-m">${pad(cd.minutes)}</div><div class="top3-countdown-label">MIN</div></div>
-                                <div class="top3-countdown-item"><div class="top3-countdown-value cd-s">${pad(cd.seconds)}</div><div class="top3-countdown-label">SEC</div></div>
-                            </div>
+                        <span class="omamori-seal" aria-hidden="true">${rank}</span>
+                        <div class="top3-image-container">
+                            ${imageHTML}
                         </div>
-                    </div>
-                    <span class="omamori-hem">御守</span>
+                        <div class="omamori-text">
+                            <p class="top3-tile-name">${escapeHtml(getShortName(user))}</p>
+                            <p class="top3-tile-date">${capitalize(dayNames[next.getDay()])} · ${pad(user.birthday.day)} ${monthNamesShort[user.birthday.month - 1]}</p>
+                            <span class="omamori-age">${upcomingAge !== null ? `${upcomingAge} ANS` : '??? ANS'}</span>
+                        </div>
+                        <div class="top3-countdown" data-countdown="${next.toISOString()}">
+                            <div class="top3-countdown-item"><div class="top3-countdown-value cd-d">${cd.days}</div><div class="top3-countdown-label">JRS</div></div>
+                            <div class="top3-countdown-item"><div class="top3-countdown-value cd-h">${pad(cd.hours)}</div><div class="top3-countdown-label">HRS</div></div>
+                            <div class="top3-countdown-item"><div class="top3-countdown-value cd-m">${pad(cd.minutes)}</div><div class="top3-countdown-label">MIN</div></div>
+                            <div class="top3-countdown-item"><div class="top3-countdown-value cd-s">${pad(cd.seconds)}</div><div class="top3-countdown-label">SEC</div></div>
+                        </div>
+                        <span class="omamori-hem">御守</span>
                     </div>
                 </div>
             `;
@@ -2615,7 +2632,9 @@
                      data-countdown="${nextBirthday.toISOString()}"
                      data-uid="${users.indexOf(user)}" role="button" tabindex="0"
                      aria-label="Carte de vœux pour ${escapeHtml(getFullName(user))}"
-                     style="--i:${Math.min(index, 11)}">
+                     style="--i:${Math.min(index, 11)}; --tilt:${(((index * 37) % 7) - 3) * 0.45}deg">
+                    <span class="ema-rail" aria-hidden="true"></span>
+                    <div class="ema-hang">
                     <span class="ema-cord" aria-hidden="true">${knotSVG()}</span>
                     <div class="ema-plaque">
                     <div class="avatar-container">${createAvatarHTML(user)}</div>
@@ -2634,6 +2653,7 @@
                                 ${ageInfoHTML}
                             </div>
                         </div>
+                    </div>
                     </div>
                     </div>
                 </div>
