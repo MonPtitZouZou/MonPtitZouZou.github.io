@@ -30,16 +30,12 @@
             --radius: 0px;
             --cut: 14px; /* coin coupé des panels */
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         *:focus-visible {
             outline: 2px solid var(--accent);
             outline-offset: 3px;
         }
-
         html { scroll-behavior: smooth; }
-
         body {
             font-family: 'Inter Tight', 'Noto Sans JP', sans-serif;
             background: var(--bg);
@@ -50,7 +46,6 @@
             font-weight: 400;
             letter-spacing: 0.01em;
         }
-
         /* SCREENTONE — trame de points façon manga */
         body::after {
             content: '';
@@ -62,7 +57,6 @@
             z-index: 9999;
             mix-blend-mode: overlay;
         }
-
         /* Vignette seule — les halos rouges vivent maintenant dans #bg-fx */
         body::before {
             content: '';
@@ -72,7 +66,6 @@
             pointer-events: none;
             z-index: 1;
         }
-
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -80,12 +73,10 @@
                 transition-duration: 0.01ms !important;
             }
         }
-
         #confetti-canvas {
             position: fixed; inset: 0;
             pointer-events: none; z-index: 1000;
         }
-
         .container {
             position: relative;
             z-index: 2;
@@ -93,12 +84,10 @@
             margin: 0 auto;
             padding: 48px 24px 100px;
         }
-
         /* Panel manga générique : coin coupé + bord encré */
         .manga-panel {
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
         }
-
         /* ============================================================
          * HEADER — Couverture de tome
          * ============================================================ */
@@ -109,7 +98,6 @@
             position: relative;
             animation: fadeInDown 1s ease-out;
         }
-
         /* Burst de vitesse derrière le titre */
         header::before {
             content: '';
@@ -128,17 +116,14 @@
             pointer-events: none;
             z-index: -1;
         }
-
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .header-tag {
             display: inline-flex;
             align-items: center;
@@ -150,7 +135,6 @@
             text-transform: uppercase;
             margin-bottom: 28px;
         }
-
         .header-tag::before, .header-tag::after {
             content: '';
             width: 32px;
@@ -158,7 +142,6 @@
             background: var(--accent);
             transform: skewX(-20deg);
         }
-
         .title {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-size: clamp(2.8rem, 9vw, 6.4rem);
@@ -173,7 +156,6 @@
                 4px 4px 0 var(--accent),
                 8px 8px 0 rgba(163, 29, 26, 0.4);
         }
-
         .title-jp {
             font-family: 'Noto Sans JP', sans-serif;
             font-weight: 900;
@@ -182,7 +164,6 @@
             color: var(--accent);
             margin-bottom: 12px;
         }
-
         .subtitle {
             font-family: 'Inter Tight', sans-serif;
             font-style: italic;
@@ -192,7 +173,6 @@
             letter-spacing: 2px;
             margin-top: 8px;
         }
-
         .header-meta {
             display: flex;
             justify-content: center;
@@ -204,14 +184,12 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .header-meta span { display: inline-flex; align-items: center; gap: 8px; }
         .header-meta .dot {
             width: 7px; height: 7px;
             background: var(--accent);
             transform: rotate(45deg);
         }
-
         /* ============================================================
          * SECTIONS — En-têtes façon épisode
          * ============================================================ */
@@ -225,7 +203,6 @@
             border: 1px solid var(--accent);
             transform: skewX(-12deg);
         }
-
         .section-title {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-weight: 400;
@@ -237,7 +214,6 @@
             align-items: baseline;
             gap: 16px;
         }
-
         .section-jp {
             font-family: 'Noto Sans JP', sans-serif;
             font-weight: 700;
@@ -245,7 +221,6 @@
             color: var(--ink-mute);
             letter-spacing: 4px;
         }
-
         .section-divider {
             display: flex;
             align-items: center;
@@ -254,13 +229,11 @@
             padding-bottom: 16px;
             border-bottom: 2px solid var(--line-strong);
         }
-
         .section-divider .line {
             flex: 1;
             height: 2px;
             background: repeating-linear-gradient(90deg, var(--line-strong) 0 12px, transparent 12px 20px);
         }
-
         .count-badge {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -271,7 +244,6 @@
             background: var(--yellow);
             transform: skewX(-12deg);
         }
-
         /* ============================================================
          * TODAY — Page de couverture
          * ============================================================ */
@@ -279,7 +251,6 @@
             margin-bottom: 80px;
             animation: fadeInUp 1s 0.1s ease-out backwards;
         }
-
         .today-poster {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -291,7 +262,6 @@
             overflow: hidden;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
         }
-
         /* Burst de vitesse derrière l'avatar */
         .today-poster::before {
             content: '';
@@ -309,7 +279,6 @@
             mask-image: radial-gradient(circle, black 0%, transparent 65%);
             pointer-events: none;
         }
-
         .today-poster::after {
             content: '誕生日';
             position: absolute;
@@ -324,7 +293,6 @@
             letter-spacing: 12px;
             pointer-events: none;
         }
-
         .today-image-wrap {
             aspect-ratio: 2 / 3;
             overflow: hidden;
@@ -333,14 +301,12 @@
             border: 2px solid var(--border-ink);
             z-index: 1;
         }
-
         .today-image-wrap .avatar,
         .today-image-wrap .avatar-placeholder {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .today-image-wrap .avatar-placeholder {
             display: flex;
             align-items: center;
@@ -352,7 +318,6 @@
                 radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 8px 8px,
                 linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
         }
-
         .today-image-wrap::after {
             content: '';
             position: absolute;
@@ -360,9 +325,7 @@
             background: linear-gradient(to top, rgba(0,0,0,0.6), transparent 50%);
             pointer-events: none;
         }
-
         .today-info { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; }
-
         .today-feature-tag {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -374,14 +337,12 @@
             align-items: center;
             gap: 12px;
         }
-
         .today-feature-tag::before {
             content: '';
             width: 24px; height: 2px;
             background: var(--accent);
             transform: skewX(-20deg);
         }
-
         .today-name {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-weight: 400;
@@ -393,20 +354,17 @@
             transform: skewX(-3deg);
             text-shadow: 3px 3px 0 var(--accent);
         }
-
         .today-tagline {
             font-size: 1.1rem;
             color: var(--ink-dim);
             font-style: italic;
             margin-bottom: 24px;
         }
-
         .age-highlight {
             color: var(--yellow);
             font-weight: 700;
             font-style: normal;
         }
-
         .today-credits {
             display: grid;
             grid-template-columns: auto 1fr;
@@ -418,15 +376,12 @@
             border-top: 2px solid var(--line-strong);
             border-bottom: 2px solid var(--line-strong);
         }
-
         .credit-label {
             color: var(--ink-mute);
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .credit-value { color: var(--ink); }
-
         .share-btn {
             display: inline-flex;
             align-items: center;
@@ -445,14 +400,11 @@
             align-self: flex-start;
             clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
         }
-
         .share-btn:hover {
             background: var(--accent-dark);
             box-shadow: 0 0 30px var(--accent-glow);
         }
-
         .share-btn:active { transform: translateY(1px); }
-
         /* ============================================================
          * TOOLBAR
          * ============================================================ */
@@ -466,14 +418,12 @@
             animation: fadeInUp 1s 0.2s ease-out backwards;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
         }
-
         .search-wrapper {
             position: relative;
             display: flex;
             align-items: center;
             border-right: 1px solid var(--line);
         }
-
         .search-icon {
             position: absolute;
             left: 18px;
@@ -481,7 +431,6 @@
             font-size: 0.9rem;
             pointer-events: none;
         }
-
         .search-input {
             width: 100%;
             padding: 16px 44px 16px 44px;
@@ -492,10 +441,8 @@
             font-size: 0.95rem;
             letter-spacing: 0.5px;
         }
-
         .search-input:focus { outline: none; }
         .search-input::placeholder { color: var(--ink-mute); font-style: italic; }
-
         .search-clear {
             position: absolute;
             right: 12px;
@@ -510,10 +457,8 @@
             font-size: 0.7rem;
             transition: background 0.2s;
         }
-
         .search-clear.visible { display: flex; }
         .search-clear:hover { background: var(--accent); color: var(--ink); }
-
         .toolbar-select {
             padding: 16px 36px 16px 18px;
             background: transparent;
@@ -533,19 +478,15 @@
             background-size: 8px;
             transition: background-color 0.2s, color 0.2s;
         }
-
         .toolbar-select:hover {
             background-color: rgba(232, 51, 46, 0.1);
             color: var(--accent);
         }
-
         .toolbar-select:focus {
             outline: none;
             background-color: rgba(232, 51, 46, 0.15);
         }
-
         .toolbar-select option { background: var(--bg-elev); color: var(--ink); }
-
         /* ============================================================
          * TOP 3 — Prochains épisodes
          * ============================================================ */
@@ -553,7 +494,6 @@
             margin-bottom: 80px;
             animation: fadeInUp 1s 0.3s ease-out backwards;
         }
-
         .top3-list {
             display: flex;
             gap: 24px;
@@ -564,7 +504,6 @@
             -webkit-overflow-scrolling: touch;
         }
         .top3-list::-webkit-scrollbar { display: none; }
-
         .top3-tile {
             position: relative;
             flex-shrink: 0;
@@ -574,9 +513,7 @@
             color: inherit;
             display: block;
         }
-
         .top3-tile:hover { transform: translateY(-8px) rotate(-0.5deg); }
-
         .top3-rank-overlay {
             position: absolute;
             top: 10px;
@@ -591,7 +528,6 @@
                 6px 6px 12px rgba(0,0,0,0.8);
             transform: skewX(-6deg);
         }
-
         .top3-rank-overlay::before {
             content: 'NEXT';
             display: block;
@@ -603,7 +539,6 @@
             margin-bottom: -2px;
             transform: skewX(6deg);
         }
-
         .top3-image-container {
             position: relative;
             width: 100%;
@@ -614,12 +549,10 @@
             transition: border-color 0.3s, box-shadow 0.3s;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
         }
-
         .top3-tile:hover .top3-image-container {
             border-color: var(--border-ink);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
         }
-
         .top3-tile-image,
         .top3-tile-placeholder {
             width: 100%;
@@ -628,11 +561,9 @@
             display: block;
             transition: transform 0.6s ease;
         }
-
         .top3-tile:hover .top3-tile-image {
             transform: scale(1.05);
         }
-
         .top3-tile-placeholder {
             display: flex;
             align-items: center;
@@ -644,14 +575,12 @@
                 radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 8px 8px,
                 linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
         }
-
         .top3-tile-overlays {
             position: absolute;
             bottom: 0; left: 0; right: 0;
             padding: 60px 18px 18px;
             background: linear-gradient(to top, rgba(10, 10, 12, 0.98), rgba(10, 10, 12, 0.85) 40%, transparent);
         }
-
         .top3-tile-name {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-size: 1.1rem;
@@ -662,7 +591,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .top3-tile-date {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -671,9 +599,7 @@
             margin-bottom: 12px;
             text-transform: uppercase;
         }
-
         .top3-countdown { display: flex; gap: 4px; }
-
         .top3-countdown-item {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--line);
@@ -681,14 +607,12 @@
             text-align: center;
             flex: 1;
         }
-
         .top3-countdown-value {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
             font-size: 1rem;
             color: var(--ink);
         }
-
         .top3-countdown-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.5rem;
@@ -697,7 +621,6 @@
             margin-top: 2px;
             letter-spacing: 1.5px;
         }
-
         .top3-age-corner {
             position: absolute;
             top: 12px;
@@ -712,7 +635,6 @@
             z-index: 5;
             transform: skewX(-12deg);
         }
-
         /* ============================================================
          * MONTH GROUPS
          * ============================================================ */
@@ -720,7 +642,6 @@
             margin-bottom: 56px;
             animation: fadeInUp 1s 0.4s ease-out backwards;
         }
-
         .month-header {
             display: flex;
             align-items: baseline;
@@ -729,7 +650,6 @@
             padding-bottom: 14px;
             border-bottom: 1px solid var(--line);
         }
-
         .month-name {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-weight: 400;
@@ -738,16 +658,13 @@
             color: var(--ink);
             text-transform: uppercase;
         }
-
         .month-name.current { color: var(--accent); text-shadow: 2px 2px 0 rgba(232,51,46,0.25); }
-
         .month-num {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
             color: var(--ink-mute);
             letter-spacing: 2px;
         }
-
         .month-count {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -755,7 +672,6 @@
             letter-spacing: 2px;
             margin-left: auto;
         }
-
         /* ============================================================
          * BIRTHDAY CARDS — Cases de manga
          * ============================================================ */
@@ -764,7 +680,6 @@
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
         }
-
         .birthday-card {
             position: relative;
             display: flex;
@@ -776,7 +691,6 @@
             overflow: hidden;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
         }
-
         /* Barre d'action diagonale au hover */
         .birthday-card::before {
             content: '';
@@ -788,18 +702,14 @@
             transform-origin: top;
             transition: height 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
         }
-
         .birthday-card:hover {
             border-color: var(--border-ink);
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.4);
         }
-
         .birthday-card:hover::before { height: 130%; }
-
         .birthday-card.imminent { border-color: rgba(232, 51, 46, 0.5); }
         .birthday-card.imminent::before { height: 130%; opacity: 0.7; }
-
         .avatar-container {
             position: relative;
             flex-shrink: 0;
@@ -809,15 +719,12 @@
             background: var(--bg-elev-2);
             border: 1px solid var(--line-strong);
         }
-
         .avatar {
             width: 100%; height: 100%;
             object-fit: cover;
             transition: transform 0.4s ease;
         }
-
         .birthday-card:hover .avatar { transform: scale(1.05); }
-
         .avatar-placeholder {
             width: 100%; height: 100%;
             display: flex;
@@ -830,7 +737,6 @@
                 radial-gradient(circle, rgba(242,239,233,0.06) 1px, transparent 1.2px) 0 0 / 6px 6px,
                 linear-gradient(135deg, var(--bg-elev-2), var(--bg-elev));
         }
-
         .card-content {
             flex: 1;
             min-width: 0;
@@ -838,7 +744,6 @@
             flex-direction: column;
             justify-content: space-between;
         }
-
         .user-name {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-weight: 400;
@@ -851,7 +756,6 @@
             text-overflow: ellipsis;
             line-height: 1.3;
         }
-
         .birthday-date {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.66rem;
@@ -863,13 +767,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .countdown-mini {
             display: flex;
             gap: 4px;
             margin-bottom: 8px;
         }
-
         .countdown-mini-item {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -881,17 +783,14 @@
             text-align: center;
             letter-spacing: 1px;
         }
-
         .countdown-mini-item .unit {
             color: var(--ink-mute);
             margin-left: 2px;
         }
-
         .imminent .countdown-mini-item {
             background: rgba(232, 51, 46, 0.15);
             border-color: rgba(232, 51, 46, 0.4);
         }
-
         .age-info {
             display: flex;
             align-items: center;
@@ -900,11 +799,9 @@
             font-size: 0.7rem;
             letter-spacing: 1px;
         }
-
         .current-age { color: var(--ink-mute); }
         .arrow { color: var(--ink-mute); }
         .upcoming-age { color: var(--yellow); font-weight: 700; }
-
         /* ============================================================
          * STATS — Fiche technique
          * ============================================================ */
@@ -914,7 +811,6 @@
             border-top: 2px solid var(--line-strong);
             animation: fadeInUp 1s 0.5s ease-out backwards;
         }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -922,7 +818,6 @@
             border: 2px solid var(--line-strong);
             background: var(--bg-elev);
         }
-
         .stat-card {
             padding: 28px 24px;
             border-right: 1px solid var(--line);
@@ -930,11 +825,9 @@
             transition: background 0.3s;
             position: relative;
         }
-
         .stat-card:hover {
             background: rgba(232, 51, 46, 0.05);
         }
-
         .stat-icon {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.65rem;
@@ -944,7 +837,6 @@
             margin-bottom: 10px;
             display: block;
         }
-
         .stat-value {
             font-family: 'Anton', sans-serif;
             font-size: 2.4rem;
@@ -953,13 +845,11 @@
             margin-bottom: 6px;
             letter-spacing: 1px;
         }
-
         .stat-value.numeric {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
             font-size: 1.8rem;
         }
-
         .stat-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -967,7 +857,6 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         /* Casting par âge */
         .casting-scroll-container {
             margin-top: 40px;
@@ -976,7 +865,6 @@
             padding: 32px;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
         }
-
         .casting-title {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             letter-spacing: 3px;
@@ -986,7 +874,6 @@
             color: var(--accent);
             text-transform: uppercase;
         }
-
         .casting-title .jp {
             display: block;
             font-family: 'Noto Sans JP', sans-serif;
@@ -996,26 +883,22 @@
             letter-spacing: 6px;
             margin-top: 6px;
         }
-
         #casting-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
-
         .casting-item {
             border-left: 3px solid var(--accent);
             padding-left: 12px;
             margin-bottom: 10px;
         }
-
         .casting-age {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
             color: var(--yellow);
             font-weight: 700;
         }
-
         .casting-name {
             font-family: 'Inter Tight', sans-serif;
             font-size: 0.75rem;
@@ -1023,13 +906,11 @@
             letter-spacing: 1px;
             color: var(--ink);
         }
-
         .casting-year {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.6rem;
             color: var(--ink-mute);
         }
-
         /* ============================================================
          * NO RESULTS
          * ============================================================ */
@@ -1041,7 +922,6 @@
             font-style: italic;
             letter-spacing: 2px;
         }
-
         .no-results-mark {
             font-family: 'Anton', sans-serif;
             font-size: 4rem;
@@ -1049,7 +929,6 @@
             margin-bottom: 16px;
             opacity: 0.5;
         }
-
         /* ============================================================
          * MODAL PARTAGE
          * ============================================================ */
@@ -1067,9 +946,7 @@
             visibility: hidden;
             transition: opacity 0.4s, visibility 0.4s;
         }
-
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
         .modal-content {
             background: var(--bg-elev);
             border: 2px solid var(--border-ink);
@@ -1081,9 +958,7 @@
             position: relative;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
         }
-
         .modal-overlay.active .modal-content { transform: scale(1); }
-
         .modal-close {
             position: absolute;
             top: 14px; right: 14px;
@@ -1098,9 +973,7 @@
             justify-content: center;
             transition: background 0.3s, transform 0.2s;
         }
-
         .modal-close:hover { background: var(--accent); border-color: var(--accent); }
-
         .modal-title {
             font-family: 'Anton', 'Noto Sans JP', sans-serif;
             font-weight: 400;
@@ -1110,7 +983,6 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
         .share-card-preview {
             width: 300px; height: 450px;
             margin: 0 auto 20px;
@@ -1118,9 +990,7 @@
             background: var(--bg);
             border: 1px solid var(--line);
         }
-
         .share-card-canvas { display: block; width: 100%; height: 100%; }
-
         .generating-text {
             text-align: center;
             padding: 10px;
@@ -1130,9 +1000,7 @@
             letter-spacing: 2px;
             display: none;
         }
-
         .generating-text.active { display: block; }
-
         .share-action-btn {
             width: 100%;
             padding: 14px 20px;
@@ -1148,12 +1016,10 @@
             transition: background 0.3s, box-shadow 0.3s;
             clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
         }
-
         .share-action-btn:hover {
             background: var(--accent-dark);
             box-shadow: 0 0 30px var(--accent-glow);
         }
-
         /* ============================================================
          * TOAST
          * ============================================================ */
@@ -1175,9 +1041,7 @@
             transition: transform 0.4s, opacity 0.4s;
             clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
         }
-
         .toast.active { transform: translateX(-50%) translateY(0); opacity: 1; }
-
         /* ============================================================
          * SCROLL TO TOP
          * ============================================================ */
@@ -1200,14 +1064,11 @@
             transition: opacity 0.3s, visibility 0.3s, transform 0.3s, background 0.3s;
             z-index: 999;
         }
-
         .scroll-top.visible {
             opacity: 1; visibility: visible; transform: translateY(0);
         }
-
         .scroll-top:hover { background: var(--accent); border-color: var(--accent); }
 /*__ZAP_CSS__*/
-
         /* ============================================================
          * FOUDRE — carte « À l'honneur » uniquement.
          * Purement additif : la bordure, le fond et la mise en page
@@ -1220,7 +1081,6 @@
             --volt-hot: #d8ecff;
             --volt-deep: #2f6dff;
         }
-
         .zap-hero .zap-svg {
             position: absolute;
             top: -10%;
@@ -1231,7 +1091,6 @@
             overflow: visible;
             z-index: 4;
         }
-
         /* Lueur des bords, synchronisée avec les décharges.
            En « inset » car le clip-path du poster découperait
            une ombre extérieure classique. */
@@ -1246,7 +1105,6 @@
                 inset 0 0 60px 6px var(--volt-deep);
             transition: opacity 45ms linear;
         }
-
         .zap-hero .zap-flash {
             position: absolute;
             inset: 0;
@@ -1259,21 +1117,19 @@
             z-index: 3;
             transition: opacity 40ms linear;
         }
-
         @media (prefers-reduced-motion: reduce) {
             .zap-hero .zap-svg,
             .zap-hero .zap-glow,
             .zap-hero .zap-flash { display: none !important; }
         }
-
         /* ============================================================
          * ⛩ ARRIÈRE-PLAN — plan d'opening d'anime
          *
-         * Sept calques, du fond vers l'avant :
+         * Huit calques, du fond vers l'avant :
          *   #bg-sky      ciel crépusculaire + halos + filigrane JP
          *   #bg-rays     rayons de lumière qui balaient
          *   #bg-clouds   deux bancs de nuages en parallaxe
-         *   #bg-canvas   étoiles, filantes, bokeh, pétales
+         *   #bg-canvas   Fuji, étoiles, filantes, bokeh, pétales
          *   #bg-horizon  silhouette de ville + torii
          *   #bg-grain    grain de pellicule
          *   ── puis body::before (vignette, z1), .container (z2),
@@ -1288,7 +1144,6 @@
             pointer-events: none;
             z-index: 0;
         }
-
         /* ---- Le ciel : nuit en haut, braises rouges à l'horizon ----
            Volontairement STATIQUE. Un dégradé plein écran qui s'anime
            doit être repeint à chaque image ; le mouvement vient des
@@ -1303,7 +1158,6 @@
                 linear-gradient(180deg,
                     #06060a 0%, #09090f 34%, #110d1b 62%, #180f1f 84%, #1f1124 100%);
         }
-
         /* Filigrane vertical façon tranche de tome.
            Pour l'enlever : supprimer ce bloc. Texte : propriété content. */
         #bg-sky::before {
@@ -1321,18 +1175,14 @@
             opacity: 0.022;
             white-space: nowrap;
         }
-
         /* Rayons de lumière et nuages sont eux aussi dans #bg-canvas :
            pré-rendus une fois, puis recopiés tels quels à chaque image.
            En CSS animé, ils coûtaient à eux seuls les deux tiers du
            budget d'affichage. */
-
         /* ---- Décor, étoiles, filantes, bokeh, pétales ---- */
         #bg-canvas { inset: 0; }
-
-        /* Le décor (montagnes, village, poteaux, lune) est entièrement
-           dessiné dans #bg-canvas — voir le bloc « CIEL ANIMÉ ». */
-
+        /* Le décor (Fuji, montagnes, village, poteaux, lune) est
+           entièrement dessiné dans #bg-canvas — voir « CIEL ANIMÉ ». */
         /* ---- Grain de pellicule, par-dessus tout le décor ---- */
         #bg-grain {
             inset: 0;
@@ -1340,7 +1190,6 @@
             opacity: 0.3;
             mix-blend-mode: overlay;
         }
-
         /* Le burst du titre tourne très lentement — vivant, pas remarquable */
         header::before {
             animation: burstSpin 120s linear infinite;
@@ -1349,7 +1198,6 @@
             from { transform: translate(-50%, -55%) rotate(0deg); }
             to   { transform: translate(-50%, -55%) rotate(360deg); }
         }
-
         /* Idem derrière l'avatar du jour, en sens inverse */
         .today-poster::before {
             animation: posterSpin 80s linear infinite;
@@ -1358,14 +1206,12 @@
             from { transform: translate(-50%, -50%) rotate(360deg); }
             to   { transform: translate(-50%, -50%) rotate(0deg); }
         }
-
         @media (prefers-reduced-motion: reduce) {
             #bg-sky, #bg-rays { animation: none; }
             #bg-clouds::before, #bg-clouds::after { animation: none; }
             #bg-canvas { display: none; }
             header::before, .today-poster::before { animation: none; }
         }
-
         /* ============================================================
          * MOBILE
          * ============================================================ */
@@ -1375,18 +1221,14 @@
                 padding: 28px;
                 gap: 28px;
             }
-
             .today-poster::before { left: 50%; top: 180px; }
-
             .today-image-wrap {
                 max-width: 240px;
                 margin: 0 auto;
             }
-
             .toolbar {
                 grid-template-columns: 1fr;
             }
-
             .search-wrapper { border-right: none; border-bottom: 1px solid var(--line); }
             .toolbar-select {
                 border-left: none;
@@ -1394,7 +1236,6 @@
             }
             .toolbar > *:last-child { border-bottom: none; }
         }
-
         @media (max-width: 600px) {
             .container { padding: 32px 16px 80px; }
             .header-meta { flex-direction: column; gap: 8px; }
@@ -1407,7 +1248,6 @@
 </head>
 <body>
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
-
     <div class="container">
         <!-- HEADER -->
         <header>
@@ -1421,10 +1261,8 @@
                 <span><span class="dot"></span><span id="header-total"></span></span>
             </div>
         </header>
-
         <!-- TODAY -->
         <div id="today-container" aria-live="polite"></div>
-
         <!-- TOOLBAR -->
         <section class="toolbar" role="search" aria-label="Filtres">
             <div class="search-wrapper">
@@ -1456,7 +1294,6 @@
                 <option value="age-asc">Âge ↑</option>
             </select>
         </section>
-
         <!-- TOP 3 -->
         <section class="top3-section">
             <div class="section-divider">
@@ -1466,7 +1303,6 @@
             </div>
             <div class="top3-list" id="top3-list"></div>
         </section>
-
         <!-- ALL BIRTHDAYS -->
         <section aria-label="Tous les anniversaires">
             <div class="section-divider">
@@ -1477,7 +1313,6 @@
             </div>
             <div id="birthdays-container"></div>
         </section>
-
         <!-- STATS -->
         <section class="stats-section">
             <div class="section-divider">
@@ -1486,16 +1321,13 @@
                 <span class="line"></span>
             </div>
             <div class="stats-grid" id="stats-grid"></div>
-
             <div class="casting-scroll-container">
                 <h3 class="casting-title">— Ordre de puissance (par âge) —<span class="jp">パワーランキング</span></h3>
                 <div id="casting-list"></div>
             </div>
         </section>
     </div>
-
     <button type="button" class="scroll-top" id="scroll-top" aria-label="Remonter">↑</button>
-
     <!-- SHARE MODAL -->
     <div class="modal-overlay" id="share-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-content">
@@ -1510,13 +1342,10 @@
             </button>
         </div>
     </div>
-
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <script>
         'use strict';
-
         /* ============================================================
          * DONNÉES
          * ============================================================ */
@@ -1528,19 +1357,16 @@
         function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
         const monthNamesShort = ['JANVIER', 'FÉVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN',
             'JUILLET', 'AOÛT', 'SEPTEMBRE', 'OCTOBRE', 'NOVEMBRE', 'DÉCEMBRE'];
-
         /* Images de repli, utilisées quand il n'y a pas d'ID Discord
            (ou que la personne n'est pas sur le serveur Lanyard). */
         const avatarsParGenre = {
             homme: 'homme.jpg',
             femme: 'femme.jpg'
         };
-
         /* ★ SOURCE UNIQUE : la liste vit dans birthdays.json (à la racine du repo).
            Le site ET le bot Discord lisent le même fichier.
            Pour ajouter quelqu'un → éditer birthdays.json, rien d'autre. */
         let users = [];
-
         /* ============================================================
          * ⚡ MOTEUR DE FOUDRE — piloté en JS, jamais deux fois pareil
          *
@@ -1548,21 +1374,17 @@
          * régénère sa géométrie, son intensité, son nombre d'arcs de
          * retour et son délai d'attente. Rien ne se répète.
          * ============================================================ */
-
         (function (global) {
             'use strict';
-
             const SVG_NS = 'http://www.w3.org/2000/svg';
             const rand = (a, b) => a + Math.random() * (b - a);
             const randInt = (a, b) => Math.floor(rand(a, b + 1));
             const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-
             /* --- Géométrie fractale (déplacement de point médian) --- */
             function fractal(x1, y1, x2, y2, cfg) {
                 let segs = [[{ x: x1, y: y1 }, { x: x2, y: y2 }]];
                 const branches = [];
                 let off = cfg.offset;
-
                 for (let lvl = 0; lvl < cfg.detail; lvl++) {
                     const next = [];
                     for (const [a, b] of segs) {
@@ -1572,7 +1394,6 @@
                         const d = rand(-off, off);
                         const mid = { x: (a.x + b.x) / 2 + px * d, y: (a.y + b.y) / 2 + py * d };
                         next.push([a, mid], [mid, b]);
-
                         if (lvl > 1 && lvl < cfg.detail - 1 && Math.random() < cfg.branch) {
                             const ang = Math.atan2(b.y - mid.y, b.x - mid.x)
                                       + (Math.random() < 0.5 ? -1 : 1) * rand(0.3, 0.95);
@@ -1587,22 +1408,18 @@
                 }
                 return { main: [segs[0][0], ...segs.map(s => s[1])], branches };
             }
-
             const toD = pts => 'M' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L');
-
             /* --- Un canal de foudre : plusieurs couches sur le même tracé --- */
             class Channel {
                 constructor(svg, paths, scale) {
                     this.g = document.createElementNS(SVG_NS, 'g');
                     this.layers = [];
-
                     const specs = [
                         { stroke: 'var(--volt-deep)', w: 24 * scale, blur: 11,  op: 0.26 },
                         { stroke: 'var(--volt)',      w: 9 * scale,  blur: 3.5, op: 0.68 },
                         { stroke: 'var(--volt-hot)',  w: 4 * scale,  blur: 1.2, op: 0.9 },
                         { stroke: '#ffffff',          w: 2 * scale,  blur: 0,   op: 1 },
                     ];
-
                     for (const s of specs) {
                         const lg = document.createElementNS(SVG_NS, 'g');
                         lg.setAttribute('filter', s.blur ? `blur(${s.blur}px)` : '');
@@ -1622,14 +1439,12 @@
                         this.g.appendChild(lg);
                         this.layers.push(lg);
                     }
-
                     this.g.style.opacity = '0';
                     svg.appendChild(this.g);
                 }
                 setOpacity(v) { this.g.style.opacity = String(v); }
                 destroy() { this.g.remove(); }
             }
-
             /* --- Le moteur --- */
             class Lightning {
                 constructor(el, opts) {
@@ -1642,48 +1457,40 @@
                         shake: 0,         // amplitude de la secousse en px
                         w: 200, h: 300,
                     }, opts || {});
-
                     this.svg = document.createElementNS(SVG_NS, 'svg');
                     this.svg.setAttribute('viewBox', `0 0 ${this.o.w} ${this.o.h}`);
                     this.svg.setAttribute('preserveAspectRatio', 'none');
                     this.svg.setAttribute('aria-hidden', 'true');
                     this.svg.className.baseVal = 'zap-svg';
                     el.appendChild(this.svg);
-
                     if (this.o.flash) {
                         this.flashEl = document.createElement('div');
                         this.flashEl.className = 'zap-flash';
                         this.flashEl.setAttribute('aria-hidden', 'true');
                         el.appendChild(this.flashEl);
                     }
-
                     if (this.o.glow) {
                         this.glowEl = document.createElement('div');
                         this.glowEl.className = 'zap-glow';
                         this.glowEl.setAttribute('aria-hidden', 'true');
                         el.appendChild(this.glowEl);
                     }
-
                     this.alive = true;
                     this.timers = [];
                     this.visible = true;
-
                     if ('IntersectionObserver' in window) {
                         this.io = new IntersectionObserver(e => { this.visible = e[0].isIntersecting; },
                             { rootMargin: '120px' });
                         this.io.observe(el);
                     }
-
                     this.scheduleStrike(rand(200, 2000));
                     if (this.o.corona) this.scheduleCorona(rand(100, 800));
                 }
-
                 after(fn, ms) {
                     const t = setTimeout(() => { if (this.alive) fn(); }, ms);
                     this.timers.push(t);
                     return t;
                 }
-
                 /* Délai jusqu'au prochain coup : distribution à queue longue,
                    donc parfois deux coups collés, parfois un long silence. */
                 nextDelay() {
@@ -1692,11 +1499,9 @@
                     const u = Math.random();
                     return base * (0.3 + Math.pow(u, 2.2) * 2.4);
                 }
-
                 makeGeometry() {
                     const { w, h, mode } = this.o;
                     const i = this.o.intensity;
-
                     if (mode === 'border') {
                         const side = randInt(0, 3);
                         const t = rand(0.02, 0.5), span = rand(0.4, 0.95);
@@ -1710,7 +1515,6 @@
                             decay: rand(0.48, 0.6), branch: 0.15 + i * 0.3,
                         });
                     }
-
                     // mode strike : tombe du haut, longueur et inclinaison variables
                     const x1 = rand(-w * 0.1, w * 1.1);
                     const x2 = x1 + rand(-w * 0.45, w * 0.45);
@@ -1720,27 +1524,22 @@
                         decay: rand(0.55, 0.65), branch: 0.18 + i * 0.22,
                     });
                 }
-
                 /* Un coup = un canal + N arcs de retour qui réempruntent le
                    même canal (comme la foudre réelle), chacun avec son propre
                    scintillement. */
                 strike() {
                     if (!this.visible) { this.scheduleStrike(this.nextDelay()); return; }
-
                     const i = this.o.intensity;
                     const geo = this.makeGeometry();
                     const paths = [toD(geo.main), ...geo.branches.map(toD)];
                     const scale = rand(0.95, 1.5) * (0.8 + i * 0.6);
                     const ch = new Channel(this.svg, paths, scale);
-
                     const power = rand(0.7, 1) * (0.6 + i * 0.5);
                     let t = 0;
-
                     // 1. Précurseur : faible, il descend
                     ch.setOpacity(0);
                     this.after(() => ch.setOpacity(0.18 * power), t += rand(0, 30));
                     this.after(() => ch.setOpacity(0.3 * power), t += rand(25, 60));
-
                     // 2. Arcs de retour : 1 à 4, intensités inégales
                     const returns = randInt(1, 2 + Math.round(i * 2));
                     for (let r = 0; r < returns; r++) {
@@ -1748,17 +1547,14 @@
                         this.after(() => ch.setOpacity(peak), t += rand(15, 45));
                         this.after(() => ch.setOpacity(peak * rand(0.05, 0.3)), t += rand(18, 50));
                         this.after(() => ch.setOpacity(peak * rand(0.6, 1)), t += rand(20, 55));
-
                         if (r === 0 && this.o.flash) this.flash(peak);
                         if (r === 0 && this.o.glow) this.glow(peak);
                         if (r === 0 && this.o.shake) this.shake(power);
                     }
-
                     // 3. Rémanence puis extinction
                     this.after(() => ch.setOpacity(0.22 * power), t += rand(30, 70));
                     this.after(() => ch.setOpacity(0.09 * power), t += rand(60, 140));
                     this.after(() => { ch.setOpacity(0); ch.destroy(); }, t += rand(90, 220));
-
                     // Parfois, un second canal frappe juste après, ailleurs
                     if (Math.random() < 0.12 + i * 0.2) {
                         this.after(() => this.strike(), rand(90, 400));
@@ -1766,9 +1562,7 @@
                     }
                     this.scheduleStrike(this.nextDelay());
                 }
-
                 scheduleStrike(ms) { this.after(() => this.strike(), ms); }
-
                 /* La lueur des bords suit la décharge : montée immédiate,
                    creux, rebond, puis extinction lente (rémanence). */
                 glow(power) {
@@ -1782,7 +1576,6 @@
                     let acc = 0;
                     for (const [d, v] of seq) { acc += d; this.after(() => { g.style.opacity = v; }, acc); }
                 }
-
                 flash(power) {
                     if (!this.flashEl) return;
                     const f = this.flashEl;
@@ -1793,7 +1586,6 @@
                     let acc = 0;
                     for (const [d, v] of seq) { acc += d; this.after(() => { f.style.opacity = v; }, acc); }
                 }
-
                 shake(power) {
                     const el = this.el;
                     const amp = this.o.shake * power;
@@ -1809,7 +1601,6 @@
                     }
                     this.after(() => { el.style.transform = ''; }, acc + 40);
                 }
-
                 /* Micro-arcs qui grésillent sur le cadre, régénérés en continu */
                 scheduleCorona(ms) {
                     this.after(() => {
@@ -1817,7 +1608,6 @@
                         this.scheduleCorona(rand(200, 950) * (1.6 - this.o.intensity));
                     }, ms);
                 }
-
                 corona() {
                     const { w, h } = this.o;
                     const side = randInt(0, 3);
@@ -1827,13 +1617,11 @@
                     else if (side === 1) { a = { x: w, y: h * t };            b = { x: w, y: h * (t + span) }; }
                     else if (side === 2) { a = { x: w * (t + span), y: h };   b = { x: w * t, y: h }; }
                     else                 { a = { x: 0, y: h * (t + span) };   b = { x: 0, y: h * t }; }
-
                     const geo = fractal(a.x, a.y, b.x, b.y, {
                         detail: randInt(4, 5), offset: Math.min(w, h) * rand(0.04, 0.11),
                         decay: 0.52, branch: 0.45,
                     });
                     const ch = new Channel(this.svg, [toD(geo.main), ...geo.branches.map(toD)], rand(0.3, 0.55));
-
                     let t2 = 0;
                     const p = rand(0.35, 0.9);
                     this.after(() => ch.setOpacity(p), t2 += rand(0, 20));
@@ -1841,7 +1629,6 @@
                     this.after(() => ch.setOpacity(p * 0.8), t2 += rand(20, 60));
                     this.after(() => { ch.setOpacity(0); ch.destroy(); }, t2 += rand(50, 130));
                 }
-
                 destroy() {
                     this.alive = false;
                     this.timers.forEach(clearTimeout);
@@ -1852,16 +1639,13 @@
                     this.el.style.transform = '';
                 }
             }
-
             /* --- API : active la carte « À l'honneur » (.zap-hero) --- */
             const registry = [];
-
             function activateZaps(root) {
                 (root || document).querySelectorAll('.zap-hero').forEach(el => {
                     if (el._zap) return;
                     const rect = el.getBoundingClientRect();
                     const ratio = rect.width && rect.height ? rect.height / rect.width : 0.65;
-
                     el._zap = new Lightning(el, {
                         intensity: 1,
                         mode: 'strike',
@@ -1875,24 +1659,19 @@
                     registry.push(el._zap);
                 });
             }
-
             function destroyZaps() {
                 registry.splice(0).forEach(z => z.destroy());
                 document.querySelectorAll('.zap-hero').forEach(el => { delete el._zap; });
             }
-
             global.activateZaps = activateZaps;
             global.destroyZaps = destroyZaps;
             global.Lightning = Lightning;
-
         })(window);
-
         /* ============================================================
          * AVATARS — repli genre immédiat, puis synchro Discord (Lanyard)
          * ============================================================ */
         const DISCORD_CACHE_KEY = 'discordAvatars';
         const DISCORD_CACHE_TTL = 3600000; // 1 h
-
         function readDiscordCache() {
             try {
                 const raw = JSON.parse(localStorage.getItem(DISCORD_CACHE_KEY) || '{}');
@@ -1900,13 +1679,11 @@
                 return raw.map || null;
             } catch (e) { return null; }
         }
-
         function writeDiscordCache(map) {
             try {
                 localStorage.setItem(DISCORD_CACHE_KEY, JSON.stringify({ t: Date.now(), map }));
             } catch (e) { /* quota ou navigation privée : on ignore */ }
         }
-
         async function fetchDiscordAvatar(id) {
             const res = await fetch(`https://api.lanyard.rest/v1/users/${id}`);
             if (!res.ok) throw new Error('lanyard');
@@ -1916,11 +1693,9 @@
             const ext = du.avatar.startsWith('a_') ? 'gif' : 'png';
             return `https://cdn.discordapp.com/avatars/${id}/${du.avatar}.${ext}?size=256`;
         }
-
         async function syncDiscordAvatars() {
             const withId = users.filter(u => u.discordId);
             if (withId.length === 0) return;
-
             const cached = readDiscordCache();
             if (cached) {
                 let hit = false;
@@ -1930,7 +1705,6 @@
                 if (hit) refreshAvatars();
                 return;
             }
-
             const map = {};
             await Promise.all(withId.map(async u => {
                 try {
@@ -1939,19 +1713,16 @@
                     map[u.discordId] = url;
                 } catch (e) { /* pas sur Lanyard → on garde l'image homme/femme */ }
             }));
-
             if (Object.keys(map).length > 0) {
                 writeDiscordCache(map);
                 refreshAvatars();
             }
         }
-
         function refreshAvatars() {
             renderToday();
             renderTop3();
             renderBirthdays();
         }
-
         function handleAvatarError(img) {
             if (img.dataset.fb) {            // Discord injoignable → image homme/femme
                 const fb = img.dataset.fb;
@@ -1963,7 +1734,6 @@
             const ph = img.nextElementSibling;
             if (ph) ph.style.display = 'flex';
         }
-
         function createAvatarHTML(user, options = {}) {
             const safeName = escapeHtml(getFullName(user));
             const initial = escapeHtml(user.prenom.charAt(0));
@@ -1975,13 +1745,11 @@
             }
             return `<div class="${cls}">${initial}</div>`;
         }
-
         /* ============================================================
          * UTILS
          * ============================================================ */
         function getFullName(user) { return `${user.prenom} ${user.nom}`.trim(); }
         function getShortName(user) { return user.nom ? `${user.prenom} ${user.nom.charAt(0)}.` : user.prenom; }
-
         function getNextBirthday(birthday) {
             const now = new Date();
             const thisYear = now.getFullYear();
@@ -1990,7 +1758,6 @@
             if (next < todayMidnight) next = new Date(thisYear + 1, birthday.month - 1, birthday.day);
             return next;
         }
-
         function getAge(birthday) {
             if (birthday.year == null) return null; // année non renseignée
             const now = new Date();
@@ -2000,12 +1767,10 @@
             if (m < birthday.month || (m === birthday.month && d < birthday.day)) age--;
             return age;
         }
-
         function isBirthdayToday(birthday) {
             const now = new Date();
             return birthday.day === now.getDate() && birthday.month === now.getMonth() + 1;
         }
-
         function getCountdown(targetDate) {
             const diff = targetDate - new Date();
             if (diff < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -2016,7 +1781,6 @@
                 seconds: Math.floor((diff % 60000) / 1000)
             };
         }
-
         function debounce(fn, delay) {
             let timer;
             return function(...args) {
@@ -2024,17 +1788,13 @@
                 timer = setTimeout(() => fn.apply(this, args), delay);
             };
         }
-
         function escapeHtml(str) {
             const div = document.createElement('div');
             div.textContent = String(str);
             return div.innerHTML;
         }
-
         function pad(n) { return String(n).padStart(2, '0'); }
-
         function formatNum(n) { return n.toLocaleString('fr-FR'); }
-
         /* ============================================================
          * LIFETIME (utilisé par la carte du jour uniquement)
          * ============================================================ */
@@ -2047,10 +1807,8 @@
             const totalHours = Math.floor(diffMs / 3600000);
             const totalDays = Math.floor(diffMs / 86400000);
             const totalWeeks = Math.floor(totalDays / 7);
-
             const heartbeatsMin = Math.floor(totalMinutes * 60);
             const heartbeatsMax = Math.floor(totalMinutes * 100);
-
             return {
                 hours: totalHours,
                 days: totalDays,
@@ -2059,7 +1817,6 @@
                 heartbeatsMax
             };
         }
-
         /* ============================================================
          * CONFETTIS
          * ============================================================ */
@@ -2153,14 +1910,12 @@
                 setTimeout(() => this.burst(this.canvas.width * 0.7, this.canvas.height * 0.25, 70), 600);
             }
         }
-
         /* ============================================================
          * CARD RENDERER (modal partage GIF)
          * ============================================================ */
         let cardConfetti = null;
         let cardAnimationId = null;
         let currentShareUser = null;
-
         class CardRenderer {
             constructor(canvas) {
                 this.canvas = canvas;
@@ -2235,7 +1990,6 @@
                 ctx.clearRect(0, 0, this.width, this.height);
                 ctx.fillStyle = '#0a0a0c';
                 ctx.fillRect(0, 0, this.width, this.height);
-
                 // Image
                 const imageHeight = 290;
                 if (this.image && this.imageLoaded) {
@@ -2261,28 +2015,23 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText(this.userInitial, this.width / 2, imageHeight / 2);
                 }
-
                 this.particles.forEach(p => this.drawParticle(p));
-
                 // Info zone
                 const infoY = imageHeight;
                 ctx.fillStyle = '#131318';
                 ctx.fillRect(0, infoY, this.width, this.height - infoY);
-
                 // Barre diagonale rouge
                 ctx.save();
                 ctx.fillStyle = '#e8332e';
                 ctx.transform(1, 0, -0.3, 1, 0, 0);
                 ctx.fillRect(28, infoY + 16, 34, 3);
                 ctx.restore();
-
                 // Tagline
                 ctx.fillStyle = '#e8332e';
                 ctx.font = '10px JetBrains Mono, monospace';
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'alphabetic';
                 ctx.fillText('— 誕生日スペシャル —', 60, infoY + 22);
-
                 // Name
                 ctx.fillStyle = '#f2efe9';
                 let fontSize = 24;
@@ -2292,7 +2041,6 @@
                     ctx.font = `${fontSize}px Anton, sans-serif`;
                 }
                 ctx.fillText(this.userName.toUpperCase(), 20, infoY + 56);
-
                 // Age badge (haut droite, jaune, skewé)
                 const badgeText = this.userAge !== null ? `${this.userAge} ANS` : '🎂 !!';
                 ctx.font = 'bold 11px JetBrains Mono, monospace';
@@ -2305,19 +2053,16 @@
                 ctx.textAlign = 'center';
                 ctx.fillText(badgeText, this.width - badgeW/2 - 8, 27);
                 ctx.restore();
-
                 // Date
                 ctx.textAlign = 'left';
                 const dateStr = `${today.getDate().toString().padStart(2,'0')} · ${monthNamesShort[today.getMonth()]} · ${today.getFullYear()}`;
                 ctx.fillStyle = '#a5a29b';
                 ctx.font = '10px JetBrains Mono, monospace';
                 ctx.fillText(dateStr, 20, infoY + 80);
-
                 // Tagline italic
                 ctx.fillStyle = '#a5a29b';
                 ctx.font = 'italic 11px Inter Tight, sans-serif';
                 ctx.fillText(`Joyeux anniversaire !!`, 20, infoY + 100);
-
                 // Border
                 ctx.strokeStyle = 'rgba(242, 239, 233, 0.85)';
                 ctx.lineWidth = 2;
@@ -2363,7 +2108,6 @@
             stop() { this.running = false; if (cardAnimationId) cancelAnimationFrame(cardAnimationId); }
             clear() { this.particles = []; this.ctx.clearRect(0, 0, this.width, this.height); }
         }
-
         function openShareModal(user) {
             currentShareUser = user;
             document.getElementById('share-modal').classList.add('active');
@@ -2375,13 +2119,11 @@
                 setTimeout(() => cardConfetti.start(), 200);
             }, 100);
         }
-
         function closeShareModal() {
             document.getElementById('share-modal').classList.remove('active');
             if (cardConfetti) { cardConfetti.stop(); cardConfetti.clear(); }
             currentShareUser = null;
         }
-
         async function downloadGif() {
             const generatingText = document.getElementById('generating-text');
             generatingText.classList.add('active');
@@ -2418,7 +2160,6 @@
                 gif.render();
             } catch (e) { fallbackToPng(); }
         }
-
         async function fallbackToPng() {
             document.getElementById('generating-text').classList.remove('active');
             showToast('Téléchargement PNG');
@@ -2427,7 +2168,6 @@
             link.href = cardConfetti.canvas.toDataURL('image/png');
             link.click();
         }
-
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -2435,30 +2175,24 @@
             clearTimeout(showToast._timer);
             showToast._timer = setTimeout(() => toast.classList.remove('active'), 3000);
         }
-
         document.getElementById('share-modal').addEventListener('click', (e) => {
             if (e.target.id === 'share-modal') closeShareModal();
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('share-modal').classList.contains('active')) {
                 closeShareModal();
             }
         });
-
 /*__ZAP_JS__*/
-
         /* ============================================================
          * RENDERS
          * ============================================================ */
         function setHeaderMeta() {
             const now = new Date();
             const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-
             document.getElementById('header-date').textContent = now.toLocaleDateString('fr-FR', dateOptions).toUpperCase();
             document.getElementById('header-time-now').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
             document.getElementById('header-total').textContent = `${users.length} PERSONNAGES`;
-
             const h = now.getHours();
             const tagEl = document.getElementById('header-tag');
             if (h < 5) { tagEl.textContent = '— ARC NOCTURNE —'; }
@@ -2467,13 +2201,11 @@
             else if (h < 22) { tagEl.textContent = '— ENDING —'; }
             else { tagEl.textContent = '— ÉPISODE DE MINUIT —'; }
         }
-
         function createTodayCard(user) {
             const age = getAge(user.birthday);
             const stats = getLifetimeStats(user.birthday);
             const userIndex = users.indexOf(user);
             const now = new Date();
-
             return `
                 <section class="today-section">
                     <div class="section-divider">
@@ -2491,27 +2223,21 @@
                             <p class="today-tagline">${age !== null
                                 ? `Passe au niveau <span class="age-highlight">${age}</span> aujourd'hui.`
                                 : `Fête son anniversaire aujourd'hui — <span class="age-highlight">niveau secret</span>.`}</p>
-
                             <div class="today-credits">
                                 <span class="credit-label">Né(e) le</span>
                                 <span class="credit-value">${user.birthday.day} ${monthNames[user.birthday.month - 1]}${user.birthday.year != null ? ' ' + user.birthday.year : ' · année inconnue'}</span>
-
                                 <span class="credit-label">Niveau</span>
                                 <span class="credit-value">${age !== null ? `${age} ans révolus` : '??? — non renseigné'}</span>
                                 ${stats ? `
                                 <span class="credit-label">Jours vécus</span>
                                 <span class="credit-value">${formatNum(stats.days)}</span>
-
                                 <span class="credit-label">Heures vécues</span>
                                 <span class="credit-value">${formatNum(stats.hours)}</span>
-
                                 <span class="credit-label">Semaines vécues</span>
                                 <span class="credit-value">${formatNum(stats.weeks)}</span>
-
                                 <span class="credit-label">Battements de coeur (est.)</span>
                                 <span class="credit-value">${formatNum(stats.heartbeatsMin)} à ${formatNum(stats.heartbeatsMax)}</span>` : ''}
                             </div>
-
                             <button type="button" class="share-btn" onclick="openShareModal(users[${userIndex}])">
                                 <span>Créer une carte</span>
                                 <span>→</span>
@@ -2521,7 +2247,6 @@
                 </section>
             `;
         }
-
         function createTop3Tile(user, rank) {
             const next = getNextBirthday(user.birthday);
             const currentAge = getAge(user.birthday);
@@ -2533,7 +2258,6 @@
             const imageHTML = user.avatar
                 ? `<img src="${escapeHtml(user.avatar)}" class="top3-tile-image" alt="${escapeHtml(getFullName(user))}" loading="lazy"${fb} onerror="handleAvatarError(this)"><div class="top3-tile-placeholder" style="display:none;">${initial}</div>`
                 : `<div class="top3-tile-placeholder">${initial}</div>`;
-
             return `
                 <div class="top3-tile">
                     <span class="top3-rank-overlay">${rank}</span>
@@ -2554,7 +2278,6 @@
                 </div>
             `;
         }
-
         function createBirthdayCard(user, index) {
             const nextBirthday = getNextBirthday(user.birthday);
             const currentAge = getAge(user.birthday);
@@ -2566,7 +2289,6 @@
                                 <span class="arrow">→</span>
                                 <span class="upcoming-age">LVL ${upcomingAge}</span>`
                 : `<span class="upcoming-age">LVL ???</span>`;
-
             return `
                 <div class="birthday-card${isImminent ? ' imminent' : ''}" data-countdown="${nextBirthday.toISOString()}">
                     <div class="avatar-container">${createAvatarHTML(user)}</div>
@@ -2589,7 +2311,6 @@
                 </div>
             `;
         }
-
         /* ============================================================
          * STATS
          * ============================================================ */
@@ -2597,19 +2318,15 @@
             const ages = users.map(u => getAge(u.birthday)).filter(a => a !== null);
             const total = users.length;
             const avg = ages.length > 0 ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : '—';
-
             const upcoming = users.filter(u => !isBirthdayToday(u.birthday))
                 .sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday))[0];
             const daysUntil = upcoming ? Math.ceil((getNextBirthday(upcoming.birthday) - new Date()) / 86400000) : 0;
-
             const monthCounts = new Array(12).fill(0);
             users.forEach(u => monthCounts[u.birthday.month - 1]++);
             let busiestMonth = 0;
             for (let i = 1; i < 12; i++) if (monthCounts[i] > monthCounts[busiestMonth]) busiestMonth = i;
-
             const currentMonth = new Date().getMonth();
             const thisMonthCount = users.filter(u => u.birthday.month - 1 === currentMonth).length;
-
             const stats = [
                 { tag: '— TOTAL —', value: total, label: 'PERSONNAGES' },
                 { tag: '— MOYENNE —', value: avg, label: 'NIVEAU MOYEN' },
@@ -2617,7 +2334,6 @@
                 { tag: '— APOGÉE —', value: monthCounts[busiestMonth], label: monthNamesShort[busiestMonth] + ' · ARC LE PLUS CHARGÉ' },
                 { tag: '— PROCHAINEMENT —', value: `${daysUntil}`, label: `JRS · ${escapeHtml(upcoming?.prenom || '')}` },
             ];
-
             document.getElementById('stats-grid').innerHTML = stats.map(s => `
                 <div class="stat-card">
                     <span class="stat-icon">${escapeHtml(s.tag)}</span>
@@ -2625,7 +2341,6 @@
                     <span class="stat-label">${s.label}</span>
                 </div>
             `).join('');
-
             const sortedCasting = [...users].sort((a, b) => {
                 const ageA = getAge(a.birthday), ageB = getAge(b.birthday);
                 if (ageA === null && ageB === null) return 0;
@@ -2633,7 +2348,6 @@
                 if (ageB === null) return -1;
                 return ageB - ageA;
             });
-
             document.getElementById('casting-list').innerHTML = sortedCasting.map(u => {
                 const a = getAge(u.birthday);
                 return `
@@ -2645,13 +2359,11 @@
             `;
             }).join('');
         }
-
         /* ============================================================
          * COUNTDOWN OBSERVER
          * ============================================================ */
         const visibleCountdowns = new Set();
         let countdownObserver = null;
-
         function initCountdownObserver() {
             if (countdownObserver) countdownObserver.disconnect();
             visibleCountdowns.clear();
@@ -2663,7 +2375,6 @@
             }, { rootMargin: '100px' });
             document.querySelectorAll('[data-countdown]').forEach(el => countdownObserver.observe(el));
         }
-
         function updateVisibleCountdowns() {
             visibleCountdowns.forEach(el => {
                 const target = new Date(el.dataset.countdown);
@@ -2678,18 +2389,14 @@
                 if (s) s.textContent = pad(cd.seconds);
             });
         }
-
         /* ============================================================
          * MAIN RENDER
          * ============================================================ */
         let mainConfetti = null;
-
         function renderToday() {
             const todayBirthdays = users.filter(u => isBirthdayToday(u.birthday));
             const container = document.getElementById('today-container');
-
             if (typeof destroyZaps === 'function') destroyZaps();   // coupe l'ancien rendu
-
             if (todayBirthdays.length > 0) {
                 container.innerHTML = todayBirthdays.map(createTodayCard).join('');
                 if (typeof activateZaps === 'function') activateZaps();   // ⚡ foudre
@@ -2701,21 +2408,17 @@
                 container.innerHTML = '';
             }
         }
-
         function renderTop3() {
             const upcoming = users.filter(u => !isBirthdayToday(u.birthday))
                 .sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday));
             const list = document.getElementById('top3-list');
             list.innerHTML = upcoming.slice(0, 3).map((u, i) => createTop3Tile(u, i + 1)).join('');
         }
-
         function renderBirthdays() {
             const search = document.getElementById('search-input').value.trim().toLowerCase();
             const monthFilter = document.getElementById('filter-month').value;
             const sortBy = document.getElementById('sort-by').value;
-
             let filtered = users.filter(u => !isBirthdayToday(u.birthday));
-
             if (search) {
                 filtered = filtered.filter(u =>
                     getFullName(u).toLowerCase().includes(search) ||
@@ -2723,16 +2426,12 @@
                     u.nom.toLowerCase().includes(search)
                 );
             }
-
             if (monthFilter !== 'all') {
                 filtered = filtered.filter(u => u.birthday.month - 1 === parseInt(monthFilter));
             }
-
             document.getElementById('total-count').textContent =
                 `${filtered.length} ${filtered.length > 1 ? 'PERSONNAGES' : 'PERSONNAGE'}`;
-
             const container = document.getElementById('birthdays-container');
-
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="no-results">
@@ -2743,7 +2442,6 @@
                 initCountdownObserver();
                 return;
             }
-
             if (sortBy === 'name') {
                 filtered.sort((a, b) => getFullName(a).localeCompare(getFullName(b), 'fr'));
             } else if (sortBy === 'age-desc' || sortBy === 'age-asc') {
@@ -2757,9 +2455,7 @@
             } else {
                 filtered.sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday));
             }
-
             const groupByMonth = sortBy === 'upcoming' && !search && monthFilter === 'all';
-
             if (groupByMonth) {
                 const groups = new Map();
                 filtered.forEach(u => {
@@ -2767,7 +2463,6 @@
                     if (!groups.has(m)) groups.set(m, []);
                     groups.get(m).push(u);
                 });
-
                 let html = '';
                 let cardIndex = 0;
                 const currentMonth = today.getMonth();
@@ -2790,10 +2485,8 @@
             } else {
                 container.innerHTML = `<div class="birthday-grid">${filtered.map((u, i) => createBirthdayCard(u, i)).join('')}</div>`;
             }
-
             initCountdownObserver();
         }
-
         /* ============================================================
          * SCROLL TO TOP
          * ============================================================ */
@@ -2809,7 +2502,6 @@
             }
         }, { passive: true });
         scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
         /* ============================================================
          * TOOLBAR EVENTS
          * ============================================================ */
@@ -2817,31 +2509,25 @@
         const searchClear = document.getElementById('search-clear');
         const filterMonth = document.getElementById('filter-month');
         const sortBy = document.getElementById('sort-by');
-
         const debouncedRender = debounce(renderBirthdays, 200);
-
         searchInput.addEventListener('input', () => {
             searchClear.classList.toggle('visible', searchInput.value.length > 0);
             debouncedRender();
         });
-
         searchClear.addEventListener('click', () => {
             searchInput.value = '';
             searchClear.classList.remove('visible');
             renderBirthdays();
             searchInput.focus();
         });
-
         filterMonth.addEventListener('change', renderBirthdays);
         sortBy.addEventListener('change', renderBirthdays);
-
         /* ============================================================
          * INIT — charge birthdays.json puis affiche tout
          * ============================================================ */
         async function init() {
             setHeaderMeta();
             setInterval(setHeaderMeta, 10000);
-
             try {
                 const res = await fetch('birthdays.json', { cache: 'no-cache' });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -2859,13 +2545,11 @@
                 `;
                 return;
             }
-
             // Avatars de repli homme/femme
             users.forEach(u => {
                 u.avatarFallback = avatarsParGenre[u.genre] || null;
                 u.avatar = u.avatarFallback;
             });
-
             setHeaderMeta();
             renderToday();
             renderTop3();
@@ -2873,23 +2557,21 @@
             renderStats();
             syncDiscordAvatars();
         }
-
         init();
         setInterval(updateVisibleCountdowns, 1000);
-
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
-
         /* ============================================================
          * ⛩ CIEL ANIMÉ — décor complet d'opening, dessiné en canvas
          *
-         * Le décor n'est plus une image : montagnes générées par
-         * déplacement de point médian, village japonais (toits courbes,
-         * pagode, torii, arbres), poteaux électriques avec caténaires,
-         * lune, lucioles — le tout en parallaxe sur le scroll.
+         * Le décor n'est plus une image : le mont Fuji et les crêtes
+         * sont générés par déplacement de point médian / profil en
+         * puissance, le village japonais (toits courbes, pagode, torii,
+         * arbres), les poteaux électriques avec caténaires, la lune,
+         * les lucioles — le tout en parallaxe sur le scroll.
          *
          * Les pétales sont pré-rendus en sprites : vraie forme échancrée,
          * dégradé de la base vers la pointe, nervures, culbute sur deux
@@ -2902,19 +2584,17 @@
          * ============================================================ */
         (function () {
             'use strict';
-
             const BG = {
                 ciel: true,          // dégradé crépusculaire + filigrane japonais
                 rayons: true,        // rayons de lumière qui balaient
                 nuages: true,        // deux bancs de nuages en parallaxe
                 grain: true,         // grain de pellicule
-
                 montagnes: true,     // deux crêtes procédurales, jamais les mêmes
+                fuji: true,          // ⛰ le mont Fuji, plan dominant du fond
                 village: true,       // maisons, pagode, torii, arbres
                 poteaux: true,       // poteaux électriques + fils qui pendent
                 lune: true,          // lune et son halo
                 branche: true,       // branche de cerisier en amorce (écrans larges)
-
                 etoiles: 120,        // étoiles (0 = aucune)
                 scintillantes: 7,    // parmi elles, celles à croix de lumière
                 filantes: true,      // étoiles filantes, toutes les 9 à 24 s
@@ -2925,7 +2605,6 @@
                 rafales: true,       // coups de vent qui emportent les pétales
                 lignesVitesse: true  // balayage manga, toutes les 22 à 45 s
             };
-
             const body = document.body;
             const layer = (id, on) => {
                 if (!on) return null;
@@ -2934,12 +2613,9 @@
                 el.setAttribute('aria-hidden', 'true');
                 return el;
             };
-
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
             /* Insérés en tête de <body>, du plus lointain au plus proche. */
             const stack = [layer('bg-sky', BG.ciel)].filter(Boolean);
-
             let canvas = null;
             if (!reduced) {
                 canvas = document.createElement('canvas');
@@ -2947,15 +2623,11 @@
                 canvas.setAttribute('aria-hidden', 'true');
                 stack.push(canvas);
             }
-
             const grain = layer('bg-grain', BG.grain);
             if (grain) stack.push(grain);
-
             const anchor = body.firstChild;
             stack.forEach(el => body.insertBefore(el, anchor));
-
             if (!canvas) return;
-
             /* ======================================================
              * Outils
              * ====================================================== */
@@ -2963,20 +2635,17 @@
             const rand = (a, b) => a + Math.random() * (b - a);
             const randInt = (a, b) => Math.floor(rand(a, b + 1));
             const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-
             const ENCRE = '#07070a';            // la silhouette, presque noire
             const IVOIRE = '242,239,233';
             const OR = '255,210,63';
             const VIOLET = '150,132,215';
             const ROUGE = '232,51,46';
-
             /* Trois teintes par pétale : base sombre → cœur → pointe pâle */
             const PALETTES = [
                 { base: '206,112,134', mid: '255,183,197', tip: '255,232,238' },  // sakura
                 { base: '198,140,150', mid: '250,214,220', tip: '255,255,255' },  // sakura pâle
                 { base: '146,26,24',   mid: '232,51,46',   tip: '255,152,132' }   // rouge shōnen
             ];
-
             let W = 0, H = 0, small = false, dpr = 1;
             let stars = [], bokeh = [], fireflies = [], petals = [], shooting = [];
             let flash = null, nextShoot = 4000, nextFlash = 16000, nextGust = 7000;
@@ -2984,7 +2653,6 @@
             let scrollPush = 0, lastScroll = window.scrollY;
             const scenery = {};
             const sprites = { petal: [], petalBlur: [], glow: {} };
-
             /* ======================================================
              * Sprites — dessinés une fois, réutilisés à chaque image
              * ====================================================== */
@@ -3011,7 +2679,6 @@
                 sprites.glow[rgb] = c;
                 return c;
             }
-
             /* Le pétale de sakura : deux flancs bombés et une échancrure
                à la pointe. C'est cette encoche qui fait qu'on le
                reconnaît au lieu de voir une simple feuille. */
@@ -3023,21 +2690,18 @@
                 const s = S * 0.36;
                 g.translate(S / 2, S / 2);
                 if (blur) { try { g.filter = `blur(${blur}px)`; } catch (e) {} }
-
                 g.beginPath();
                 g.moveTo(0, s * 0.66);
                 g.bezierCurveTo(-s * 0.98, s * 0.34, -s * 0.9, -s * 0.44, -s * 0.28, -s * 0.7);
                 g.quadraticCurveTo(0, -s * 0.44, s * 0.28, -s * 0.7);   // ← l'échancrure
                 g.bezierCurveTo(s * 0.9, -s * 0.44, s * 0.98, s * 0.34, 0, s * 0.66);
                 g.closePath();
-
                 const grd = g.createLinearGradient(0, s * 0.66, 0, -s * 0.7);
                 grd.addColorStop(0, `rgba(${pal.base},1)`);
                 grd.addColorStop(0.42, `rgba(${pal.mid},1)`);
                 grd.addColorStop(1, `rgba(${pal.tip},1)`);
                 g.fillStyle = grd;
                 g.fill();
-
                 g.strokeStyle = `rgba(${pal.base},0.42)`;   // les nervures
                 g.lineWidth = 0.9;
                 g.beginPath();
@@ -3045,31 +2709,26 @@
                 g.moveTo(0, s * 0.24); g.lineTo(-s * 0.38, -s * 0.3);
                 g.moveTo(0, s * 0.24); g.lineTo(s * 0.38, -s * 0.3);
                 g.stroke();
-
                 g.strokeStyle = `rgba(${pal.tip},0.3)`;     // liseré lumineux
                 g.lineWidth = 0.7;
                 g.beginPath();
                 g.moveTo(0, s * 0.66);
                 g.bezierCurveTo(-s * 0.98, s * 0.34, -s * 0.9, -s * 0.44, -s * 0.28, -s * 0.7);
                 g.stroke();
-
                 return c;
             }
-
             function moonSprite(size) {
                 const S = Math.round(size * 3.4);
                 const c = document.createElement('canvas');
                 c.width = c.height = S;
                 const g = c.getContext('2d');
                 const cx = S / 2, r = size / 2;
-
                 const halo = g.createRadialGradient(cx, cx, r * 0.7, cx, cx, S / 2);
                 halo.addColorStop(0, 'rgba(255,244,214,0.20)');
                 halo.addColorStop(0.35, 'rgba(255,232,190,0.07)');
                 halo.addColorStop(1, 'rgba(255,232,190,0)');
                 g.fillStyle = halo;
                 g.fillRect(0, 0, S, S);
-
                 const disc = g.createRadialGradient(cx - r * 0.3, cx - r * 0.3, r * 0.1, cx, cx, r);
                 disc.addColorStop(0, 'rgba(255,252,240,0.95)');
                 disc.addColorStop(0.7, 'rgba(250,238,208,0.85)');
@@ -3078,7 +2737,6 @@
                 g.beginPath();
                 g.arc(cx, cx, r, 0, Math.PI * 2);
                 g.fill();
-
                 g.globalCompositeOperation = 'source-atop';    // quelques mers lunaires
                 g.fillStyle = 'rgba(196,180,156,0.35)';
                 for (let i = 0; i < 6; i++) {
@@ -3089,15 +2747,13 @@
                 }
                 return c;
             }
-
             /* ======================================================
-             * Décor — rayons, nuages, crêtes, village, poteaux
+             * Décor — rayons, nuages, Fuji, crêtes, village, poteaux
              *
              * Tout est rendu une seule fois à la taille exacte de
              * l'écran. À l'exécution il ne reste que des recopies 1:1,
              * l'opération la moins chère qu'un navigateur sache faire.
              * ====================================================== */
-
             /* Rayons crépusculaires, en éventail depuis le haut */
             function renderRays(h) {
                 const c = document.createElement('canvas');
@@ -3105,7 +2761,6 @@
                 const g = c.getContext('2d');
                 const ox = W * 0.5, oy = -h * 0.12;
                 const R = Math.hypot(W, h) * 1.3;
-
                 g.translate(ox, oy);
                 g.fillStyle = 'rgba(255, 226, 170, 0.042)';
                 for (let a = 0; a < Math.PI; a += rand(0.055, 0.1)) {
@@ -3118,7 +2773,6 @@
                     g.fill();
                 }
                 g.setTransform(1, 0, 0, 1, 0, 0);
-
                 // fondu : rien tout en haut, rien tout en bas
                 g.globalCompositeOperation = 'destination-out';
                 const m = g.createLinearGradient(0, 0, 0, c.height);
@@ -3130,7 +2784,6 @@
                 g.fillRect(0, 0, c.width, c.height);
                 return { c, h: c.height };
             }
-
             /* Un banc de nuages, tuilable : chaque masse est aussi
                dessinée décalée d'une tuile pour que la couture passe
                inaperçue. */
@@ -3160,7 +2813,6 @@
                 }
                 return { c, w: c.width, h: c.height };
             }
-
             /* Déplacement de point médian : la même technique que la
                foudre, appliquée à une ligne d'horizon. Deux chargements
                ne donnent jamais la même montagne. */
@@ -3181,14 +2833,12 @@
                 for (let i = 0; i < n; i++) a[i] = Math.max(h * 0.06, Math.min(h * 0.97, a[i]));
                 return a;
             }
-
             function renderRidge(h, fill, rough, rim) {
                 const c = document.createElement('canvas');
                 c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
                 const g = c.getContext('2d');
                 const a = ridgeHeights(7, h, rough);
                 const n = a.length;
-
                 g.beginPath();
                 g.moveTo(0, h - a[0]);
                 for (let i = 1; i < n; i++) g.lineTo(i / (n - 1) * W, h - a[i]);
@@ -3196,7 +2846,6 @@
                 g.closePath();
                 g.fillStyle = fill;
                 g.fill();
-
                 if (rim) {                                  // liseré de lumière sur la crête
                     g.beginPath();
                     g.moveTo(0, h - a[0]);
@@ -3207,7 +2856,112 @@
                 }
                 return { c, h: c.height };
             }
+            /* --- ⛰ LE MONT FUJI ---------------------------------------
+               Son galbe ne vient pas d'un triangle : le profil suit une
+               puissance < 1, ce qui évase la jupe et redresse les épaules.
+               S'y ajoutent le sommet tronqué par le cratère, les ravines
+               qui rayonnent depuis la cime, et la neige éternelle dont
+               les langues descendent dans ces mêmes ravines.
+               Rendu une seule fois, puis simple recopie à chaque image. */
+            function renderFuji(w, h) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(w));
+                c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const cx = c.width / 2, halfW = c.width / 2;
+                const baseY = c.height;
+                const peak = c.height * 0.94;
+                const flare = rand(0.54, 0.62);   // < 1 → la jupe s'évase
+                const crest = 0.05;               // demi-largeur du sommet tronqué
+                const wob = rand(0, 6.28);
 
+                const profile = t => {
+                    const a = Math.abs(t);
+                    if (a <= crest) {             // le cratère, à peine creusé
+                        const k = a / crest;
+                        return peak * (1 - 0.014 * (1 - k * k));
+                    }
+                    const u = (a - crest) / (1 - crest);
+                    return peak * (1 - Math.pow(u, flare));
+                };
+
+                const N = 260, pts = [];
+                for (let i = 0; i <= N; i++) {
+                    const t = -1 + (2 * i) / N;
+                    const grain = (Math.sin(i * 0.9 + wob) + Math.sin(i * 0.23 + wob * 2)) * 0.9;
+                    pts.push({ x: cx + t * halfW, y: baseY - profile(t) + grain });
+                }
+                const trace = () => {
+                    g.beginPath();
+                    g.moveTo(pts[0].x, baseY);
+                    for (const p of pts) g.lineTo(p.x, p.y);
+                    g.lineTo(pts[pts.length - 1].x, baseY);
+                    g.closePath();
+                };
+
+                trace();                                   // la masse
+                const rock = g.createLinearGradient(0, baseY - peak, 0, baseY);
+                rock.addColorStop(0, 'rgba(31,25,48,0.92)');
+                rock.addColorStop(0.45, 'rgba(21,17,35,0.9)');
+                rock.addColorStop(1, 'rgba(12,10,21,0.86)');
+                g.fillStyle = rock;
+                g.fill();
+
+                g.save();
+                trace();
+                g.clip();
+
+                g.strokeStyle = 'rgba(8,6,14,0.4)';        // les ravines
+                for (let i = 0; i < 26; i++) {
+                    const t = rand(-0.92, 0.92);
+                    g.lineWidth = rand(0.6, 2.2);
+                    g.beginPath();
+                    g.moveTo(cx + t * halfW * 0.14, baseY - peak * rand(0.86, 0.99));
+                    g.quadraticCurveTo(cx + t * halfW * 0.55, baseY - peak * 0.45,
+                                       cx + t * halfW * rand(0.85, 1.05), baseY);
+                    g.stroke();
+                }
+
+                /* La neige ne coiffe que le dernier quart : plus bas,
+                   elle mangerait la silhouette et le Fuji cesserait
+                   d'être une masse sombre dans une nuit sombre. */
+                const snowY = baseY - peak * rand(0.74, 0.8);
+                g.beginPath();
+                g.moveTo(0, 0);
+                g.lineTo(c.width, 0);
+                for (let i = N; i >= 0; i--) {
+                    const t = -1 + (2 * i) / N;
+                    // élevé au carré : des coulées étroites plutôt que
+                    // de grosses festons arrondis
+                    const tongue = Math.pow(
+                        Math.max(0, Math.sin(i * 0.55 + wob) * 0.6 + Math.sin(i * 0.17) * 0.4), 2);
+                    g.lineTo(cx + t * halfW,
+                             snowY + tongue * peak * 0.11 + Math.abs(t) * peak * 0.02);
+                }
+                g.closePath();
+                const snow = g.createLinearGradient(0, baseY - peak, 0, snowY + peak * 0.13);
+                snow.addColorStop(0, 'rgba(232,230,244,0.62)');
+                snow.addColorStop(0.55, 'rgba(196,193,218,0.4)');
+                snow.addColorStop(1, 'rgba(160,156,190,0)');
+                g.fillStyle = snow;
+                g.fill();
+
+                const warm = g.createLinearGradient(cx - halfW * 0.2, 0, cx + halfW, 0);
+                warm.addColorStop(0, 'rgba(232,51,46,0)');     // le couchant accroche
+                warm.addColorStop(1, 'rgba(255,140,90,0.10)'); // le versant droit
+                g.fillStyle = warm;
+                g.fillRect(0, 0, c.width, c.height);
+                g.restore();
+
+                g.beginPath();                               // liseré de crête
+                g.moveTo(pts[0].x, pts[0].y);
+                for (const p of pts) g.lineTo(p.x, p.y);
+                g.strokeStyle = 'rgba(226,214,232,0.16)';
+                g.lineWidth = 1.2;
+                g.stroke();
+
+                return { c, w: c.width, h: c.height };
+            }
             /* --- Toit japonais : pentes concaves et avant-toits relevés.
                    C'est ce galbe qui remplace le rectangle. --- */
             function roof(g, cx, baseY, halfW, h, flick) {
@@ -3222,7 +2976,6 @@
                 g.closePath();
                 g.fill();
             }
-
             function house(g, x, w, groundY, scale) {
                 const bodyH = rand(0.3, 0.5) * 90 * scale;
                 const rH = rand(0.28, 0.42) * 90 * scale;
@@ -3232,14 +2985,12 @@
                     roof(g, x + w * 0.5, groundY - bodyH - rH * 0.55, w * 0.22, rH * 0.4, w * 0.03);
                 }
             }
-
             function tower(g, x, w, groundY, scale) {
                 const hh = rand(70, 165) * scale;
                 g.fillRect(x, groundY - hh, w, hh);
                 if (Math.random() < 0.5) g.fillRect(x + w / 2 - 1.5, groundY - hh - rand(14, 34) * scale, 3, rand(14, 34) * scale);
                 if (Math.random() < 0.4) g.fillRect(x - w * 0.12, groundY - hh - 4 * scale, w * 1.24, 4 * scale);
             }
-
             function tree(g, x, w, groundY, scale) {
                 const th = rand(26, 54) * scale;
                 g.fillRect(x + w * 0.44, groundY - th, w * 0.12, th);
@@ -3252,7 +3003,6 @@
                     g.fill();
                 }
             }
-
             function pagoda(g, cx, w, groundY, scale) {
                 const tiers = randInt(4, 5);
                 const tierH = rand(24, 32) * scale;
@@ -3268,7 +3018,6 @@
                     g.fillRect(cx - 6 * scale, y - 20 * scale + i * 6 * scale, 12 * scale, 2 * scale);
                 }
             }
-
             function torii(g, cx, w, groundY, scale) {
                 const hh = rand(78, 104) * scale;
                 const pw = Math.max(4, w * 0.055);
@@ -3285,7 +3034,6 @@
                 g.closePath();
                 g.fill();
             }
-
             /* --- Branche de cerisier en amorce dans le coin.
                    On construit d'abord la géométrie, puis on la rend
                    deux fois : un liseré pâle décalé (la lune est
@@ -3309,7 +3057,6 @@
                 if (depth >= 1) blooms.push({ x: cx, y: cy, r: w * 2.6 });
                 if (depth === 0) blooms.push({ x: cx, y: cy, r: w * 2 });
             }
-
             function blossom(g, x, y, r) {
                 for (let i = 0; i < 5; i++) {
                     const a = i / 5 * Math.PI * 2 + rand(-0.2, 0.2);
@@ -3328,7 +3075,6 @@
                 g.fill();
                 g.restore();
             }
-
             function renderBranch(w, h) {
                 const c = document.createElement('canvas');
                 c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h));
@@ -3336,7 +3082,6 @@
                 const segs = [], blooms = [];
                 buildLimb(-10, h * 0.08, rand(0.34, 0.52), h * 0.95, Math.max(7, h * 0.032), 0, segs, blooms);
                 buildLimb(-10, h * 0.2, rand(0.05, 0.2), h * 0.7, Math.max(5, h * 0.022), 0, segs, blooms);
-
                 g.lineCap = 'round';
                 g.strokeStyle = 'rgba(226,214,232,0.16)';        // contre-jour lunaire
                 for (const s of segs) {
@@ -3348,7 +3093,6 @@
                     g.lineWidth = s.w;
                     g.beginPath(); g.moveTo(s.x1, s.y1); g.lineTo(s.x2, s.y2); g.stroke();
                 }
-
                 for (const b of blooms) {                         // grappes de fleurs
                     const n = randInt(3, 6);
                     for (let i = 0; i < n; i++) {
@@ -3360,7 +3104,6 @@
                 }
                 return { c, w: c.width, h: c.height };
             }
-
             function renderTown(h) {
                 const c = document.createElement('canvas');
                 c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
@@ -3368,11 +3111,9 @@
                 const groundY = c.height - Math.max(6, h * 0.05);
                 const scale = Math.min(1.25, Math.max(0.62, h / 190));
                 g.fillStyle = ENCRE;
-
                 const pagodaAt = rand(W * 0.1, W * 0.42);
                 const toriiAt = rand(W * 0.56, W * 0.88);
                 let pagodaDone = false, toriiDone = false;
-
                 let x = -60;
                 while (x < W + 60) {
                     const w = rand(46, 108) * scale;
@@ -3394,25 +3135,21 @@
                     else tree(g, x, w * 0.8, groundY, scale);
                     x += w * rand(0.82, 1.12);
                 }
-
                 g.fillRect(0, groundY, c.width, c.height - groundY);   // le sol
                 return { c, h: c.height, groundY };
             }
-
             function renderPoles(h) {
                 const c = document.createElement('canvas');
                 c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
                 const g = c.getContext('2d');
                 const groundY = c.height;
                 const scale = Math.min(1.2, Math.max(0.6, h / 240));
-
                 const list = [];
                 let x = rand(-80, 40);
                 while (x < W + 120) {
                     list.push({ x, h: rand(0.55, 0.95) * h });
                     x += rand(150, 285) * scale;
                 }
-
                 g.strokeStyle = ENCRE;                       // les fils, d'abord
                 g.lineWidth = 1.3;
                 for (let i = 0; i < list.length - 1; i++) {
@@ -3427,7 +3164,6 @@
                         g.stroke();
                     }
                 }
-
                 g.fillStyle = ENCRE;                         // puis les mâts
                 for (const p of list) {
                     const top = groundY - p.h;
@@ -3440,7 +3176,6 @@
                 }
                 return { c, h: c.height };
             }
-
             /* ======================================================
              * Particules
              * ====================================================== */
@@ -3455,7 +3190,6 @@
                     color: Math.random() < 0.12 ? OR : IVOIRE
                 };
             }
-
             function makeBokeh(fromBottom) {
                 return {
                     x: rand(-40, W + 40),
@@ -3470,7 +3204,6 @@
                     color: pick([OR, ROUGE, VIOLET, '255,183,197'])
                 };
             }
-
             /* Les lucioles vivent bas, près du village, et clignotent
                par intermittence au lieu de pulser régulièrement. */
             function makeFirefly() {
@@ -3486,7 +3219,6 @@
                     alpha: rand(0.35, 0.9)
                 };
             }
-
             function makePetal(fromTop, blurred) {
                 const depth = blurred ? rand(0.9, 1) : Math.random();
                 return {
@@ -3508,11 +3240,9 @@
                     alpha: blurred ? rand(0.07, 0.14) : 0.38 + depth * 0.5
                 };
             }
-
             function build() {
                 small = W < 700;
                 const n = k => Math.round(small ? k * 0.5 : k);
-
                 stars = Array.from({ length: n(BG.etoiles) }, makeStar);
                 for (let i = 0; i < Math.min(n(BG.scintillantes), stars.length); i++) {
                     stars[i].cross = true;
@@ -3525,7 +3255,6 @@
                     ...Array.from({ length: n(BG.petales) }, () => makePetal(false, false)),
                     ...Array.from({ length: n(BG.petalesFlous) }, () => makePetal(false, true))
                 ];
-
                 scenery.branch = (BG.branche && W > 900)
                     ? renderBranch(W * 0.34, H * 0.46) : null;
                 scenery.rays = BG.rayons ? renderRays(Math.max(240, H * 0.72)) : null;
@@ -3535,20 +3264,22 @@
                 scenery.cloudNear = BG.nuages
                     ? renderCloudBand(Math.max(W * 0.8, 700), Math.max(100, H * 0.26), small ? 3 : 6,
                         ['232,120,90', '232,51,46', '160,140,210']) : null;
-
+                /* Le Fuji : 1,3 × la largeur de l'écran, donc il déborde
+                   des deux côtés — c'est ce débordement qui donne
+                   l'échelle. Sa base sera masquée par les crêtes. */
+                scenery.fuji = BG.fuji
+                    ? renderFuji(W * 1.3, Math.max(200, H * 0.6)) : null;
                 scenery.mountFar = BG.montagnes
                     ? renderRidge(Math.max(120, H * 0.34), 'rgba(33,27,52,0.75)', 0.56, 'rgba(150,124,205,0.10)') : null;
                 scenery.mountNear = BG.montagnes
                     ? renderRidge(Math.max(90, H * 0.24), 'rgba(18,14,30,0.94)', 0.62, 'rgba(232,51,46,0.13)') : null;
                 scenery.town = BG.village ? renderTown(Math.max(120, H * 0.2)) : null;
                 scenery.poles = BG.poteaux ? renderPoles(Math.max(150, H * 0.3)) : null;
-
                 if (BG.lune) {
                     const size = Math.max(48, Math.min(W, H) * 0.1);
                     scenery.moon = { c: moonSprite(size), size, x: W * rand(0.72, 0.86), y: H * rand(0.07, 0.13) };
                 }
             }
-
             function resize() {
                 dpr = Math.min(window.devicePixelRatio || 1, 2);
                 W = window.innerWidth;
@@ -3560,22 +3291,18 @@
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 build();
             }
-
             if (!sprites.petal.length) {
                 PALETTES.forEach(p => {
                     sprites.petal.push(petalSprite(p, 0));
                     sprites.petalBlur.push(petalSprite(p, 2.2));
                 });
             }
-
             window.addEventListener('scroll', () => {
                 const d = window.scrollY - lastScroll;
                 lastScroll = window.scrollY;
                 scrollPush = Math.max(-16, Math.min(16, scrollPush + d * 0.07));
             }, { passive: true });
-
             window.addEventListener('resize', resize);
-
             /* ======================================================
              * Rendus
              * ====================================================== */
@@ -3599,7 +3326,6 @@
                 }
                 ctx.globalCompositeOperation = 'source-over';
             }
-
             function drawBokeh(t, dt) {
                 ctx.globalCompositeOperation = 'lighter';
                 for (const b of bokeh) {
@@ -3612,7 +3338,6 @@
                 ctx.globalAlpha = 1;
                 ctx.globalCompositeOperation = 'source-over';
             }
-
             function drawFireflies(t, dt) {
                 ctx.globalCompositeOperation = 'lighter';
                 const sp = glowSprite(OR);
@@ -3632,7 +3357,6 @@
                 ctx.globalAlpha = 1;
                 ctx.globalCompositeOperation = 'source-over';
             }
-
             /* Un pétale culbute sur deux axes. On simule l'axe qui nous
                fait face par un scaleX, et on assombrit quand il passe
                de profil — sans ça, il a l'air d'un autocollant. */
@@ -3643,7 +3367,6 @@
                 if (face < 0.07) sx = 0.07 * (sx < 0 ? -1 : 1);
                 const sy = 0.86 + 0.14 * Math.cos(p.tilt);
                 const sp = p.blurred ? sprites.petalBlur[p.pal] : sprites.petal[p.pal];
-
                 ctx.save();
                 ctx.translate(x, p.y);
                 ctx.rotate(p.rot);
@@ -3653,7 +3376,6 @@
                 ctx.restore();
                 ctx.globalAlpha = 1;
             }
-
             function spawnShooting(t) {
                 const fromLeft = Math.random() < 0.5;
                 const ang = fromLeft ? rand(0.25, 0.55) : Math.PI - rand(0.25, 0.55);
@@ -3667,7 +3389,6 @@
                 });
                 nextShoot = t + rand(9000, 24000);
             }
-
             function drawShooting(dt) {
                 ctx.globalCompositeOperation = 'lighter';
                 for (let i = shooting.length - 1; i >= 0; i--) {
@@ -3697,7 +3418,6 @@
                 }
                 ctx.globalCompositeOperation = 'source-over';
             }
-
             function spawnFlash(t) {
                 const span = Math.hypot(W, H);
                 flash = {
@@ -3713,7 +3433,6 @@
                 gustTarget += rand(1.4, 2.6) * -flash.dir;   // le souffle emporte les pétales
                 nextFlash = t + rand(22000, 45000);
             }
-
             function drawFlash(t) {
                 if (!flash) return;
                 const k = (t - flash.t0) / flash.dur;
@@ -3735,7 +3454,6 @@
                 }
                 ctx.restore();
             }
-
             /* ======================================================
              * La boucle
              * ====================================================== */
@@ -3745,12 +3463,9 @@
                 if (document.hidden) { last = t; return; }
                 const dt = Math.min(t - last, 50) / 16.67;   // normalisé sur 60 fps
                 last = t;
-
                 ctx.clearRect(0, 0, W, H);
-
                 /* -- Parallaxe : chaque plan glisse à sa propre vitesse -- */
                 const par = Math.min(window.scrollY, 1500);
-
                 if (scenery.rays) {
                     // respiration lente plutôt qu'une rotation : pas de
                     // rééchantillonnage, donc une recopie directe
@@ -3758,20 +3473,26 @@
                     ctx.drawImage(scenery.rays.c, 0, 0);
                     ctx.globalAlpha = 1;
                 }
-
                 if (scenery.moon) {
                     const m = scenery.moon;
                     ctx.drawImage(m.c, m.x - m.c.width / 2, m.y - m.c.height / 2 - par * 0.006);
                 }
-
                 if (stars.length) drawStars(t);
-
                 if (scenery.cloudFar) {
                     const b = scenery.cloudFar;
                     const off = (t * 0.0072) % b.w;
                     const y = H * 0.3 - par * 0.016;
                     ctx.drawImage(b.c, -off, y);
                     ctx.drawImage(b.c, -off + b.w, y);
+                }
+                /* ⛰ Le Fuji, juste devant les nuages lointains.
+                   Sa parallaxe (0,008) est la plus lente du décor :
+                   c'est elle qui le fait lire comme très éloigné,
+                   donc très grand. Les nuages proches lui passent
+                   devant, les crêtes lui mangent la base. */
+                if (scenery.fuji) {
+                    const f = scenery.fuji;
+                    ctx.drawImage(f.c, W * 0.37 - f.w / 2, H * 0.9 - f.h - par * 0.008);
                 }
                 if (scenery.cloudNear) {
                     const b = scenery.cloudNear;
@@ -3781,12 +3502,10 @@
                     ctx.drawImage(b.c, off, y);
                     if (off < W) ctx.drawImage(b.c, off + b.w, y);
                 }
-
                 if (BG.filantes) {
                     if (t > nextShoot) spawnShooting(t);
                     if (shooting.length) drawShooting(dt);
                 }
-
                 if (scenery.mountFar) {
                     const l = scenery.mountFar;
                     ctx.drawImage(l.c, 0, H - l.h - H * 0.085 - par * 0.012);
@@ -3795,7 +3514,6 @@
                     const l = scenery.mountNear;
                     ctx.drawImage(l.c, 0, H - l.h - H * 0.035 - par * 0.024);
                 }
-
                 /* Brume de vallée : sépare les montagnes du village */
                 const haze = ctx.createLinearGradient(0, H * 0.62, 0, H);
                 haze.addColorStop(0, 'rgba(232,51,46,0)');
@@ -3803,9 +3521,7 @@
                 haze.addColorStop(1, 'rgba(255,140,60,0.08)');
                 ctx.fillStyle = haze;
                 ctx.fillRect(0, H * 0.62, W, H * 0.38);
-
                 if (bokeh.length) drawBokeh(t, dt);
-
                 if (scenery.town) {
                     const dy = par * 0.038;
                     ctx.drawImage(scenery.town.c, 0, H - scenery.town.h - dy);
@@ -3816,13 +3532,10 @@
                     const dy = par * 0.062;
                     ctx.drawImage(scenery.poles.c, 0, H - scenery.poles.h - dy);
                 }
-
                 if (scenery.branch) {
                     ctx.drawImage(scenery.branch.c, 0, -par * 0.09);
                 }
-
                 if (fireflies.length) drawFireflies(t, dt);
-
                 /* -- Rafales : le vent monte, tient, puis retombe -- */
                 if (BG.rafales) {
                     if (t > nextGust) {
@@ -3833,7 +3546,6 @@
                     gust += (gustTarget - gust) * 0.03 * dt;
                 }
                 scrollPush *= 0.93;
-
                 for (const p of petals) {
                     p.y += (p.speed + scrollPush * p.depth * 0.5) * dt;
                     p.x += gust * (0.35 + p.depth) * dt;
@@ -3846,13 +3558,11 @@
                     else if (p.x > W + 60) p.x = -50;
                     drawPetal(p, t);
                 }
-
                 if (BG.lignesVitesse) {
                     if (!flash && t > nextFlash) spawnFlash(t);
                     drawFlash(t);
                 }
             }
-
             resize();
             requestAnimationFrame(loop);
         })();
