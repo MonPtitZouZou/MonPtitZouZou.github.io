@@ -27,6 +27,10 @@
             --accent-dark: #a31d1a;
             --accent-glow: rgba(232, 51, 46, 0.35);
             --yellow: #ffd23f;
+            --cord: #efe7d7;      /* la cordelette tressée, ivoire */
+            --cord-deep: #b9ad95;  /* son ombre dans les tressages */
+            --brocart: #ffd23f;   /* le fil d'or du brocart */
+            --wood: #221913;      /* cèdre teinté des ema */
             --radius: 0px;
             --cut: 14px; /* coin coupé des panels */
         }
@@ -251,22 +255,60 @@
             margin-bottom: 80px;
             animation: fadeInUp 1s 0.1s ease-out backwards;
         }
+        /* ---- ⛩ L'AFFICHE DU JOUR = un grand ema ----
+           Un clip-path mange les bordures : impossible d'avoir un
+           liseré propre le long des pentes du fronton. D'où deux
+           calques imbriqués, découpés à la même forme — celui du
+           dessous est la bordure, celui du dessus le contenu. */
+        .today-hang { position: relative; padding-top: 44px; }
+        .hero-cord {
+            position: absolute;
+            z-index: 4;
+            top: -6px; left: 50%;
+            width: 132px;
+            transform: translateX(-50%);
+        }
+        .hero-cord .knot { width: 100%; }
+        .today-frame {
+            --gable: 46px;
+            padding: 2px;
+            background: linear-gradient(158deg,
+                rgba(255, 210, 63, 0.6), rgba(242, 239, 233, 0.22) 45%, rgba(232, 51, 46, 0.4));
+            clip-path: polygon(50% 0, 100% var(--gable), 100% calc(100% - 22px),
+                               calc(100% - 22px) 100%, 0 100%, 0 var(--gable));
+        }
         .today-poster {
             display: grid;
             grid-template-columns: 280px 1fr;
             gap: 40px;
-            background: var(--bg-elev);
-            border: 2px solid var(--border-ink);
-            padding: 40px;
+            /* cèdre du sanctuaire : deux veines sur un fond chaud */
+            background:
+                repeating-linear-gradient(91deg, rgba(255,238,214,0.022) 0 1px, transparent 1px 7px),
+                repeating-linear-gradient(89deg, rgba(0,0,0,0.14) 0 2px, transparent 2px 13px),
+                linear-gradient(168deg, #2e231b 0%, #1a1310 60%, #241a14 100%);
+            padding: 70px 38px 38px;
             position: relative;
             overflow: hidden;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+            clip-path: polygon(50% 0, 100% 44px, 100% calc(100% - 21px),
+                               calc(100% - 21px) 100%, 0 100%, 0 44px);
+        }
+        .today-frame { position: relative; }
+        .today-frame::before {              /* les deux trous percés au faîte */
+            content: '';
+            position: absolute;
+            z-index: 3;
+            top: 30px; left: 50%;
+            width: 60px; height: 7px;
+            transform: translateX(-50%);
+            background:
+                radial-gradient(circle at 5px 50%,  rgba(0,0,0,0.9) 0 3px, transparent 3.2px),
+                radial-gradient(circle at 55px 50%, rgba(0,0,0,0.9) 0 3px, transparent 3.2px);
         }
         /* Burst de vitesse derrière l'avatar */
         .today-poster::before {
             content: '';
             position: absolute;
-            top: 50%; left: 200px;
+            top: 54%; left: 200px;
             width: 700px;
             aspect-ratio: 1;
             transform: translate(-50%, -50%);
@@ -298,7 +340,8 @@
             overflow: hidden;
             position: relative;
             background: var(--bg-elev-2);
-            border: 2px solid var(--border-ink);
+            border: 1px solid rgba(255, 210, 63, 0.4);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.45);
             z-index: 1;
         }
         .today-image-wrap .avatar,
@@ -373,8 +416,8 @@
             font-size: 0.75rem;
             margin-bottom: 28px;
             padding: 20px 0;
-            border-top: 2px solid var(--line-strong);
-            border-bottom: 2px solid var(--line-strong);
+            border-top: 1px solid rgba(255, 238, 214, 0.2);
+            border-bottom: 1px solid rgba(255, 238, 214, 0.2);
         }
         .credit-label {
             color: var(--ink-mute);
@@ -496,31 +539,103 @@
         }
         .top3-list {
             display: flex;
-            gap: 24px;
+            gap: 28px;
             overflow-x: auto;
-            padding: 8px 4px 24px;
+            padding: 8px 4px 28px;
             scrollbar-width: none;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
         .top3-list::-webkit-scrollbar { display: none; }
+        /* ---- ★ OMAMORI (お守り) : la tuile pend à son cordon ----
+           Trois pièces : le cordon noué, le corps en brocart aux
+           épaules coupées, l'ourlet doré en bas. La photo est la
+           fenêtre cousue au centre. */
         .top3-tile {
             position: relative;
             flex-shrink: 0;
             width: 280px;
             scroll-snap-align: start;
-            transition: transform 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
             color: inherit;
             display: block;
+            transform-origin: 50% 4px;   /* elle pivote autour du nœud */
         }
-        .top3-tile:hover { transform: translateY(-8px) rotate(-0.5deg); }
+        .top3-tile:hover { animation: omamoriSway 2.6s cubic-bezier(0.2, 0.7, 0.3, 1); }
+        /* Un vrai balancement s'amortit : chaque oscillation est plus
+           courte que la précédente, et jamais symétrique. */
+        @keyframes omamoriSway {
+            0%   { transform: rotate(0deg); }
+            18%  { transform: rotate(2.4deg); }
+            42%  { transform: rotate(-1.5deg); }
+            64%  { transform: rotate(0.85deg); }
+            82%  { transform: rotate(-0.35deg); }
+            100% { transform: rotate(0deg); }
+        }
+        /* ---- LE NŒUD (叶結び) ----
+           Une rosace plate : deux boucles qui se croisent, un cœur
+           tressé, une bride qui monte pour la suspension et deux
+           brins qui retombent sur le tissu. Le même dessin sert aux
+           trois formats, seule sa largeur change. */
+        .knot {
+            display: block;
+            overflow: visible;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65));
+        }
+        .knot .knot-cord {
+            fill: none;
+            stroke: var(--cord);
+            stroke-linecap: round;
+            stroke-width: 5;
+        }
+        .knot .knot-core { fill: var(--cord); }
+        .knot .knot-braid {                 /* le tressage du cœur */
+            stroke: var(--cord-deep);
+            stroke-width: 1.4;
+            stroke-linecap: round;
+        }
+        .omamori-cord {
+            display: block;
+            position: relative;
+            z-index: 4;
+            margin-bottom: -28px;           /* les brins retombent sur le tissu */
+        }
+        .omamori-cord .knot { width: 132px; margin: 0 auto; }
+        .omamori-body {
+            position: relative;
+            padding: 30px 26px 40px;
+            /* Brocart : treillis de losanges au fil d'or, semé de
+               points — le motif des vraies pochettes. */
+            background-image:
+                url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><g fill='none' stroke='%23ffd23f' stroke-opacity='0.22' stroke-width='1'><path d='M15 0 L30 15 L15 30 L0 15 Z'/></g><g fill='%23ffd23f' fill-opacity='0.2'><circle cx='15' cy='15' r='1.7'/><circle cx='0' cy='0' r='1.7'/><circle cx='30' cy='0' r='1.7'/><circle cx='0' cy='30' r='1.7'/><circle cx='30' cy='30' r='1.7'/></g></svg>"),
+                linear-gradient(168deg, #8a2020 0%, #581216 52%, #741a1b 100%);
+            background-size: 30px 30px, auto;
+            clip-path: polygon(0 17px, 17px 0, calc(100% - 17px) 0, 100% 17px, 100% 100%, 0 100%);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55);
+            transition: box-shadow 0.35s;
+        }
+        .top3-tile:hover .omamori-body {
+            box-shadow: 0 20px 42px rgba(0, 0, 0, 0.62), 0 0 34px var(--accent-glow);
+        }
+        .omamori-hem {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            padding: 8px 0 10px;
+            text-align: center;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+            font-size: 0.6rem;
+            letter-spacing: 6px;
+            color: var(--cord);
+            background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+            border-top: 1px solid rgba(255, 210, 63, 0.28);
+        }
         .top3-rank-overlay {
             position: absolute;
-            top: 10px;
-            left: 12px;
+            top: 4px;
+            left: 8px;
             z-index: 5;
             font-family: 'Anton', sans-serif;
-            font-size: 4.5rem;
+            font-size: 3.4rem;
             line-height: 0.9;
             color: var(--ink);
             text-shadow:
@@ -532,26 +647,27 @@
             content: 'NEXT';
             display: block;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             letter-spacing: 3px;
             color: var(--yellow);
             text-shadow: none;
             margin-bottom: -2px;
             transform: skewX(6deg);
         }
+        /* Le portrait tient lieu de cartouche : sur les vraies
+           omamori, c'est ce panneau clair au centre qui porte le
+           texte. D'où le double filet ivoire. */
         .top3-image-container {
             position: relative;
             width: 100%;
             aspect-ratio: 2 / 3;
             overflow: hidden;
             background: var(--bg-elev);
-            border: 2px solid var(--line-strong);
-            transition: border-color 0.3s, box-shadow 0.3s;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
-        }
-        .top3-tile:hover .top3-image-container {
-            border-color: var(--border-ink);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
+            border: 2px solid rgba(239, 231, 215, 0.78);
+            box-shadow:
+                0 0 0 1px rgba(88, 18, 22, 0.9),
+                0 0 0 4px rgba(239, 231, 215, 0.3),
+                0 6px 16px rgba(0, 0, 0, 0.45);
         }
         .top3-tile-image,
         .top3-tile-placeholder {
@@ -593,7 +709,10 @@
         }
         .top3-tile-date {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.66rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             color: var(--ink-dim);
             letter-spacing: 2px;
             margin-bottom: 12px;
@@ -623,8 +742,8 @@
         }
         .top3-age-corner {
             position: absolute;
-            top: 12px;
-            right: -6px;
+            top: 10px;
+            right: 0;
             background: var(--yellow);
             color: var(--bg);
             font-family: 'JetBrains Mono', monospace;
@@ -640,8 +759,20 @@
          * ============================================================ */
         .month-section {
             margin-bottom: 56px;
-            animation: fadeInUp 1s 0.4s ease-out backwards;
         }
+        /* ---- Révélation au scroll ----
+           Chaque plaquette se pose en arrivant dans l'écran, avec un
+           décalage sur ses voisines (--i). Le voile n'existe que si
+           le script a tourné : sans lui, .has-reveal est absent et
+           tout reste visible. */
+        .has-reveal .reveal {
+            opacity: 0;
+            transform: translateY(18px) rotate(-1.4deg);
+            transition: opacity 0.55s ease-out,
+                        transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+            transition-delay: calc(var(--i, 0) * 45ms);
+        }
+        .has-reveal .reveal.in { opacity: 1; transform: none; }
         .month-header {
             display: flex;
             align-items: baseline;
@@ -677,47 +808,97 @@
          * ============================================================ */
         .birthday-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 22px 18px;
         }
+        /* ---- ⛩ EMA (絵馬) : la plaquette de vœu accrochée ----
+           Le fronton en pointe est un clip-path ; le bois, trois
+           dégradés superposés (deux veines + le fond chaud). La
+           carte elle-même n'est qu'un support : elle porte la
+           cordelette et sert de pivot au balancement. */
         .birthday-card {
+            position: relative;
+            padding-top: 20px;
+            transform-origin: 50% 6px;
+        }
+        .birthday-card:hover { animation: emaSway 2.2s cubic-bezier(0.2, 0.7, 0.3, 1); }
+        @keyframes emaSway {
+            0%   { transform: rotate(0deg); }
+            20%  { transform: rotate(1.7deg); }
+            45%  { transform: rotate(-1.1deg); }
+            68%  { transform: rotate(0.55deg); }
+            86%  { transform: rotate(-0.22deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .ema-cord {
+            position: absolute;
+            z-index: 3;
+            top: 2px; left: 50%;
+            width: 74px;
+            transform: translateX(-50%);
+            transition: filter 0.3s;
+        }
+        .ema-cord .knot { width: 100%; }
+        .ema-plaque {
             position: relative;
             display: flex;
             gap: 16px;
-            padding: 16px;
-            background: var(--bg-elev);
-            border: 1px solid var(--line-strong);
-            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-            overflow: hidden;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            padding: 36px 16px 16px;
+            background:
+                repeating-linear-gradient(91deg, rgba(255,238,214,0.022) 0 1px, transparent 1px 6px),
+                repeating-linear-gradient(89deg, rgba(0,0,0,0.16) 0 2px, transparent 2px 11px),
+                linear-gradient(168deg, #2a2019 0%, #191310 58%, var(--wood) 100%);
+            clip-path: polygon(50% 0, 100% 28px, 100% 100%, 0 100%, 0 28px);
+            transition: filter 0.3s;
         }
-        /* Barre d'action diagonale au hover */
-        .birthday-card::before {
+        .birthday-card:hover .ema-plaque { filter: brightness(1.2); }
+        .ema-plaque::before {            /* les deux trous du faîte */
             content: '';
             position: absolute;
-            top: 0; left: 0;
-            width: 4px; height: 0;
-            background: var(--accent);
-            transform: skewY(-8deg);
-            transform-origin: top;
-            transition: height 0.4s cubic-bezier(0.2, 0.6, 0.2, 1);
+            top: 17px; left: 50%;
+            width: 40px; height: 5px;
+            transform: translateX(-50%);
+            background:
+                radial-gradient(circle at 4px 50%,  rgba(0,0,0,0.85) 0 2.2px, transparent 2.4px),
+                radial-gradient(circle at 36px 50%, rgba(0,0,0,0.85) 0 2.2px, transparent 2.4px);
         }
-        .birthday-card:hover {
-            border-color: var(--border-ink);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        .ema-plaque::after {             /* le liseré vermillon sous le fronton */
+            content: '';
+            position: absolute;
+            top: 28px; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(232,51,46,0.35), transparent);
         }
-        .birthday-card:hover::before { height: 130%; }
-        .birthday-card.imminent { border-color: rgba(232, 51, 46, 0.5); }
-        .birthday-card.imminent::before { height: 130%; opacity: 0.7; }
+        .birthday-card.imminent .ema-plaque {
+            background:
+                repeating-linear-gradient(91deg, rgba(255,238,214,0.03) 0 1px, transparent 1px 6px),
+                repeating-linear-gradient(89deg, rgba(0,0,0,0.16) 0 2px, transparent 2px 11px),
+                linear-gradient(168deg, #3a1c18 0%, #24100e 58%, #2e1512 100%);
+        }
+        .birthday-card.imminent .ema-cord {
+            filter: drop-shadow(0 0 7px var(--accent-glow));
+        }
+        /* Toute plaquette décrochable ouvre sa carte de vœux */
+        [data-uid] { cursor: pointer; }
+        /* Moins de 24 h : la cordelette respire. Une pulsation toutes
+           les 4 s — assez lente pour qu'on la remarque sans qu'elle
+           attire l'œil en permanence. */
+        .birthday-card.last-day .ema-cord {
+            animation: cordPulse 4s ease-in-out infinite;
+        }
+        @keyframes cordPulse {
+            0%, 100% { filter: drop-shadow(0 0 3px var(--accent-glow)); }
+            50%      { filter: drop-shadow(0 0 12px var(--accent)); }
+        }
         .avatar-container {
             position: relative;
             flex-shrink: 0;
-            width: 64px;
-            height: 96px;
+            width: 62px;
+            height: 92px;
             overflow: hidden;
             background: var(--bg-elev-2);
-            border: 1px solid var(--line-strong);
+            border: 1px solid rgba(255, 210, 63, 0.22);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
         }
         .avatar {
             width: 100%; height: 100%;
@@ -775,8 +956,8 @@
         .countdown-mini-item {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
-            background: rgba(232, 51, 46, 0.06);
-            border: 1px solid var(--line);
+            background: rgba(255, 238, 214, 0.05);
+            border: 1px solid rgba(255, 238, 214, 0.12);
             padding: 3px 7px;
             color: var(--ink);
             min-width: 32px;
@@ -1043,6 +1224,29 @@
         }
         .toast.active { transform: translateX(-50%) translateY(0); opacity: 1; }
         /* ============================================================
+         * OUVERTURE DE LA CARTE DE VŒUX
+         * Un seul écouteur par conteneur, posé une fois : les cartes
+         * sont recréées à chaque filtre, y attacher un handler
+         * individuel les ferait fuir.
+         * ============================================================ */
+        function bindCardOpen(id) {
+            const root = document.getElementById(id);
+            if (!root) return;
+            const open = (target) => {
+                const card = target.closest('[data-uid]');
+                if (!card) return false;
+                const u = users[Number(card.dataset.uid)];
+                if (!u) return false;
+                openShareModal(u);
+                return true;
+            };
+            root.addEventListener('click', e => open(e.target));
+            root.addEventListener('keydown', e => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                if (open(e.target)) e.preventDefault();
+            });
+        }
+        /* ============================================================
          * SCROLL TO TOP
          * ============================================================ */
         .scroll-top {
@@ -1218,9 +1422,10 @@
         @media (max-width: 900px) {
             .today-poster {
                 grid-template-columns: 1fr;
-                padding: 28px;
+                padding: 54px 24px 28px;
                 gap: 28px;
             }
+            .today-frame { --gable: 34px; }
             .today-poster::before { left: 50%; top: 180px; }
             .today-image-wrap {
                 max-width: 240px;
@@ -1241,6 +1446,8 @@
             .header-meta { flex-direction: column; gap: 8px; }
             .stats-grid { grid-template-columns: 1fr; }
             .top3-tile { width: 240px; }
+            .month-header { flex-wrap: wrap; gap: 6px 14px; }
+            .month-count { font-size: 0.62rem; }
             .today-poster::after { display: none; }
             #bg-sky::before { display: none; }
         }
@@ -1748,6 +1955,28 @@
         /* ============================================================
          * UTILS
          * ============================================================ */
+        /* Le nœud tressé des omamori (叶結び), en SVG : une bride
+           qui monte, deux boucles croisées, un cœur tressé et deux
+           brins qui retombent. Un seul dessin, mis à l'échelle par
+           le CSS selon qu'il coiffe une pochette, un ema ou
+           l'affiche du jour. */
+        function knotSVG() {
+            return `<svg class="knot" viewBox="0 0 140 96" aria-hidden="true" focusable="false">
+                <g class="knot-cord">
+                    <path d="M65 54 C 48 20, 92 20, 75 54"/>
+                    <path d="M64 58 C 33 59, 19 39, 39 33 C 55 28, 63 47, 64 58"/>
+                    <path d="M76 58 C 107 59, 121 39, 101 33 C 85 28, 77 47, 76 58"/>
+                    <path d="M66 71 C 59 80, 48 87, 34 93"/>
+                    <path d="M74 71 C 81 80, 92 87, 106 93"/>
+                </g>
+                <rect class="knot-core" x="60" y="51" width="20" height="20" rx="6"/>
+                <g class="knot-braid">
+                    <line x1="63" y1="57" x2="77" y2="57"/>
+                    <line x1="63" y1="61" x2="77" y2="61"/>
+                    <line x1="63" y1="65" x2="77" y2="65"/>
+                </g>
+            </svg>`;
+        }
         function getFullName(user) { return `${user.prenom} ${user.nom}`.trim(); }
         function getShortName(user) { return user.nom ? `${user.prenom} ${user.nom.charAt(0)}.` : user.prenom; }
         function getNextBirthday(birthday) {
@@ -1934,8 +2163,16 @@
             }
             setUser(user) {
                 this.userName = getFullName(user);
-                this.userAge = getAge(user.birthday);
                 this.userInitial = user.prenom.charAt(0).toUpperCase();
+                /* La carte sert aussi pour un anniversaire à venir :
+                   on montre alors l'âge qu'il ou elle aura, et le
+                   nombre de jours restants au lieu de « aujourd'hui ». */
+                this.isToday = isBirthdayToday(user.birthday);
+                const age = getAge(user.birthday);
+                this.userAge = this.isToday ? age : (age !== null ? age + 1 : null);
+                const next = getNextBirthday(user.birthday);
+                this.daysLeft = this.isToday ? 0 : Math.ceil((next - new Date()) / 86400000);
+                this.dateLabel = `${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}`;
                 this.imageLoaded = false;
                 if (user.avatar) {
                     const fallback = user.avatarFallback;
@@ -1985,88 +2222,179 @@
                 }
                 ctx.restore();
             }
+            /* ============================================================
+             * La carte partagée = une omamori.
+             * Même dessin que les tuiles du site, mais tracé à la
+             * main : un canvas n'a ni clip-path ni SVG. Les courbes
+             * du nœud sont les mêmes chaînes de chemin que knotSVG(),
+             * relues par Path2D — un seul dessin fait autorité.
+             * ============================================================ */
+            drawKnot(ctx, cx, cy, scale) {
+                const paths = [
+                    'M65 54 C 48 20, 92 20, 75 54',
+                    'M64 58 C 33 59, 19 39, 39 33 C 55 28, 63 47, 64 58',
+                    'M76 58 C 107 59, 121 39, 101 33 C 85 28, 77 47, 76 58',
+                    'M66 71 C 59 80, 48 87, 34 93',
+                    'M74 71 C 81 80, 92 87, 106 93'
+                ];
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.scale(scale, scale);
+                ctx.translate(-70, -61);          // (70,61) = le cœur du nœud
+                ctx.strokeStyle = '#efe7d7';
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                for (const d of paths) ctx.stroke(new Path2D(d));
+                ctx.fillStyle = '#efe7d7';
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(60, 51, 20, 20, 6);
+                else ctx.rect(60, 51, 20, 20);
+                ctx.fill();
+                ctx.strokeStyle = '#b9ad95';
+                ctx.lineWidth = 1.4;
+                for (const y of [57, 61, 65]) {
+                    ctx.beginPath();
+                    ctx.moveTo(63, y);
+                    ctx.lineTo(77, y);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
             drawCard() {
                 const ctx = this.ctx;
-                ctx.clearRect(0, 0, this.width, this.height);
+                const W = this.width, H = this.height;
+                ctx.clearRect(0, 0, W, H);
                 ctx.fillStyle = '#0a0a0c';
-                ctx.fillRect(0, 0, this.width, this.height);
-                // Image
-                const imageHeight = 290;
+                ctx.fillRect(0, 0, W, H);
+                this.drawSpeedLines(ctx, W / 2, H * 0.42, 300);
+
+                const L = 30, R = W - 30, T = 56, B = 432, cut = 18;
+                const pouch = () => {
+                    ctx.beginPath();
+                    ctx.moveTo(L, T + cut);
+                    ctx.lineTo(L + cut, T);
+                    ctx.lineTo(R - cut, T);
+                    ctx.lineTo(R, T + cut);
+                    ctx.lineTo(R, B);
+                    ctx.lineTo(L, B);
+                    ctx.closePath();
+                };
+
+                // le tissu
+                ctx.save();
+                pouch();
+                const silk = ctx.createLinearGradient(L, T, R, B);
+                silk.addColorStop(0, '#8a2020');
+                silk.addColorStop(0.52, '#581216');
+                silk.addColorStop(1, '#741a1b');
+                ctx.fillStyle = silk;
+                ctx.fill();
+                ctx.clip();
+                // le treillis de losanges au fil d'or
+                ctx.strokeStyle = 'rgba(255,210,63,0.2)';
+                ctx.lineWidth = 1;
+                for (let d = -H; d < W + H; d += 22) {
+                    ctx.beginPath(); ctx.moveTo(d, 0);     ctx.lineTo(d + H, H); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(d + H, 0); ctx.lineTo(d, H);     ctx.stroke();
+                }
+                ctx.fillStyle = 'rgba(255,210,63,0.22)';
+                for (let y = 0; y < H; y += 22) {
+                    for (let x = (y / 22) % 2 ? 11 : 0; x < W; x += 22) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+
+                // le liseré du tissu
+                pouch();
+                ctx.strokeStyle = 'rgba(255,210,63,0.35)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // le nœud tressé, posé sur le haut de la pochette
+                this.drawKnot(ctx, W / 2, T + 6, 0.62);
+
+                // le cartouche clair : c'est lui qui porte le portrait
+                const wx = 66, wy = 100, ww = 168, wh = 186;
+                ctx.fillStyle = '#13131a';
+                ctx.fillRect(wx, wy, ww, wh);
                 if (this.image && this.imageLoaded) {
-                    const imgRatio = this.image.width / this.image.height;
-                    const cardRatio = this.width / imageHeight;
+                    const ir = this.image.width / this.image.height, wr = ww / wh;
                     let dW, dH, dX, dY;
-                    if (imgRatio > cardRatio) { dH = imageHeight; dW = this.image.width * (imageHeight / this.image.height); dX = (this.width - dW) / 2; dY = 0; }
-                    else { dW = this.width; dH = this.image.height * (this.width / this.image.width); dX = 0; dY = 0; }
+                    if (ir > wr) { dH = wh; dW = ir * wh; dX = wx - (dW - ww) / 2; dY = wy; }
+                    else { dW = ww; dH = ww / ir; dX = wx; dY = wy - (dH - wh) / 2; }
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(wx, wy, ww, wh);
+                    ctx.clip();
                     ctx.drawImage(this.image, dX, dY, dW, dH);
-                    // Vignette
-                    const grd = ctx.createLinearGradient(0, imageHeight - 80, 0, imageHeight);
-                    grd.addColorStop(0, 'rgba(10,10,12,0)');
-                    grd.addColorStop(1, 'rgba(10,10,12,0.85)');
-                    ctx.fillStyle = grd;
-                    ctx.fillRect(0, imageHeight - 80, this.width, 80);
+                    ctx.restore();
                 } else {
-                    ctx.fillStyle = '#131318';
-                    ctx.fillRect(0, 0, this.width, imageHeight);
-                    this.drawSpeedLines(ctx, this.width / 2, imageHeight / 2, 200);
                     ctx.fillStyle = '#e8332e';
-                    ctx.font = '120px Anton, sans-serif';
+                    ctx.font = '92px Anton, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(this.userInitial, this.width / 2, imageHeight / 2);
+                    ctx.fillText(this.userInitial, wx + ww / 2, wy + wh / 2);
                 }
-                this.particles.forEach(p => this.drawParticle(p));
-                // Info zone
-                const infoY = imageHeight;
-                ctx.fillStyle = '#131318';
-                ctx.fillRect(0, infoY, this.width, this.height - infoY);
-                // Barre diagonale rouge
-                ctx.save();
-                ctx.fillStyle = '#e8332e';
-                ctx.transform(1, 0, -0.3, 1, 0, 0);
-                ctx.fillRect(28, infoY + 16, 34, 3);
-                ctx.restore();
-                // Tagline
-                ctx.fillStyle = '#e8332e';
-                ctx.font = '10px JetBrains Mono, monospace';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'alphabetic';
-                ctx.fillText('— 誕生日スペシャル —', 60, infoY + 22);
-                // Name
-                ctx.fillStyle = '#f2efe9';
-                let fontSize = 24;
-                ctx.font = `${fontSize}px Anton, sans-serif`;
-                while (ctx.measureText(this.userName.toUpperCase()).width > this.width - 40 && fontSize > 12) {
-                    fontSize -= 1;
-                    ctx.font = `${fontSize}px Anton, sans-serif`;
-                }
-                ctx.fillText(this.userName.toUpperCase(), 20, infoY + 56);
-                // Age badge (haut droite, jaune, skewé)
-                const badgeText = this.userAge !== null ? `${this.userAge} ANS` : '🎂 !!';
-                ctx.font = 'bold 11px JetBrains Mono, monospace';
-                const badgeW = ctx.measureText(badgeText).width + 18;
-                ctx.save();
-                ctx.transform(1, 0, -0.2, 1, 0, 0);
-                ctx.fillStyle = '#ffd23f';
-                ctx.fillRect(this.width - badgeW - 8, 12, badgeW, 22);
-                ctx.fillStyle = '#0a0a0c';
-                ctx.textAlign = 'center';
-                ctx.fillText(badgeText, this.width - badgeW/2 - 8, 27);
-                ctx.restore();
-                // Date
-                ctx.textAlign = 'left';
-                const dateStr = `${today.getDate().toString().padStart(2,'0')} · ${monthNamesShort[today.getMonth()]} · ${today.getFullYear()}`;
-                ctx.fillStyle = '#a5a29b';
-                ctx.font = '10px JetBrains Mono, monospace';
-                ctx.fillText(dateStr, 20, infoY + 80);
-                // Tagline italic
-                ctx.fillStyle = '#a5a29b';
-                ctx.font = 'italic 11px Inter Tight, sans-serif';
-                ctx.fillText(`Joyeux anniversaire !!`, 20, infoY + 100);
-                // Border
-                ctx.strokeStyle = 'rgba(242, 239, 233, 0.85)';
+                ctx.strokeStyle = 'rgba(239,231,215,0.8)';   // double filet ivoire
                 ctx.lineWidth = 2;
-                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
+                ctx.strokeRect(wx - 1, wy - 1, ww + 2, wh + 2);
+                ctx.strokeStyle = 'rgba(239,231,215,0.3)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(wx - 5, wy - 5, ww + 10, wh + 10);
+
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'alphabetic';
+
+                // le nom, réduit jusqu'à tenir sur le tissu
+                ctx.fillStyle = '#f7f2e8';
+                let fs = 25;
+                ctx.font = `${fs}px Anton, sans-serif`;
+                const upper = this.userName.toUpperCase();
+                while (ctx.measureText(upper).width > W - 84 && fs > 11) {
+                    fs -= 1;
+                    ctx.font = `${fs}px Anton, sans-serif`;
+                }
+                ctx.fillText(upper, W / 2, 318);
+
+                ctx.fillStyle = 'rgba(247,242,232,0.62)';
+                ctx.font = '10px JetBrains Mono, monospace';
+                ctx.fillText(this.dateLabel, W / 2, 337);
+
+                // le bandeau : aujourd'hui, ou le décompte
+                const status = this.isToday
+                    ? 'AUJOURD\u0027HUI'
+                    : (this.daysLeft <= 1 ? 'DEMAIN' : `DANS ${this.daysLeft} JOURS`);
+                const lvl = this.userAge !== null ? ` · LVL ${this.userAge}` : ' · LVL ???';
+                ctx.font = 'bold 11px JetBrains Mono, monospace';
+                const label = status + lvl;
+                const bw = Math.min(W - 84, ctx.measureText(label).width + 26);
+                ctx.fillStyle = '#ffd23f';
+                ctx.fillRect((W - bw) / 2, 350, bw, 24);
+                ctx.fillStyle = '#33090b';
+                ctx.fillText(label, W / 2, 366);
+
+                // le vœu
+                ctx.fillStyle = 'rgba(255,232,190,0.95)';
+                ctx.font = '700 14px "Noto Sans JP", sans-serif';
+                ctx.fillText('誕生日おめでとう', W / 2, 404);
+
+                ctx.strokeStyle = 'rgba(255,210,63,0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(W / 2 - 54, 413);
+                ctx.lineTo(W / 2 + 54, 413);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255,232,190,0.5)';
+                ctx.font = '8px JetBrains Mono, monospace';
+                ctx.fillText('— ANNIVERSAIRES —', W / 2, 425);
+
+                // les confettis passent devant la pochette
+                this.particles.forEach(p => this.drawParticle(p));
             }
             drawParticle(p) {
                 const ctx = this.ctx;
@@ -2213,6 +2541,9 @@
                         <h2 class="section-title">À l'honneur <span class="section-jp">主人公</span></h2>
                         <span class="line"></span>
                     </div>
+                    <div class="today-hang">
+                    <span class="hero-cord" aria-hidden="true">${knotSVG()}</span>
+                    <div class="today-frame">
                     <div class="today-poster zap-hero">
                         <div class="today-image-wrap">
                             ${createAvatarHTML(user)}
@@ -2244,6 +2575,8 @@
                             </button>
                         </div>
                     </div>
+                    </div>
+                    </div>
                 </section>
             `;
         }
@@ -2259,10 +2592,14 @@
                 ? `<img src="${escapeHtml(user.avatar)}" class="top3-tile-image" alt="${escapeHtml(getFullName(user))}" loading="lazy"${fb} onerror="handleAvatarError(this)"><div class="top3-tile-placeholder" style="display:none;">${initial}</div>`
                 : `<div class="top3-tile-placeholder">${initial}</div>`;
             return `
-                <div class="top3-tile">
-                    <span class="top3-rank-overlay">${rank}</span>
-                    <span class="top3-age-corner">${upcomingAge !== null ? `${upcomingAge} ans` : '??? ans'}</span>
+                <div class="top3-tile reveal" style="--i:${rank - 1}"
+                     data-uid="${users.indexOf(user)}" role="button" tabindex="0"
+                     aria-label="Carte de vœux pour ${escapeHtml(getFullName(user))}">
+                    <span class="omamori-cord" aria-hidden="true">${knotSVG()}</span>
+                    <div class="omamori-body">
                     <div class="top3-image-container">
+                        <span class="top3-rank-overlay">${rank}</span>
+                        <span class="top3-age-corner">${upcomingAge !== null ? `${upcomingAge} ans` : '??? ans'}</span>
                         ${imageHTML}
                         <div class="top3-tile-overlays">
                             <p class="top3-tile-name">${escapeHtml(getShortName(user))}</p>
@@ -2275,6 +2612,8 @@
                             </div>
                         </div>
                     </div>
+                    <span class="omamori-hem">御守</span>
+                    </div>
                 </div>
             `;
         }
@@ -2284,13 +2623,20 @@
             const upcomingAge = currentAge !== null ? currentAge + 1 : null;
             const cd = getCountdown(nextBirthday);
             const isImminent = cd.days <= 7;
+            const isLastDay = cd.days === 0;
             const ageInfoHTML = currentAge !== null
                 ? `<span class="current-age">LVL ${currentAge}</span>
                                 <span class="arrow">→</span>
                                 <span class="upcoming-age">LVL ${upcomingAge}</span>`
                 : `<span class="upcoming-age">LVL ???</span>`;
             return `
-                <div class="birthday-card${isImminent ? ' imminent' : ''}" data-countdown="${nextBirthday.toISOString()}">
+                <div class="birthday-card reveal${isImminent ? ' imminent' : ''}${isLastDay ? ' last-day' : ''}"
+                     data-countdown="${nextBirthday.toISOString()}"
+                     data-uid="${users.indexOf(user)}" role="button" tabindex="0"
+                     aria-label="Carte de vœux pour ${escapeHtml(getFullName(user))}"
+                     style="--i:${Math.min(index, 11)}">
+                    <span class="ema-cord" aria-hidden="true">${knotSVG()}</span>
+                    <div class="ema-plaque">
                     <div class="avatar-container">${createAvatarHTML(user)}</div>
                     <div class="card-content">
                         <div>
@@ -2307,6 +2653,7 @@
                                 ${ageInfoHTML}
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             `;
@@ -2375,6 +2722,25 @@
             }, { rootMargin: '100px' });
             document.querySelectorAll('[data-countdown]').forEach(el => countdownObserver.observe(el));
         }
+        /* ============================================================
+         * RÉVÉLATION AU SCROLL
+         * Une seule fois par élément : on cesse de l'observer dès
+         * qu'il est apparu, sinon la grille se re-révèle à chaque
+         * remontée et l'effet devient un clignotement.
+         * ============================================================ */
+        let revealObserver = null;
+        function initRevealObserver() {
+            if (!revealObserver) {
+                revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (!e.isIntersecting) return;
+                        e.target.classList.add('in');
+                        revealObserver.unobserve(e.target);
+                    });
+                }, { rootMargin: '0px 0px -6% 0px' });
+            }
+            document.querySelectorAll('.reveal:not(.in)').forEach(el => revealObserver.observe(el));
+        }
         function updateVisibleCountdowns() {
             visibleCountdowns.forEach(el => {
                 const target = new Date(el.dataset.countdown);
@@ -2413,6 +2779,7 @@
                 .sort((a, b) => getNextBirthday(a.birthday) - getNextBirthday(b.birthday));
             const list = document.getElementById('top3-list');
             list.innerHTML = upcoming.slice(0, 3).map((u, i) => createTop3Tile(u, i + 1)).join('');
+            initRevealObserver();
         }
         function renderBirthdays() {
             const search = document.getElementById('search-input').value.trim().toLowerCase();
@@ -2464,7 +2831,6 @@
                     groups.get(m).push(u);
                 });
                 let html = '';
-                let cardIndex = 0;
                 const currentMonth = today.getMonth();
                 groups.forEach((monthUsers, monthIdx) => {
                     const isCurrent = monthIdx === currentMonth;
@@ -2476,7 +2842,7 @@
                                 <span class="month-count">${monthUsers.length} ${monthUsers.length > 1 ? 'personnages' : 'personnage'}</span>
                             </div>
                             <div class="birthday-grid">
-                                ${monthUsers.map(u => createBirthdayCard(u, cardIndex++)).join('')}
+                                ${monthUsers.map((u, i) => createBirthdayCard(u, i)).join('')}
                             </div>
                         </div>
                     `;
@@ -2486,6 +2852,30 @@
                 container.innerHTML = `<div class="birthday-grid">${filtered.map((u, i) => createBirthdayCard(u, i)).join('')}</div>`;
             }
             initCountdownObserver();
+            initRevealObserver();
+        }
+        /* ============================================================
+         * OUVERTURE DE LA CARTE DE VŒUX
+         * Un seul écouteur par conteneur, posé une fois : les cartes
+         * sont recréées à chaque filtre, y attacher un handler
+         * individuel les ferait fuir.
+         * ============================================================ */
+        function bindCardOpen(id) {
+            const root = document.getElementById(id);
+            if (!root) return;
+            const open = (target) => {
+                const card = target.closest('[data-uid]');
+                if (!card) return false;
+                const u = users[Number(card.dataset.uid)];
+                if (!u) return false;
+                openShareModal(u);
+                return true;
+            };
+            root.addEventListener('click', e => open(e.target));
+            root.addEventListener('keydown', e => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                if (open(e.target)) e.preventDefault();
+            });
         }
         /* ============================================================
          * SCROLL TO TOP
@@ -2526,6 +2916,7 @@
          * INIT — charge birthdays.json puis affiche tout
          * ============================================================ */
         async function init() {
+            document.body.classList.add('has-reveal');   // le voile n'existe que si le JS tourne
             setHeaderMeta();
             setInterval(setHeaderMeta, 10000);
             try {
@@ -2555,6 +2946,8 @@
             renderTop3();
             renderBirthdays();
             renderStats();
+            bindCardOpen('birthdays-container');
+            bindCardOpen('top3-list');
             syncDiscordAvatars();
         }
         init();
@@ -2592,6 +2985,8 @@
                 montagnes: true,     // deux crêtes procédurales, jamais les mêmes
                 fuji: true,          // ⛰ le mont Fuji, plan dominant du fond
                 village: true,       // maisons, pagode, torii, arbres
+                lanternes: true,     // chōchin allumés sous les toits
+                oiseaux: true,       // une volée traverse, toutes les 40 à 80 s
                 poteaux: true,       // poteaux électriques + fils qui pendent
                 lune: true,          // lune et son halo
                 branche: true,       // branche de cerisier en amorce (écrans larges)
@@ -2648,7 +3043,8 @@
             ];
             let W = 0, H = 0, small = false, dpr = 1;
             let stars = [], bokeh = [], fireflies = [], petals = [], shooting = [];
-            let flash = null, nextShoot = 4000, nextFlash = 16000, nextGust = 7000;
+            let birds = [];
+            let flash = null, nextShoot = 4000, nextFlash = 16000, nextGust = 7000, nextBirds = 14000;
             let gust = 0, gustTarget = 0;
             let scrollPush = 0, lastScroll = window.scrollY;
             const scenery = {};
@@ -2976,13 +3372,25 @@
                 g.closePath();
                 g.fill();
             }
-            function house(g, x, w, groundY, scale) {
+            function house(g, x, w, groundY, scale, lanterns) {
                 const bodyH = rand(0.3, 0.5) * 90 * scale;
                 const rH = rand(0.28, 0.42) * 90 * scale;
                 g.fillRect(x + w * 0.1, groundY - bodyH, w * 0.8, bodyH);
                 roof(g, x + w / 2, groundY - bodyH, w * 0.62, rH, w * 0.09);
                 if (Math.random() < 0.35) {                 // une lucarne
                     roof(g, x + w * 0.5, groundY - bodyH - rH * 0.55, w * 0.22, rH * 0.4, w * 0.03);
+                }
+                /* Un chōchin pendu sous l'avant-toit. Les positions
+                   sont collectées ici mais dessinées dans la boucle :
+                   ce qui palpite ne peut pas être pré-rendu. */
+                if (lanterns && Math.random() < 0.62) {
+                    lanterns.push({
+                        x: x + w * rand(0.2, 0.8),
+                        y: groundY - bodyH + rand(2, 7) * scale,
+                        r: rand(2.2, 3.6) * scale,
+                        ph: rand(0, 6.28),
+                        sp: rand(0.0006, 0.0018)
+                    });
                 }
             }
             function tower(g, x, w, groundY, scale) {
@@ -3110,6 +3518,7 @@
                 const g = c.getContext('2d');
                 const groundY = c.height - Math.max(6, h * 0.05);
                 const scale = Math.min(1.25, Math.max(0.62, h / 190));
+                const lanterns = BG.lanternes ? [] : null;
                 g.fillStyle = ENCRE;
                 const pagodaAt = rand(W * 0.1, W * 0.42);
                 const toriiAt = rand(W * 0.56, W * 0.88);
@@ -3125,18 +3534,22 @@
                     }
                     if (!toriiDone && x + w > toriiAt) {
                         torii(g, x + w * 0.9, w * 1.8, groundY, scale);
+                        if (lanterns) {                    // deux lanternes au torii
+                            lanterns.push({ x: x + w * 0.9 - w * 0.5, y: groundY - 82 * scale, r: 3.6 * scale, ph: rand(0, 6.28), sp: 0.0009 });
+                            lanterns.push({ x: x + w * 0.9 + w * 0.5, y: groundY - 82 * scale, r: 3.6 * scale, ph: rand(0, 6.28), sp: 0.0011 });
+                        }
                         toriiDone = true;
                         x += w * 2;
                         continue;
                     }
                     const r = Math.random();
-                    if (r < 0.5) house(g, x, w, groundY, scale);
+                    if (r < 0.5) house(g, x, w, groundY, scale, lanterns);
                     else if (r < 0.74) tower(g, x, w * 0.62, groundY, scale);
                     else tree(g, x, w * 0.8, groundY, scale);
                     x += w * rand(0.82, 1.12);
                 }
                 g.fillRect(0, groundY, c.width, c.height - groundY);   // le sol
-                return { c, h: c.height, groundY };
+                return { c, h: c.height, groundY, lanterns };
             }
             function renderPoles(h) {
                 const c = document.createElement('canvas');
@@ -3418,6 +3831,70 @@
                 }
                 ctx.globalCompositeOperation = 'source-over';
             }
+            /* --- Une volée d'oiseaux ---
+               Rare, et c'est ce qui fait qu'on la remarque. La
+               formation est décalée en escalier, chaque oiseau bat
+               des ailes à son propre rythme : synchronisés, ils
+               feraient mécanique. */
+            function spawnBirds(t) {
+                const dir = Math.random() < 0.5 ? 1 : -1;
+                const n = randInt(5, 9);
+                const y0 = rand(H * 0.1, H * 0.4);
+                const sp = rand(0.5, 0.95);
+                const drop = Math.random() < 0.5 ? 1 : -1;
+                birds = [];
+                for (let i = 0; i < n; i++) {
+                    birds.push({
+                        x: (dir > 0 ? -70 : W + 70) - dir * i * rand(16, 30),
+                        y: y0 + i * rand(3.5, 9) * drop + rand(-5, 5),
+                        dir, sp: sp * rand(0.94, 1.06),
+                        size: rand(3.4, 6.2),
+                        ph: rand(0, 6.28),
+                        flap: rand(0.005, 0.011)
+                    });
+                }
+                nextBirds = t + rand(40000, 82000);
+            }
+            function drawBirds(t, dt) {
+                ctx.strokeStyle = `rgba(${IVOIRE},0.26)`;
+                ctx.lineWidth = 1.1;
+                ctx.lineCap = 'round';
+                for (let i = birds.length - 1; i >= 0; i--) {
+                    const b = birds[i];
+                    b.x += b.dir * b.sp * dt * 1.5;
+                    b.y += Math.sin(t * 0.0006 + b.ph) * 0.06 * dt;
+                    if (b.x < -110 || b.x > W + 110) { birds.splice(i, 1); continue; }
+                    const w = b.size;
+                    const up = Math.sin(t * b.flap + b.ph) * w * 0.62;
+                    ctx.beginPath();
+                    ctx.moveTo(b.x - w, b.y - up * 0.25);
+                    ctx.quadraticCurveTo(b.x - w * 0.5, b.y - up, b.x, b.y);
+                    ctx.quadraticCurveTo(b.x + w * 0.5, b.y - up, b.x + w, b.y - up * 0.25);
+                    ctx.stroke();
+                }
+            }
+            /* --- Les chōchin du village ---
+               Un cœur chaud sur un halo, et une respiration lente
+               propre à chaque lanterne. */
+            function drawLanterns(t, topY) {
+                const list = scenery.town && scenery.town.lanterns;
+                if (!list || !list.length) return;
+                const sp = glowSprite('255,146,74');
+                ctx.globalCompositeOperation = 'lighter';
+                for (const L of list) {
+                    const a = 0.55 + 0.45 * Math.sin(t * L.sp + L.ph);
+                    const s = L.r * (7 + a * 1.6);
+                    ctx.globalAlpha = 0.3 + 0.32 * a;
+                    ctx.drawImage(sp, L.x - s / 2, topY + L.y - s / 2, s, s);
+                    ctx.globalAlpha = 0.55 + 0.4 * a;
+                    ctx.fillStyle = 'rgba(255,206,150,0.95)';
+                    ctx.beginPath();
+                    ctx.ellipse(L.x, topY + L.y, L.r * 0.5, L.r * 0.7, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
+            }
             function spawnFlash(t) {
                 const span = Math.hypot(W, H);
                 flash = {
@@ -3506,6 +3983,10 @@
                     if (t > nextShoot) spawnShooting(t);
                     if (shooting.length) drawShooting(dt);
                 }
+                if (BG.oiseaux) {
+                    if (!birds.length && t > nextBirds) spawnBirds(t);
+                    if (birds.length) drawBirds(t, dt);
+                }
                 if (scenery.mountFar) {
                     const l = scenery.mountFar;
                     ctx.drawImage(l.c, 0, H - l.h - H * 0.085 - par * 0.012);
@@ -3524,9 +4005,11 @@
                 if (bokeh.length) drawBokeh(t, dt);
                 if (scenery.town) {
                     const dy = par * 0.038;
-                    ctx.drawImage(scenery.town.c, 0, H - scenery.town.h - dy);
+                    const topY = H - scenery.town.h - dy;
+                    ctx.drawImage(scenery.town.c, 0, topY);
                     ctx.fillStyle = ENCRE;
                     ctx.fillRect(0, H - dy - 2, W, dy + 4);
+                    drawLanterns(t, topY);
                 }
                 if (scenery.poles) {
                     const dy = par * 0.062;
