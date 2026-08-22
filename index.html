@@ -1267,54 +1267,46 @@
         }
 
         /* ============================================================
-         * ⛩ ARRIÈRE-PLAN — couches de page de manga
+         * ⛩ ARRIÈRE-PLAN — plan d'opening d'anime
          *
-         * Ordre d'empilement :
-         *   #bg-fx (0) → #bg-canvas (0) → body::before vignette (1)
-         *   → .container (2) → screentone body::after (9999)
+         * Sept calques, du fond vers l'avant :
+         *   #bg-sky      ciel crépusculaire + halos + filigrane JP
+         *   #bg-rays     rayons de lumière qui balaient
+         *   #bg-clouds   deux bancs de nuages en parallaxe
+         *   #bg-canvas   étoiles, filantes, bokeh, pétales
+         *   #bg-horizon  silhouette de ville + torii
+         *   #bg-grain    grain de pellicule
+         *   ── puis body::before (vignette, z1), .container (z2),
+         *      screentone body::after (z9999)
          *
-         * Les deux calques sont créés en JS (voir « FOND ANIMÉ »
-         * à la fin du script). Rien d'autre n'est touché.
+         * Tous créés en JS (bloc « CIEL ANIMÉ » à la fin du script) :
+         * couper une option dans l'objet BG suffit à faire disparaître
+         * le calque correspondant.
          * ============================================================ */
-        #bg-fx, #bg-canvas {
+        #bg-sky, #bg-canvas, #bg-grain {
             position: fixed;
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Couche 1 : halos qui respirent + trame diagonale */
-        #bg-fx {
-            inset: -12%;
-            background:
-                radial-gradient(circle at 16% 18%, rgba(232, 51, 46, 0.11), transparent 42%),
-                radial-gradient(circle at 84% 76%, rgba(232, 51, 46, 0.07), transparent 40%),
-                radial-gradient(circle at 60% 8%,  rgba(255, 210, 63, 0.035), transparent 34%),
-                repeating-linear-gradient(115deg,
-                    rgba(242, 239, 233, 0.022) 0 1px,
-                    transparent 1px 9px);
-            animation: bgDrift 48s ease-in-out infinite alternate;
-            will-change: transform;
-        }
-
-        @keyframes bgDrift {
-            from { transform: translate3d(0, 0, 0) scale(1); }
-            to   { transform: translate3d(-2.5%, 2%, 0) scale(1.07); }
-        }
-
-        /* Grain de papier — ce qui fait « imprimé » plutôt qu'« écran » */
-        #bg-fx::after {
-            content: '';
-            position: absolute;
+        /* ---- Le ciel : nuit en haut, braises rouges à l'horizon ----
+           Volontairement STATIQUE. Un dégradé plein écran qui s'anime
+           doit être repeint à chaque image ; le mouvement vient des
+           nuages et de la parallaxe, pas du ciel lui-même. */
+        #bg-sky {
             inset: 0;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.45'/></svg>");
-            opacity: 0.32;
-            mix-blend-mode: overlay;
+            background:
+                radial-gradient(ellipse 120% 62% at 50% 104%, rgba(232, 51, 46, 0.17), transparent 62%),
+                radial-gradient(ellipse 90% 44% at 76% 92%,  rgba(255, 140, 60, 0.075), transparent 62%),
+                radial-gradient(circle at 17% 13%, rgba(116, 92, 214, 0.11), transparent 48%),
+                radial-gradient(circle at 88% 22%, rgba(232, 51, 46, 0.06), transparent 42%),
+                linear-gradient(180deg,
+                    #06060a 0%, #09090f 34%, #110d1b 62%, #180f1f 84%, #1f1124 100%);
         }
 
         /* Filigrane vertical façon tranche de tome.
-           Pour l'enlever : supprimer ce bloc.
-           Pour changer le texte : la propriété content. */
-        #bg-fx::before {
+           Pour l'enlever : supprimer ce bloc. Texte : propriété content. */
+        #bg-sky::before {
             content: '誕生日スペシャル';
             position: absolute;
             top: 50%;
@@ -1330,8 +1322,24 @@
             white-space: nowrap;
         }
 
-        /* Couche 2 : pétales d'encre + poussière (canvas) */
+        /* Rayons de lumière et nuages sont eux aussi dans #bg-canvas :
+           pré-rendus une fois, puis recopiés tels quels à chaque image.
+           En CSS animé, ils coûtaient à eux seuls les deux tiers du
+           budget d'affichage. */
+
+        /* ---- Décor, étoiles, filantes, bokeh, pétales ---- */
         #bg-canvas { inset: 0; }
+
+        /* Le décor (montagnes, village, poteaux, lune) est entièrement
+           dessiné dans #bg-canvas — voir le bloc « CIEL ANIMÉ ». */
+
+        /* ---- Grain de pellicule, par-dessus tout le décor ---- */
+        #bg-grain {
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.45'/></svg>");
+            opacity: 0.3;
+            mix-blend-mode: overlay;
+        }
 
         /* Le burst du titre tourne très lentement — vivant, pas remarquable */
         header::before {
@@ -1352,7 +1360,8 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            #bg-fx { animation: none; }
+            #bg-sky, #bg-rays { animation: none; }
+            #bg-clouds::before, #bg-clouds::after { animation: none; }
             #bg-canvas { display: none; }
             header::before, .today-poster::before { animation: none; }
         }
@@ -1392,7 +1401,7 @@
             .stats-grid { grid-template-columns: 1fr; }
             .top3-tile { width: 240px; }
             .today-poster::after { display: none; }
-            #bg-fx::before { display: none; }
+            #bg-sky::before { display: none; }
         }
     </style>
 </head>
@@ -2875,80 +2884,673 @@
         }
 
         /* ============================================================
-         * ⛩ FOND ANIMÉ — pétales d'encre, poussière, balayage de vitesse
+         * ⛩ CIEL ANIMÉ — décor complet d'opening, dessiné en canvas
          *
-         * Auto-suffisant : il crée ses propres calques (#bg-fx et
-         * #bg-canvas) et ne touche à rien d'autre. Voir le bloc CSS
-         * « ARRIÈRE-PLAN » pour l'habillage.
+         * Le décor n'est plus une image : montagnes générées par
+         * déplacement de point médian, village japonais (toits courbes,
+         * pagode, torii, arbres), poteaux électriques avec caténaires,
+         * lune, lucioles — le tout en parallaxe sur le scroll.
          *
-         * Trois réglages utiles :
-         *   - densité      → les nombres dans build()
-         *   - fréquence du balayage → rand(14000, 30000) dans spawnFlash
-         *   - filigrane JP → opacity de #bg-fx::before dans le CSS
+         * Les pétales sont pré-rendus en sprites : vraie forme échancrée,
+         * dégradé de la base vers la pointe, nervures, culbute sur deux
+         * axes avec ombrage, et une couche floue au premier plan pour
+         * la profondeur de champ.
+         *
+         * ⚙ RÉGLAGES : l'objet BG ci-dessous. false ou 0 retire le
+         *   calque et son coût. Densités valables sur grand écran
+         *   (divisées par ~2 sous 700 px).
          * ============================================================ */
         (function () {
             'use strict';
 
-            const fx = document.createElement('div');
-            fx.id = 'bg-fx';
-            fx.setAttribute('aria-hidden', 'true');
-            document.body.insertBefore(fx, document.body.firstChild);
+            const BG = {
+                ciel: true,          // dégradé crépusculaire + filigrane japonais
+                rayons: true,        // rayons de lumière qui balaient
+                nuages: true,        // deux bancs de nuages en parallaxe
+                grain: true,         // grain de pellicule
 
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                montagnes: true,     // deux crêtes procédurales, jamais les mêmes
+                village: true,       // maisons, pagode, torii, arbres
+                poteaux: true,       // poteaux électriques + fils qui pendent
+                lune: true,          // lune et son halo
+                branche: true,       // branche de cerisier en amorce (écrans larges)
 
-            const canvas = document.createElement('canvas');
-            canvas.id = 'bg-canvas';
-            canvas.setAttribute('aria-hidden', 'true');
-            document.body.insertBefore(canvas, fx.nextSibling);
+                etoiles: 120,        // étoiles (0 = aucune)
+                scintillantes: 7,    // parmi elles, celles à croix de lumière
+                filantes: true,      // étoiles filantes, toutes les 9 à 24 s
+                bokeh: 14,           // halos lumineux qui montent
+                lucioles: 20,        // lucioles près du sol
+                petales: 26,         // pétales nets
+                petalesFlous: 5,     // pétales au premier plan, hors focale
+                rafales: true,       // coups de vent qui emportent les pétales
+                lignesVitesse: true  // balayage manga, toutes les 22 à 45 s
+            };
 
+            const body = document.body;
+            const layer = (id, on) => {
+                if (!on) return null;
+                const el = document.createElement('div');
+                el.id = id;
+                el.setAttribute('aria-hidden', 'true');
+                return el;
+            };
+
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* Insérés en tête de <body>, du plus lointain au plus proche. */
+            const stack = [layer('bg-sky', BG.ciel)].filter(Boolean);
+
+            let canvas = null;
+            if (!reduced) {
+                canvas = document.createElement('canvas');
+                canvas.id = 'bg-canvas';
+                canvas.setAttribute('aria-hidden', 'true');
+                stack.push(canvas);
+            }
+
+            const grain = layer('bg-grain', BG.grain);
+            if (grain) stack.push(grain);
+
+            const anchor = body.firstChild;
+            stack.forEach(el => body.insertBefore(el, anchor));
+
+            if (!canvas) return;
+
+            /* ======================================================
+             * Outils
+             * ====================================================== */
             const ctx = canvas.getContext('2d');
-            const INK = '242,239,233', RED = '232,51,46', YEL = '255,210,63';
             const rand = (a, b) => a + Math.random() * (b - a);
+            const randInt = (a, b) => Math.floor(rand(a, b + 1));
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-            let W = 0, H = 0, petals = [], dust = [], flash = null, nextFlash = 6000;
+            const ENCRE = '#07070a';            // la silhouette, presque noire
+            const IVOIRE = '242,239,233';
+            const OR = '255,210,63';
+            const VIOLET = '150,132,215';
+            const ROUGE = '232,51,46';
+
+            /* Trois teintes par pétale : base sombre → cœur → pointe pâle */
+            const PALETTES = [
+                { base: '206,112,134', mid: '255,183,197', tip: '255,232,238' },  // sakura
+                { base: '198,140,150', mid: '250,214,220', tip: '255,255,255' },  // sakura pâle
+                { base: '146,26,24',   mid: '232,51,46',   tip: '255,152,132' }   // rouge shōnen
+            ];
+
+            let W = 0, H = 0, small = false, dpr = 1;
+            let stars = [], bokeh = [], fireflies = [], petals = [], shooting = [];
+            let flash = null, nextShoot = 4000, nextFlash = 16000, nextGust = 7000;
+            let gust = 0, gustTarget = 0;
             let scrollPush = 0, lastScroll = window.scrollY;
+            const scenery = {};
+            const sprites = { petal: [], petalBlur: [], glow: {} };
 
-            /* --- Un pétale : profondeur, dérive, rotation sur son axe --- */
-            function makePetal(fromTop) {
-                const depth = Math.random();          // 0 = arrière-plan, 1 = premier plan
+            /* ======================================================
+             * Sprites — dessinés une fois, réutilisés à chaque image
+             * ====================================================== */
+            function glowSprite(rgb) {
+                if (sprites.glow[rgb]) return sprites.glow[rgb];
+                const s = 128;
+                const c = document.createElement('canvas');
+                c.width = c.height = s;
+                const g = c.getContext('2d');
+                const grd = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+                grd.addColorStop(0, `rgba(${rgb},0.5)`);
+                grd.addColorStop(0.55, `rgba(${rgb},0.16)`);
+                grd.addColorStop(0.85, `rgba(${rgb},0.05)`);
+                grd.addColorStop(1, `rgba(${rgb},0)`);
+                g.fillStyle = grd;
+                g.beginPath();
+                g.arc(s / 2, s / 2, s / 2, 0, Math.PI * 2);
+                g.fill();
+                g.strokeStyle = `rgba(${rgb},0.19)`;   // l'anneau d'un vrai bokeh
+                g.lineWidth = 5;
+                g.beginPath();
+                g.arc(s / 2, s / 2, s / 2 - 8, 0, Math.PI * 2);
+                g.stroke();
+                sprites.glow[rgb] = c;
+                return c;
+            }
+
+            /* Le pétale de sakura : deux flancs bombés et une échancrure
+               à la pointe. C'est cette encoche qui fait qu'on le
+               reconnaît au lieu de voir une simple feuille. */
+            function petalSprite(pal, blur) {
+                const S = 80;
+                const c = document.createElement('canvas');
+                c.width = c.height = S;
+                const g = c.getContext('2d');
+                const s = S * 0.36;
+                g.translate(S / 2, S / 2);
+                if (blur) { try { g.filter = `blur(${blur}px)`; } catch (e) {} }
+
+                g.beginPath();
+                g.moveTo(0, s * 0.66);
+                g.bezierCurveTo(-s * 0.98, s * 0.34, -s * 0.9, -s * 0.44, -s * 0.28, -s * 0.7);
+                g.quadraticCurveTo(0, -s * 0.44, s * 0.28, -s * 0.7);   // ← l'échancrure
+                g.bezierCurveTo(s * 0.9, -s * 0.44, s * 0.98, s * 0.34, 0, s * 0.66);
+                g.closePath();
+
+                const grd = g.createLinearGradient(0, s * 0.66, 0, -s * 0.7);
+                grd.addColorStop(0, `rgba(${pal.base},1)`);
+                grd.addColorStop(0.42, `rgba(${pal.mid},1)`);
+                grd.addColorStop(1, `rgba(${pal.tip},1)`);
+                g.fillStyle = grd;
+                g.fill();
+
+                g.strokeStyle = `rgba(${pal.base},0.42)`;   // les nervures
+                g.lineWidth = 0.9;
+                g.beginPath();
+                g.moveTo(0, s * 0.52); g.lineTo(0, -s * 0.5);
+                g.moveTo(0, s * 0.24); g.lineTo(-s * 0.38, -s * 0.3);
+                g.moveTo(0, s * 0.24); g.lineTo(s * 0.38, -s * 0.3);
+                g.stroke();
+
+                g.strokeStyle = `rgba(${pal.tip},0.3)`;     // liseré lumineux
+                g.lineWidth = 0.7;
+                g.beginPath();
+                g.moveTo(0, s * 0.66);
+                g.bezierCurveTo(-s * 0.98, s * 0.34, -s * 0.9, -s * 0.44, -s * 0.28, -s * 0.7);
+                g.stroke();
+
+                return c;
+            }
+
+            function moonSprite(size) {
+                const S = Math.round(size * 3.4);
+                const c = document.createElement('canvas');
+                c.width = c.height = S;
+                const g = c.getContext('2d');
+                const cx = S / 2, r = size / 2;
+
+                const halo = g.createRadialGradient(cx, cx, r * 0.7, cx, cx, S / 2);
+                halo.addColorStop(0, 'rgba(255,244,214,0.20)');
+                halo.addColorStop(0.35, 'rgba(255,232,190,0.07)');
+                halo.addColorStop(1, 'rgba(255,232,190,0)');
+                g.fillStyle = halo;
+                g.fillRect(0, 0, S, S);
+
+                const disc = g.createRadialGradient(cx - r * 0.3, cx - r * 0.3, r * 0.1, cx, cx, r);
+                disc.addColorStop(0, 'rgba(255,252,240,0.95)');
+                disc.addColorStop(0.7, 'rgba(250,238,208,0.85)');
+                disc.addColorStop(1, 'rgba(228,208,178,0.7)');
+                g.fillStyle = disc;
+                g.beginPath();
+                g.arc(cx, cx, r, 0, Math.PI * 2);
+                g.fill();
+
+                g.globalCompositeOperation = 'source-atop';    // quelques mers lunaires
+                g.fillStyle = 'rgba(196,180,156,0.35)';
+                for (let i = 0; i < 6; i++) {
+                    g.beginPath();
+                    g.arc(cx + rand(-r * 0.55, r * 0.55), cx + rand(-r * 0.55, r * 0.55),
+                          rand(r * 0.08, r * 0.24), 0, Math.PI * 2);
+                    g.fill();
+                }
+                return c;
+            }
+
+            /* ======================================================
+             * Décor — rayons, nuages, crêtes, village, poteaux
+             *
+             * Tout est rendu une seule fois à la taille exacte de
+             * l'écran. À l'exécution il ne reste que des recopies 1:1,
+             * l'opération la moins chère qu'un navigateur sache faire.
+             * ====================================================== */
+
+            /* Rayons crépusculaires, en éventail depuis le haut */
+            function renderRays(h) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const ox = W * 0.5, oy = -h * 0.12;
+                const R = Math.hypot(W, h) * 1.3;
+
+                g.translate(ox, oy);
+                g.fillStyle = 'rgba(255, 226, 170, 0.042)';
+                for (let a = 0; a < Math.PI; a += rand(0.055, 0.1)) {
+                    const w = rand(0.006, 0.02);
+                    g.beginPath();
+                    g.moveTo(0, 0);
+                    g.lineTo(Math.cos(a) * R, Math.sin(a) * R);
+                    g.lineTo(Math.cos(a + w) * R, Math.sin(a + w) * R);
+                    g.closePath();
+                    g.fill();
+                }
+                g.setTransform(1, 0, 0, 1, 0, 0);
+
+                // fondu : rien tout en haut, rien tout en bas
+                g.globalCompositeOperation = 'destination-out';
+                const m = g.createLinearGradient(0, 0, 0, c.height);
+                m.addColorStop(0, 'rgba(0,0,0,0.96)');
+                m.addColorStop(0.22, 'rgba(0,0,0,0)');
+                m.addColorStop(0.6, 'rgba(0,0,0,0.25)');
+                m.addColorStop(1, 'rgba(0,0,0,1)');
+                g.fillStyle = m;
+                g.fillRect(0, 0, c.width, c.height);
+                return { c, h: c.height };
+            }
+
+            /* Un banc de nuages, tuilable : chaque masse est aussi
+               dessinée décalée d'une tuile pour que la couture passe
+               inaperçue. */
+            function renderCloudBand(tileW, h, count, colors) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(tileW)); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                for (let i = 0; i < count; i++) {
+                    const cx = rand(0, tileW), cy = rand(h * 0.25, h * 0.8);
+                    const rx = rand(tileW * 0.09, tileW * 0.26), ry = rand(h * 0.1, h * 0.24);
+                    const col = pick(colors);
+                    for (const dx of [-tileW, 0, tileW]) {
+                        const grd = g.createRadialGradient(cx + dx, cy, 0, cx + dx, cy, Math.max(rx, ry));
+                        grd.addColorStop(0, `rgba(${col},0.085)`);
+                        grd.addColorStop(0.55, `rgba(${col},0.035)`);
+                        grd.addColorStop(1, `rgba(${col},0)`);
+                        g.save();
+                        g.translate(cx + dx, cy);
+                        g.scale(1, ry / Math.max(rx, ry));
+                        g.translate(-(cx + dx), -cy);
+                        g.fillStyle = grd;
+                        g.beginPath();
+                        g.arc(cx + dx, cy, Math.max(rx, ry), 0, Math.PI * 2);
+                        g.fill();
+                        g.restore();
+                    }
+                }
+                return { c, w: c.width, h: c.height };
+            }
+
+            /* Déplacement de point médian : la même technique que la
+               foudre, appliquée à une ligne d'horizon. Deux chargements
+               ne donnent jamais la même montagne. */
+            function ridgeHeights(levels, h, rough) {
+                const n = Math.pow(2, levels) + 1;
+                const a = new Float32Array(n);
+                a[0] = rand(0.3, 0.75) * h;
+                a[n - 1] = rand(0.3, 0.75) * h;
+                let step = n - 1, amp = h * 0.46;
+                while (step > 1) {
+                    const half = step >> 1;
+                    for (let i = half; i < n; i += step) {
+                        a[i] = (a[i - half] + a[Math.min(n - 1, i + half)]) / 2 + rand(-amp, amp);
+                    }
+                    step = half;
+                    amp *= rough;
+                }
+                for (let i = 0; i < n; i++) a[i] = Math.max(h * 0.06, Math.min(h * 0.97, a[i]));
+                return a;
+            }
+
+            function renderRidge(h, fill, rough, rim) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const a = ridgeHeights(7, h, rough);
+                const n = a.length;
+
+                g.beginPath();
+                g.moveTo(0, h - a[0]);
+                for (let i = 1; i < n; i++) g.lineTo(i / (n - 1) * W, h - a[i]);
+                g.lineTo(W, h); g.lineTo(0, h);
+                g.closePath();
+                g.fillStyle = fill;
+                g.fill();
+
+                if (rim) {                                  // liseré de lumière sur la crête
+                    g.beginPath();
+                    g.moveTo(0, h - a[0]);
+                    for (let i = 1; i < n; i++) g.lineTo(i / (n - 1) * W, h - a[i]);
+                    g.strokeStyle = rim;
+                    g.lineWidth = 1.3;
+                    g.stroke();
+                }
+                return { c, h: c.height };
+            }
+
+            /* --- Toit japonais : pentes concaves et avant-toits relevés.
+                   C'est ce galbe qui remplace le rectangle. --- */
+            function roof(g, cx, baseY, halfW, h, flick) {
+                g.beginPath();
+                g.moveTo(cx - halfW, baseY);
+                g.quadraticCurveTo(cx - halfW * 0.42, baseY - h * 0.62, cx, baseY - h);
+                g.quadraticCurveTo(cx + halfW * 0.42, baseY - h * 0.62, cx + halfW, baseY);
+                g.lineTo(cx + halfW + flick, baseY - flick * 0.85);
+                g.lineTo(cx + halfW * 0.82, baseY + h * 0.13);
+                g.lineTo(cx - halfW * 0.82, baseY + h * 0.13);
+                g.lineTo(cx - halfW - flick, baseY - flick * 0.85);
+                g.closePath();
+                g.fill();
+            }
+
+            function house(g, x, w, groundY, scale) {
+                const bodyH = rand(0.3, 0.5) * 90 * scale;
+                const rH = rand(0.28, 0.42) * 90 * scale;
+                g.fillRect(x + w * 0.1, groundY - bodyH, w * 0.8, bodyH);
+                roof(g, x + w / 2, groundY - bodyH, w * 0.62, rH, w * 0.09);
+                if (Math.random() < 0.35) {                 // une lucarne
+                    roof(g, x + w * 0.5, groundY - bodyH - rH * 0.55, w * 0.22, rH * 0.4, w * 0.03);
+                }
+            }
+
+            function tower(g, x, w, groundY, scale) {
+                const hh = rand(70, 165) * scale;
+                g.fillRect(x, groundY - hh, w, hh);
+                if (Math.random() < 0.5) g.fillRect(x + w / 2 - 1.5, groundY - hh - rand(14, 34) * scale, 3, rand(14, 34) * scale);
+                if (Math.random() < 0.4) g.fillRect(x - w * 0.12, groundY - hh - 4 * scale, w * 1.24, 4 * scale);
+            }
+
+            function tree(g, x, w, groundY, scale) {
+                const th = rand(26, 54) * scale;
+                g.fillRect(x + w * 0.44, groundY - th, w * 0.12, th);
+                const cy = groundY - th - w * 0.18;
+                for (let i = 0; i < randInt(6, 9); i++) {   // canopée irrégulière
+                    g.beginPath();
+                    g.arc(x + w / 2 + rand(-w * 0.4, w * 0.4),
+                          cy + rand(-w * 0.3, w * 0.22),
+                          rand(w * 0.22, w * 0.42), 0, Math.PI * 2);
+                    g.fill();
+                }
+            }
+
+            function pagoda(g, cx, w, groundY, scale) {
+                const tiers = randInt(4, 5);
+                const tierH = rand(24, 32) * scale;
+                let y = groundY;
+                for (let i = 0; i < tiers; i++) {
+                    const k = 1 - i * 0.13;
+                    g.fillRect(cx - w * 0.19 * k, y - tierH * 0.55, w * 0.38 * k, tierH * 0.55);
+                    roof(g, cx, y - tierH * 0.55, w * 0.56 * k, tierH * 0.5, w * 0.1 * k);
+                    y -= tierH;
+                }
+                g.fillRect(cx - 2 * scale, y - 26 * scale, 4 * scale, 28 * scale);   // le sōrin
+                for (let i = 0; i < 3; i++) {
+                    g.fillRect(cx - 6 * scale, y - 20 * scale + i * 6 * scale, 12 * scale, 2 * scale);
+                }
+            }
+
+            function torii(g, cx, w, groundY, scale) {
+                const hh = rand(78, 104) * scale;
+                const pw = Math.max(4, w * 0.055);
+                g.fillRect(cx - w * 0.3, groundY - hh, pw, hh);
+                g.fillRect(cx + w * 0.3 - pw, groundY - hh, pw, hh);
+                g.fillRect(cx - w * 0.38, groundY - hh * 0.76, w * 0.76, hh * 0.07);   // nuki
+                g.fillRect(cx - w * 0.05, groundY - hh * 1.02, w * 0.1, hh * 0.1);     // gakuzuka
+                const y = groundY - hh;                                               // kasagi galbé
+                g.beginPath();
+                g.moveTo(cx - w * 0.48, y + hh * 0.04);
+                g.quadraticCurveTo(cx, y - hh * 0.11, cx + w * 0.48, y + hh * 0.04);
+                g.lineTo(cx + w * 0.48, y + hh * 0.11);
+                g.quadraticCurveTo(cx, y - hh * 0.03, cx - w * 0.48, y + hh * 0.11);
+                g.closePath();
+                g.fill();
+            }
+
+            /* --- Branche de cerisier en amorce dans le coin.
+                   On construit d'abord la géométrie, puis on la rend
+                   deux fois : un liseré pâle décalé (la lune est
+                   derrière) puis le bois sombre par-dessus. Sans ce
+                   contre-jour, une branche noire sur un ciel noir ne
+                   se voit pas. --- */
+            function buildLimb(x, y, ang, len, w, depth, segs, blooms) {
+                const steps = 6;
+                let cx = x, cy = y, a = ang;
+                for (let i = 0; i < steps; i++) {
+                    const l = len / steps;
+                    const nx = cx + Math.cos(a) * l, ny = cy + Math.sin(a) * l;
+                    segs.push({ x1: cx, y1: cy, x2: nx, y2: ny, w: w * (1 - i / steps * 0.75) });
+                    a += rand(-0.24, 0.24) + (depth ? 0.05 : 0.02);
+                    cx = nx; cy = ny;
+                    if (depth < 2 && i > 1 && Math.random() < 0.5) {
+                        buildLimb(cx, cy, a + (Math.random() < 0.5 ? -1 : 1) * rand(0.45, 1),
+                            len * rand(0.34, 0.6), w * 0.52, depth + 1, segs, blooms);
+                    }
+                }
+                if (depth >= 1) blooms.push({ x: cx, y: cy, r: w * 2.6 });
+                if (depth === 0) blooms.push({ x: cx, y: cy, r: w * 2 });
+            }
+
+            function blossom(g, x, y, r) {
+                for (let i = 0; i < 5; i++) {
+                    const a = i / 5 * Math.PI * 2 + rand(-0.2, 0.2);
+                    g.save();
+                    g.translate(x + Math.cos(a) * r * 0.5, y + Math.sin(a) * r * 0.5);
+                    g.rotate(a);
+                    g.beginPath();
+                    g.ellipse(0, 0, r * 0.5, r * 0.36, 0, 0, Math.PI * 2);
+                    g.fill();
+                    g.restore();
+                }
+                g.save();
+                g.fillStyle = 'rgba(255,214,120,0.5)';
+                g.beginPath();
+                g.arc(x, y, r * 0.18, 0, Math.PI * 2);
+                g.fill();
+                g.restore();
+            }
+
+            function renderBranch(w, h) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const segs = [], blooms = [];
+                buildLimb(-10, h * 0.08, rand(0.34, 0.52), h * 0.95, Math.max(7, h * 0.032), 0, segs, blooms);
+                buildLimb(-10, h * 0.2, rand(0.05, 0.2), h * 0.7, Math.max(5, h * 0.022), 0, segs, blooms);
+
+                g.lineCap = 'round';
+                g.strokeStyle = 'rgba(226,214,232,0.16)';        // contre-jour lunaire
+                for (const s of segs) {
+                    g.lineWidth = s.w + 2.4;
+                    g.beginPath(); g.moveTo(s.x1 + 1.6, s.y1 - 1.6); g.lineTo(s.x2 + 1.6, s.y2 - 1.6); g.stroke();
+                }
+                g.strokeStyle = '#0d0b12';                        // le bois
+                for (const s of segs) {
+                    g.lineWidth = s.w;
+                    g.beginPath(); g.moveTo(s.x1, s.y1); g.lineTo(s.x2, s.y2); g.stroke();
+                }
+
+                for (const b of blooms) {                         // grappes de fleurs
+                    const n = randInt(3, 6);
+                    for (let i = 0; i < n; i++) {
+                        const bx = b.x + rand(-b.r * 1.6, b.r * 1.6);
+                        const by = b.y + rand(-b.r * 1.6, b.r * 1.6);
+                        g.fillStyle = pick(['rgba(255,196,210,0.5)', 'rgba(255,224,232,0.42)', 'rgba(246,168,186,0.45)']);
+                        blossom(g, bx, by, b.r * rand(0.5, 0.95));
+                    }
+                }
+                return { c, w: c.width, h: c.height };
+            }
+
+            function renderTown(h) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const groundY = c.height - Math.max(6, h * 0.05);
+                const scale = Math.min(1.25, Math.max(0.62, h / 190));
+                g.fillStyle = ENCRE;
+
+                const pagodaAt = rand(W * 0.1, W * 0.42);
+                const toriiAt = rand(W * 0.56, W * 0.88);
+                let pagodaDone = false, toriiDone = false;
+
+                let x = -60;
+                while (x < W + 60) {
+                    const w = rand(46, 108) * scale;
+                    if (!pagodaDone && x + w > pagodaAt) {
+                        pagoda(g, x + w * 0.9, w * 1.7, groundY, scale);
+                        pagodaDone = true;
+                        x += w * 1.9;
+                        continue;
+                    }
+                    if (!toriiDone && x + w > toriiAt) {
+                        torii(g, x + w * 0.9, w * 1.8, groundY, scale);
+                        toriiDone = true;
+                        x += w * 2;
+                        continue;
+                    }
+                    const r = Math.random();
+                    if (r < 0.5) house(g, x, w, groundY, scale);
+                    else if (r < 0.74) tower(g, x, w * 0.62, groundY, scale);
+                    else tree(g, x, w * 0.8, groundY, scale);
+                    x += w * rand(0.82, 1.12);
+                }
+
+                g.fillRect(0, groundY, c.width, c.height - groundY);   // le sol
+                return { c, h: c.height, groundY };
+            }
+
+            function renderPoles(h) {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, W); c.height = Math.max(1, Math.round(h));
+                const g = c.getContext('2d');
+                const groundY = c.height;
+                const scale = Math.min(1.2, Math.max(0.6, h / 240));
+
+                const list = [];
+                let x = rand(-80, 40);
+                while (x < W + 120) {
+                    list.push({ x, h: rand(0.55, 0.95) * h });
+                    x += rand(150, 285) * scale;
+                }
+
+                g.strokeStyle = ENCRE;                       // les fils, d'abord
+                g.lineWidth = 1.3;
+                for (let i = 0; i < list.length - 1; i++) {
+                    const a = list[i], b = list[i + 1];
+                    for (let k = 0; k < 3; k++) {
+                        const off = 8 * scale + k * 9 * scale;
+                        const y1 = groundY - a.h + off, y2 = groundY - b.h + off;
+                        const sag = (b.x - a.x) * rand(0.11, 0.17);
+                        g.beginPath();
+                        g.moveTo(a.x, y1);
+                        g.quadraticCurveTo((a.x + b.x) / 2, (y1 + y2) / 2 + sag, b.x, y2);
+                        g.stroke();
+                    }
+                }
+
+                g.fillStyle = ENCRE;                         // puis les mâts
+                for (const p of list) {
+                    const top = groundY - p.h;
+                    g.fillRect(p.x - 2.4 * scale, top, 4.8 * scale, p.h);
+                    for (let k = 0; k < 3; k++) {
+                        const y = top + 6 * scale + k * 9 * scale;
+                        const armW = (26 - k * 4) * scale;
+                        g.fillRect(p.x - armW, y, armW * 2, 2.4 * scale);
+                    }
+                }
+                return { c, h: c.height };
+            }
+
+            /* ======================================================
+             * Particules
+             * ====================================================== */
+            function makeStar() {
                 return {
-                    x: rand(0, W),
-                    y: fromTop ? rand(-H * 0.4, -20) : rand(0, H),
-                    size: 5 + depth * 11,
-                    depth,
-                    speed: 0.16 + depth * 0.5,
-                    sway: rand(20, 60),
-                    swaySpeed: rand(0.0004, 0.0012),
+                    x: rand(0, W), y: rand(0, H * 0.72),
+                    r: rand(0.35, 1.35),
+                    base: rand(0.12, 0.7),
                     phase: rand(0, Math.PI * 2),
-                    rot: rand(0, Math.PI * 2),
-                    rotSpeed: rand(-0.008, 0.008),
-                    flip: rand(0, Math.PI * 2),
-                    flipSpeed: rand(0.005, 0.013),
-                    color: Math.random() < 0.15 ? RED : INK,
-                    alpha: 0.05 + depth * 0.15
+                    speed: rand(0.0006, 0.0028),
+                    cross: false,
+                    color: Math.random() < 0.12 ? OR : IVOIRE
                 };
             }
 
-            function makeDust(fromBottom) {
+            function makeBokeh(fromBottom) {
+                return {
+                    x: rand(-40, W + 40),
+                    y: fromBottom ? rand(H + 30, H + 220) : rand(0, H),
+                    size: rand(22, 92),
+                    speed: rand(0.06, 0.3),
+                    sway: rand(12, 46),
+                    swaySpeed: rand(0.0003, 0.0009),
+                    phase: rand(0, Math.PI * 2),
+                    alpha: rand(0.05, 0.15),
+                    pulse: rand(0.0008, 0.0022),
+                    color: pick([OR, ROUGE, VIOLET, '255,183,197'])
+                };
+            }
+
+            /* Les lucioles vivent bas, près du village, et clignotent
+               par intermittence au lieu de pulser régulièrement. */
+            function makeFirefly() {
                 return {
                     x: rand(0, W),
-                    y: fromBottom ? rand(H, H + 60) : rand(0, H),
-                    r: rand(0.6, 2.2),
-                    speed: rand(0.05, 0.22),
-                    drift: rand(-0.12, 0.12),
-                    alpha: rand(0.04, 0.13),
-                    color: Math.random() < 0.12 ? YEL : INK
+                    y: rand(H * 0.62, H * 0.99),
+                    size: rand(5, 13),
+                    vx: rand(-0.22, 0.22),
+                    vy: rand(-0.14, 0.08),
+                    phase: rand(0, Math.PI * 2),
+                    speed: rand(0.0012, 0.004),
+                    wander: rand(0.001, 0.003),
+                    alpha: rand(0.35, 0.9)
+                };
+            }
+
+            function makePetal(fromTop, blurred) {
+                const depth = blurred ? rand(0.9, 1) : Math.random();
+                return {
+                    x: rand(-30, W + 30),
+                    y: fromTop ? rand(-H * 0.45, -30) : rand(0, H),
+                    size: blurred ? rand(32, 60) : 13 + depth * 28,
+                    depth, blurred,
+                    speed: (blurred ? 0.5 : 0.16) + depth * 0.55,
+                    sway: rand(24, 70),
+                    swaySpeed: rand(0.0004, 0.0013),
+                    phase: rand(0, Math.PI * 2),
+                    rot: rand(0, Math.PI * 2),
+                    rotSpeed: rand(-0.012, 0.012),
+                    flip: rand(0, Math.PI * 2),
+                    flipSpeed: rand(0.006, 0.018),
+                    tilt: rand(0, Math.PI * 2),
+                    tiltSpeed: rand(0.003, 0.009),
+                    pal: randInt(0, PALETTES.length - 1),
+                    alpha: blurred ? rand(0.07, 0.14) : 0.38 + depth * 0.5
                 };
             }
 
             function build() {
-                const small = W < 700;
-                petals = Array.from({ length: small ? 10 : 22 }, () => makePetal(false));
-                dust = Array.from({ length: small ? 16 : 34 }, () => makeDust(false));
+                small = W < 700;
+                const n = k => Math.round(small ? k * 0.5 : k);
+
+                stars = Array.from({ length: n(BG.etoiles) }, makeStar);
+                for (let i = 0; i < Math.min(n(BG.scintillantes), stars.length); i++) {
+                    stars[i].cross = true;
+                    stars[i].r = rand(1, 1.9);
+                    stars[i].base = rand(0.5, 0.9);
+                }
+                bokeh = Array.from({ length: n(BG.bokeh) }, () => makeBokeh(false));
+                fireflies = Array.from({ length: n(BG.lucioles) }, makeFirefly);
+                petals = [
+                    ...Array.from({ length: n(BG.petales) }, () => makePetal(false, false)),
+                    ...Array.from({ length: n(BG.petalesFlous) }, () => makePetal(false, true))
+                ];
+
+                scenery.branch = (BG.branche && W > 900)
+                    ? renderBranch(W * 0.34, H * 0.46) : null;
+                scenery.rays = BG.rayons ? renderRays(Math.max(240, H * 0.72)) : null;
+                scenery.cloudFar = BG.nuages
+                    ? renderCloudBand(Math.max(W, 900), Math.max(120, H * 0.34), small ? 4 : 7,
+                        ['150,132,205', '210,130,120']) : null;
+                scenery.cloudNear = BG.nuages
+                    ? renderCloudBand(Math.max(W * 0.8, 700), Math.max(100, H * 0.26), small ? 3 : 6,
+                        ['232,120,90', '232,51,46', '160,140,210']) : null;
+
+                scenery.mountFar = BG.montagnes
+                    ? renderRidge(Math.max(120, H * 0.34), 'rgba(33,27,52,0.75)', 0.56, 'rgba(150,124,205,0.10)') : null;
+                scenery.mountNear = BG.montagnes
+                    ? renderRidge(Math.max(90, H * 0.24), 'rgba(18,14,30,0.94)', 0.62, 'rgba(232,51,46,0.13)') : null;
+                scenery.town = BG.village ? renderTown(Math.max(120, H * 0.2)) : null;
+                scenery.poles = BG.poteaux ? renderPoles(Math.max(150, H * 0.3)) : null;
+
+                if (BG.lune) {
+                    const size = Math.max(48, Math.min(W, H) * 0.1);
+                    scenery.moon = { c: moonSprite(size), size, x: W * rand(0.72, 0.86), y: H * rand(0.07, 0.13) };
+                }
             }
 
             function resize() {
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
                 W = window.innerWidth;
                 H = window.innerHeight;
                 canvas.width = W * dpr;
@@ -2959,7 +3561,13 @@
                 build();
             }
 
-            /* --- Le scroll pousse les pétales : plus tu descends vite, plus ça souffle --- */
+            if (!sprites.petal.length) {
+                PALETTES.forEach(p => {
+                    sprites.petal.push(petalSprite(p, 0));
+                    sprites.petalBlur.push(petalSprite(p, 2.2));
+                });
+            }
+
             window.addEventListener('scroll', () => {
                 const d = window.scrollY - lastScroll;
                 lastScroll = window.scrollY;
@@ -2968,44 +3576,142 @@
 
             window.addEventListener('resize', resize);
 
+            /* ======================================================
+             * Rendus
+             * ====================================================== */
+            function drawStars(t) {
+                ctx.globalCompositeOperation = 'lighter';
+                for (const s of stars) {
+                    const a = s.base * (0.55 + 0.45 * Math.sin(t * s.speed + s.phase));
+                    ctx.fillStyle = `rgba(${s.color},${a})`;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (s.cross) {
+                        const L = s.r * 9 * (0.6 + 0.4 * a);
+                        ctx.strokeStyle = `rgba(${s.color},${a * 0.4})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(s.x - L, s.y); ctx.lineTo(s.x + L, s.y);
+                        ctx.moveTo(s.x, s.y - L); ctx.lineTo(s.x, s.y + L);
+                        ctx.stroke();
+                    }
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            function drawBokeh(t, dt) {
+                ctx.globalCompositeOperation = 'lighter';
+                for (const b of bokeh) {
+                    b.y -= b.speed * dt;
+                    if (b.y < -b.size) Object.assign(b, makeBokeh(true));
+                    const x = b.x + Math.sin(t * b.swaySpeed + b.phase) * b.sway;
+                    ctx.globalAlpha = b.alpha * (0.7 + 0.3 * Math.sin(t * b.pulse + b.phase));
+                    ctx.drawImage(glowSprite(b.color), x - b.size / 2, b.y - b.size / 2, b.size, b.size);
+                }
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            function drawFireflies(t, dt) {
+                ctx.globalCompositeOperation = 'lighter';
+                const sp = glowSprite(OR);
+                for (const f of fireflies) {
+                    f.x += (f.vx + Math.sin(t * f.wander + f.phase) * 0.25) * dt;
+                    f.y += (f.vy + Math.cos(t * f.wander * 1.3 + f.phase) * 0.18) * dt;
+                    if (f.x < -20) f.x = W + 20;
+                    if (f.x > W + 20) f.x = -20;
+                    if (f.y < H * 0.55 || f.y > H + 20) Object.assign(f, makeFirefly());
+                    // clignotement : une sinusoïde durcie, donc des éclats brefs
+                    const s = Math.sin(t * f.speed + f.phase);
+                    const a = f.alpha * Math.max(0, Math.pow((s + 1) / 2, 3.5));
+                    if (a < 0.01) continue;
+                    ctx.globalAlpha = a;
+                    ctx.drawImage(sp, f.x - f.size / 2, f.y - f.size / 2, f.size, f.size);
+                }
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            /* Un pétale culbute sur deux axes. On simule l'axe qui nous
+               fait face par un scaleX, et on assombrit quand il passe
+               de profil — sans ça, il a l'air d'un autocollant. */
             function drawPetal(p, t) {
                 const x = p.x + Math.sin(t * p.swaySpeed + p.phase) * p.sway;
-                const s = p.size;
+                let sx = Math.cos(p.flip);
+                const face = Math.abs(sx);
+                if (face < 0.07) sx = 0.07 * (sx < 0 ? -1 : 1);
+                const sy = 0.86 + 0.14 * Math.cos(p.tilt);
+                const sp = p.blurred ? sprites.petalBlur[p.pal] : sprites.petal[p.pal];
+
                 ctx.save();
                 ctx.translate(x, p.y);
                 ctx.rotate(p.rot);
-                ctx.scale(Math.cos(p.flip) * 0.8 + 0.2, 1);   // il tourne sur lui-même
-                ctx.beginPath();
-                ctx.moveTo(0, -s * 0.5);
-                ctx.bezierCurveTo(s * 0.62, -s * 0.42, s * 0.5, s * 0.42, 0, s * 0.55);
-                ctx.bezierCurveTo(-s * 0.5, s * 0.42, -s * 0.62, -s * 0.42, 0, -s * 0.5);
-                ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
-                ctx.fill();
-                ctx.strokeStyle = `rgba(${p.color},${p.alpha * 0.9})`;   // le trait d'encre
-                ctx.lineWidth = 0.7;
-                ctx.stroke();
+                ctx.scale(sx, sy);
+                ctx.globalAlpha = p.alpha * (0.34 + 0.66 * face);
+                ctx.drawImage(sp, -p.size / 2, -p.size / 2, p.size, p.size);
                 ctx.restore();
+                ctx.globalAlpha = 1;
             }
 
-            /* --- Balayage de lignes de vitesse : rare, bref, atmosphérique --- */
+            function spawnShooting(t) {
+                const fromLeft = Math.random() < 0.5;
+                const ang = fromLeft ? rand(0.25, 0.55) : Math.PI - rand(0.25, 0.55);
+                const sp = rand(11, 19);
+                shooting.push({
+                    x: fromLeft ? rand(-W * 0.15, W * 0.55) : rand(W * 0.45, W * 1.15),
+                    y: rand(-40, H * 0.32),
+                    vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+                    life: 0, max: rand(60, 105), trail: [],
+                    color: Math.random() < 0.25 ? OR : IVOIRE
+                });
+                nextShoot = t + rand(9000, 24000);
+            }
+
+            function drawShooting(dt) {
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = shooting.length - 1; i >= 0; i--) {
+                    const s = shooting[i];
+                    s.x += s.vx * dt; s.y += s.vy * dt; s.life += dt;
+                    s.trail.unshift({ x: s.x, y: s.y });
+                    if (s.trail.length > 22) s.trail.pop();
+                    const fade = s.life < 10 ? s.life / 10
+                               : Math.max(0, 1 - (s.life - 10) / (s.max - 10));
+                    ctx.lineCap = 'round';
+                    for (let j = 0; j < s.trail.length - 1; j++) {
+                        const k = 1 - j / s.trail.length;
+                        ctx.strokeStyle = `rgba(${s.color},${fade * k * k * 0.75})`;
+                        ctx.lineWidth = k * 2.4;
+                        ctx.beginPath();
+                        ctx.moveTo(s.trail[j].x, s.trail[j].y);
+                        ctx.lineTo(s.trail[j + 1].x, s.trail[j + 1].y);
+                        ctx.stroke();
+                    }
+                    ctx.fillStyle = `rgba(255,255,255,${fade * 0.9})`;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, 1.6, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (s.life > s.max || s.x < -W * 0.3 || s.x > W * 1.3 || s.y > H * 1.2) {
+                        shooting.splice(i, 1);
+                    }
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
             function spawnFlash(t) {
                 const span = Math.hypot(W, H);
                 flash = {
-                    t0: t,
-                    dur: rand(850, 1400),
+                    t0: t, dur: rand(850, 1400),
                     angle: (Math.random() < 0.5 ? -1 : 1) * rand(0.18, 0.42),
-                    dir: Math.random() < 0.5 ? -1 : 1,
-                    span,
+                    dir: Math.random() < 0.5 ? -1 : 1, span,
                     lines: Array.from({ length: 44 }, () => ({
                         y: rand(-span * 0.5, span * 0.5),
                         len: span * rand(0.2, 0.65),
-                        w: rand(0.5, 2),
-                        a: rand(0.25, 1),
-                        off: Math.random()
+                        w: rand(0.5, 2), a: rand(0.25, 1), off: Math.random()
                     }))
                 };
-                scrollPush -= 5 * flash.dir;   // le souffle secoue les pétales
-                nextFlash = t + rand(14000, 30000);
+                gustTarget += rand(1.4, 2.6) * -flash.dir;   // le souffle emporte les pétales
+                nextFlash = t + rand(22000, 45000);
             }
 
             function drawFlash(t) {
@@ -3020,7 +3726,7 @@
                 ctx.lineCap = 'round';
                 for (const l of flash.lines) {
                     const x = (-span * 0.75 + l.off * span * 0.5 + k * span * 1.5) * flash.dir;
-                    ctx.strokeStyle = `rgba(${INK},${fade * l.a * 0.085})`;
+                    ctx.strokeStyle = `rgba(${IVOIRE},${fade * l.a * 0.08})`;
                     ctx.lineWidth = l.w;
                     ctx.beginPath();
                     ctx.moveTo(x, l.y);
@@ -3030,6 +3736,9 @@
                 ctx.restore();
             }
 
+            /* ======================================================
+             * La boucle
+             * ====================================================== */
             let last = 0;
             function loop(t) {
                 requestAnimationFrame(loop);
@@ -3038,29 +3747,110 @@
                 last = t;
 
                 ctx.clearRect(0, 0, W, H);
-                scrollPush *= 0.93;
 
-                for (const d of dust) {
-                    d.y -= d.speed * dt;
-                    d.x += d.drift * dt;
-                    if (d.y < -10) Object.assign(d, makeDust(true));
-                    ctx.beginPath();
-                    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(${d.color},${d.alpha})`;
-                    ctx.fill();
+                /* -- Parallaxe : chaque plan glisse à sa propre vitesse -- */
+                const par = Math.min(window.scrollY, 1500);
+
+                if (scenery.rays) {
+                    // respiration lente plutôt qu'une rotation : pas de
+                    // rééchantillonnage, donc une recopie directe
+                    ctx.globalAlpha = 0.72 + 0.28 * Math.sin(t * 0.00007);
+                    ctx.drawImage(scenery.rays.c, 0, 0);
+                    ctx.globalAlpha = 1;
                 }
+
+                if (scenery.moon) {
+                    const m = scenery.moon;
+                    ctx.drawImage(m.c, m.x - m.c.width / 2, m.y - m.c.height / 2 - par * 0.006);
+                }
+
+                if (stars.length) drawStars(t);
+
+                if (scenery.cloudFar) {
+                    const b = scenery.cloudFar;
+                    const off = (t * 0.0072) % b.w;
+                    const y = H * 0.3 - par * 0.016;
+                    ctx.drawImage(b.c, -off, y);
+                    ctx.drawImage(b.c, -off + b.w, y);
+                }
+                if (scenery.cloudNear) {
+                    const b = scenery.cloudNear;
+                    const off = (t * 0.0155) % b.w;
+                    const y = H * 0.5 - par * 0.03;
+                    ctx.drawImage(b.c, off - b.w, y);
+                    ctx.drawImage(b.c, off, y);
+                    if (off < W) ctx.drawImage(b.c, off + b.w, y);
+                }
+
+                if (BG.filantes) {
+                    if (t > nextShoot) spawnShooting(t);
+                    if (shooting.length) drawShooting(dt);
+                }
+
+                if (scenery.mountFar) {
+                    const l = scenery.mountFar;
+                    ctx.drawImage(l.c, 0, H - l.h - H * 0.085 - par * 0.012);
+                }
+                if (scenery.mountNear) {
+                    const l = scenery.mountNear;
+                    ctx.drawImage(l.c, 0, H - l.h - H * 0.035 - par * 0.024);
+                }
+
+                /* Brume de vallée : sépare les montagnes du village */
+                const haze = ctx.createLinearGradient(0, H * 0.62, 0, H);
+                haze.addColorStop(0, 'rgba(232,51,46,0)');
+                haze.addColorStop(0.6, 'rgba(232,51,46,0.035)');
+                haze.addColorStop(1, 'rgba(255,140,60,0.08)');
+                ctx.fillStyle = haze;
+                ctx.fillRect(0, H * 0.62, W, H * 0.38);
+
+                if (bokeh.length) drawBokeh(t, dt);
+
+                if (scenery.town) {
+                    const dy = par * 0.038;
+                    ctx.drawImage(scenery.town.c, 0, H - scenery.town.h - dy);
+                    ctx.fillStyle = ENCRE;
+                    ctx.fillRect(0, H - dy - 2, W, dy + 4);
+                }
+                if (scenery.poles) {
+                    const dy = par * 0.062;
+                    ctx.drawImage(scenery.poles.c, 0, H - scenery.poles.h - dy);
+                }
+
+                if (scenery.branch) {
+                    ctx.drawImage(scenery.branch.c, 0, -par * 0.09);
+                }
+
+                if (fireflies.length) drawFireflies(t, dt);
+
+                /* -- Rafales : le vent monte, tient, puis retombe -- */
+                if (BG.rafales) {
+                    if (t > nextGust) {
+                        gustTarget = rand(-2.8, 2.8);
+                        nextGust = t + rand(7000, 17000);
+                    }
+                    gustTarget *= 0.985;
+                    gust += (gustTarget - gust) * 0.03 * dt;
+                }
+                scrollPush *= 0.93;
 
                 for (const p of petals) {
                     p.y += (p.speed + scrollPush * p.depth * 0.5) * dt;
-                    p.rot += p.rotSpeed * dt;
+                    p.x += gust * (0.35 + p.depth) * dt;
+                    p.rot += (p.rotSpeed + gust * 0.004) * dt;
                     p.flip += p.flipSpeed * dt;
-                    if (p.y > H + 60) Object.assign(p, makePetal(true));
-                    else if (p.y < -H * 0.5) p.y = H + 20;
+                    p.tilt += p.tiltSpeed * dt;
+                    if (p.y > H + 80) Object.assign(p, makePetal(true, p.blurred));
+                    else if (p.y < -H * 0.55) p.y = H + 30;
+                    if (p.x < -60) p.x = W + 50;
+                    else if (p.x > W + 60) p.x = -50;
                     drawPetal(p, t);
                 }
 
-                if (!flash && t > nextFlash) spawnFlash(t);
-                drawFlash(t);
+                if (BG.lignesVitesse) {
+                    if (!flash && t > nextFlash) spawnFlash(t);
+                    drawFlash(t);
+                }
             }
 
             resize();
