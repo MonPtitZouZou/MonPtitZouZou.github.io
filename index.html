@@ -1224,29 +1224,6 @@
         }
         .toast.active { transform: translateX(-50%) translateY(0); opacity: 1; }
         /* ============================================================
-         * OUVERTURE DE LA CARTE DE VŒUX
-         * Un seul écouteur par conteneur, posé une fois : les cartes
-         * sont recréées à chaque filtre, y attacher un handler
-         * individuel les ferait fuir.
-         * ============================================================ */
-        function bindCardOpen(id) {
-            const root = document.getElementById(id);
-            if (!root) return;
-            const open = (target) => {
-                const card = target.closest('[data-uid]');
-                if (!card) return false;
-                const u = users[Number(card.dataset.uid)];
-                if (!u) return false;
-                openShareModal(u);
-                return true;
-            };
-            root.addEventListener('click', e => open(e.target));
-            root.addEventListener('keydown', e => {
-                if (e.key !== 'Enter' && e.key !== ' ') return;
-                if (open(e.target)) e.preventDefault();
-            });
-        }
-        /* ============================================================
          * SCROLL TO TOP
          * ============================================================ */
         .scroll-top {
@@ -1607,7 +1584,11 @@
                             const bl = len * rand(0.35, 1.3);
                             branches.push(fractal(mid.x, mid.y,
                                 mid.x + Math.cos(ang) * bl, mid.y + Math.sin(ang) * bl,
-                                { detail: randInt(2, 4), offset: off * 0.7, branch: 0.12 }).main);
+                                /* decay manquait ici : off *= undefined donnait NaN,
+                                   et toutes les ramifications sortaient en « LNaN NaN ».
+                                   La foudre n'avait donc jamais eu ses branches. */
+                                { detail: randInt(2, 4), offset: off * 0.7,
+                                  decay: cfg.decay, branch: 0.12 }).main);
                         }
                     }
                     segs = next;
