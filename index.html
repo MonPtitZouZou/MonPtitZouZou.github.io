@@ -63,15 +63,12 @@
             mix-blend-mode: overlay;
         }
 
-        /* Vignette + halo rouge */
+        /* Vignette seule — les halos rouges vivent maintenant dans #bg-fx */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background:
-                radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%),
-                radial-gradient(circle at 12% 15%, rgba(232, 51, 46, 0.09), transparent 45%),
-                radial-gradient(circle at 88% 85%, rgba(232, 51, 46, 0.05), transparent 45%);
+            background: radial-gradient(ellipse at center, transparent 32%, rgba(0,0,0,0.62) 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -857,11 +854,14 @@
 
         .birthday-date {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.66rem;
             color: var(--ink-dim);
-            letter-spacing: 1.5px;
+            letter-spacing: 0.8px;
             margin-bottom: 8px;
             text-transform: uppercase;
+            white-space: nowrap;         /* garde « MERCREDI · 02 · SEPTEMBRE » sur une ligne */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .countdown-mini {
@@ -1267,6 +1267,97 @@
         }
 
         /* ============================================================
+         * ⛩ ARRIÈRE-PLAN — couches de page de manga
+         *
+         * Ordre d'empilement :
+         *   #bg-fx (0) → #bg-canvas (0) → body::before vignette (1)
+         *   → .container (2) → screentone body::after (9999)
+         *
+         * Les deux calques sont créés en JS (voir « FOND ANIMÉ »
+         * à la fin du script). Rien d'autre n'est touché.
+         * ============================================================ */
+        #bg-fx, #bg-canvas {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Couche 1 : halos qui respirent + trame diagonale */
+        #bg-fx {
+            inset: -12%;
+            background:
+                radial-gradient(circle at 16% 18%, rgba(232, 51, 46, 0.11), transparent 42%),
+                radial-gradient(circle at 84% 76%, rgba(232, 51, 46, 0.07), transparent 40%),
+                radial-gradient(circle at 60% 8%,  rgba(255, 210, 63, 0.035), transparent 34%),
+                repeating-linear-gradient(115deg,
+                    rgba(242, 239, 233, 0.022) 0 1px,
+                    transparent 1px 9px);
+            animation: bgDrift 48s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        @keyframes bgDrift {
+            from { transform: translate3d(0, 0, 0) scale(1); }
+            to   { transform: translate3d(-2.5%, 2%, 0) scale(1.07); }
+        }
+
+        /* Grain de papier — ce qui fait « imprimé » plutôt qu'« écran » */
+        #bg-fx::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.45'/></svg>");
+            opacity: 0.32;
+            mix-blend-mode: overlay;
+        }
+
+        /* Filigrane vertical façon tranche de tome.
+           Pour l'enlever : supprimer ce bloc.
+           Pour changer le texte : la propriété content. */
+        #bg-fx::before {
+            content: '誕生日スペシャル';
+            position: absolute;
+            top: 50%;
+            right: 13%;
+            transform: translateY(-50%);
+            writing-mode: vertical-rl;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            font-size: clamp(6rem, 16vw, 15rem);
+            letter-spacing: 0.14em;
+            color: var(--ink);
+            opacity: 0.022;
+            white-space: nowrap;
+        }
+
+        /* Couche 2 : pétales d'encre + poussière (canvas) */
+        #bg-canvas { inset: 0; }
+
+        /* Le burst du titre tourne très lentement — vivant, pas remarquable */
+        header::before {
+            animation: burstSpin 120s linear infinite;
+        }
+        @keyframes burstSpin {
+            from { transform: translate(-50%, -55%) rotate(0deg); }
+            to   { transform: translate(-50%, -55%) rotate(360deg); }
+        }
+
+        /* Idem derrière l'avatar du jour, en sens inverse */
+        .today-poster::before {
+            animation: posterSpin 80s linear infinite;
+        }
+        @keyframes posterSpin {
+            from { transform: translate(-50%, -50%) rotate(360deg); }
+            to   { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #bg-fx { animation: none; }
+            #bg-canvas { display: none; }
+            header::before, .today-poster::before { animation: none; }
+        }
+
+        /* ============================================================
          * MOBILE
          * ============================================================ */
         @media (max-width: 900px) {
@@ -1301,6 +1392,7 @@
             .stats-grid { grid-template-columns: 1fr; }
             .top3-tile { width: 240px; }
             .today-poster::after { display: none; }
+            #bg-fx::before { display: none; }
         }
     </style>
 </head>
@@ -1422,6 +1514,9 @@
         const today = new Date();
         const monthNames = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
             'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        const dayNames = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi',
+            'vendredi', 'samedi'];
+        function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
         const monthNamesShort = ['JANVIER', 'FÉVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN',
             'JUILLET', 'AOÛT', 'SEPTEMBRE', 'OCTOBRE', 'NOVEMBRE', 'DÉCEMBRE'];
 
@@ -2438,7 +2533,7 @@
                         ${imageHTML}
                         <div class="top3-tile-overlays">
                             <p class="top3-tile-name">${escapeHtml(getShortName(user))}</p>
-                            <p class="top3-tile-date">${pad(user.birthday.day)} ${monthNamesShort[user.birthday.month - 1]}</p>
+                            <p class="top3-tile-date">${capitalize(dayNames[next.getDay()])} · ${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}</p>
                             <div class="top3-countdown" data-countdown="${next.toISOString()}">
                                 <div class="top3-countdown-item"><div class="top3-countdown-value cd-d">${cd.days}</div><div class="top3-countdown-label">JRS</div></div>
                                 <div class="top3-countdown-item"><div class="top3-countdown-value cd-h">${pad(cd.hours)}</div><div class="top3-countdown-label">HRS</div></div>
@@ -2469,7 +2564,7 @@
                     <div class="card-content">
                         <div>
                             <h3 class="user-name">${escapeHtml(getFullName(user))}</h3>
-                            <p class="birthday-date">${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}</p>
+                            <p class="birthday-date">${capitalize(dayNames[nextBirthday.getDay()])} · ${pad(user.birthday.day)} · ${monthNamesShort[user.birthday.month - 1]}</p>
                         </div>
                         <div>
                             <div class="countdown-mini">
@@ -2778,6 +2873,199 @@
                 navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
+
+        /* ============================================================
+         * ⛩ FOND ANIMÉ — pétales d'encre, poussière, balayage de vitesse
+         *
+         * Auto-suffisant : il crée ses propres calques (#bg-fx et
+         * #bg-canvas) et ne touche à rien d'autre. Voir le bloc CSS
+         * « ARRIÈRE-PLAN » pour l'habillage.
+         *
+         * Trois réglages utiles :
+         *   - densité      → les nombres dans build()
+         *   - fréquence du balayage → rand(14000, 30000) dans spawnFlash
+         *   - filigrane JP → opacity de #bg-fx::before dans le CSS
+         * ============================================================ */
+        (function () {
+            'use strict';
+
+            const fx = document.createElement('div');
+            fx.id = 'bg-fx';
+            fx.setAttribute('aria-hidden', 'true');
+            document.body.insertBefore(fx, document.body.firstChild);
+
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.id = 'bg-canvas';
+            canvas.setAttribute('aria-hidden', 'true');
+            document.body.insertBefore(canvas, fx.nextSibling);
+
+            const ctx = canvas.getContext('2d');
+            const INK = '242,239,233', RED = '232,51,46', YEL = '255,210,63';
+            const rand = (a, b) => a + Math.random() * (b - a);
+
+            let W = 0, H = 0, petals = [], dust = [], flash = null, nextFlash = 6000;
+            let scrollPush = 0, lastScroll = window.scrollY;
+
+            /* --- Un pétale : profondeur, dérive, rotation sur son axe --- */
+            function makePetal(fromTop) {
+                const depth = Math.random();          // 0 = arrière-plan, 1 = premier plan
+                return {
+                    x: rand(0, W),
+                    y: fromTop ? rand(-H * 0.4, -20) : rand(0, H),
+                    size: 5 + depth * 11,
+                    depth,
+                    speed: 0.16 + depth * 0.5,
+                    sway: rand(20, 60),
+                    swaySpeed: rand(0.0004, 0.0012),
+                    phase: rand(0, Math.PI * 2),
+                    rot: rand(0, Math.PI * 2),
+                    rotSpeed: rand(-0.008, 0.008),
+                    flip: rand(0, Math.PI * 2),
+                    flipSpeed: rand(0.005, 0.013),
+                    color: Math.random() < 0.15 ? RED : INK,
+                    alpha: 0.05 + depth * 0.15
+                };
+            }
+
+            function makeDust(fromBottom) {
+                return {
+                    x: rand(0, W),
+                    y: fromBottom ? rand(H, H + 60) : rand(0, H),
+                    r: rand(0.6, 2.2),
+                    speed: rand(0.05, 0.22),
+                    drift: rand(-0.12, 0.12),
+                    alpha: rand(0.04, 0.13),
+                    color: Math.random() < 0.12 ? YEL : INK
+                };
+            }
+
+            function build() {
+                const small = W < 700;
+                petals = Array.from({ length: small ? 10 : 22 }, () => makePetal(false));
+                dust = Array.from({ length: small ? 16 : 34 }, () => makeDust(false));
+            }
+
+            function resize() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                W = window.innerWidth;
+                H = window.innerHeight;
+                canvas.width = W * dpr;
+                canvas.height = H * dpr;
+                canvas.style.width = W + 'px';
+                canvas.style.height = H + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                build();
+            }
+
+            /* --- Le scroll pousse les pétales : plus tu descends vite, plus ça souffle --- */
+            window.addEventListener('scroll', () => {
+                const d = window.scrollY - lastScroll;
+                lastScroll = window.scrollY;
+                scrollPush = Math.max(-16, Math.min(16, scrollPush + d * 0.07));
+            }, { passive: true });
+
+            window.addEventListener('resize', resize);
+
+            function drawPetal(p, t) {
+                const x = p.x + Math.sin(t * p.swaySpeed + p.phase) * p.sway;
+                const s = p.size;
+                ctx.save();
+                ctx.translate(x, p.y);
+                ctx.rotate(p.rot);
+                ctx.scale(Math.cos(p.flip) * 0.8 + 0.2, 1);   // il tourne sur lui-même
+                ctx.beginPath();
+                ctx.moveTo(0, -s * 0.5);
+                ctx.bezierCurveTo(s * 0.62, -s * 0.42, s * 0.5, s * 0.42, 0, s * 0.55);
+                ctx.bezierCurveTo(-s * 0.5, s * 0.42, -s * 0.62, -s * 0.42, 0, -s * 0.5);
+                ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(${p.color},${p.alpha * 0.9})`;   // le trait d'encre
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            /* --- Balayage de lignes de vitesse : rare, bref, atmosphérique --- */
+            function spawnFlash(t) {
+                const span = Math.hypot(W, H);
+                flash = {
+                    t0: t,
+                    dur: rand(850, 1400),
+                    angle: (Math.random() < 0.5 ? -1 : 1) * rand(0.18, 0.42),
+                    dir: Math.random() < 0.5 ? -1 : 1,
+                    span,
+                    lines: Array.from({ length: 44 }, () => ({
+                        y: rand(-span * 0.5, span * 0.5),
+                        len: span * rand(0.2, 0.65),
+                        w: rand(0.5, 2),
+                        a: rand(0.25, 1),
+                        off: Math.random()
+                    }))
+                };
+                scrollPush -= 5 * flash.dir;   // le souffle secoue les pétales
+                nextFlash = t + rand(14000, 30000);
+            }
+
+            function drawFlash(t) {
+                if (!flash) return;
+                const k = (t - flash.t0) / flash.dur;
+                if (k >= 1) { flash = null; return; }
+                const fade = Math.sin(k * Math.PI);
+                const span = flash.span;
+                ctx.save();
+                ctx.translate(W / 2, H / 2);
+                ctx.rotate(flash.angle);
+                ctx.lineCap = 'round';
+                for (const l of flash.lines) {
+                    const x = (-span * 0.75 + l.off * span * 0.5 + k * span * 1.5) * flash.dir;
+                    ctx.strokeStyle = `rgba(${INK},${fade * l.a * 0.085})`;
+                    ctx.lineWidth = l.w;
+                    ctx.beginPath();
+                    ctx.moveTo(x, l.y);
+                    ctx.lineTo(x + l.len * flash.dir, l.y);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            let last = 0;
+            function loop(t) {
+                requestAnimationFrame(loop);
+                if (document.hidden) { last = t; return; }
+                const dt = Math.min(t - last, 50) / 16.67;   // normalisé sur 60 fps
+                last = t;
+
+                ctx.clearRect(0, 0, W, H);
+                scrollPush *= 0.93;
+
+                for (const d of dust) {
+                    d.y -= d.speed * dt;
+                    d.x += d.drift * dt;
+                    if (d.y < -10) Object.assign(d, makeDust(true));
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${d.color},${d.alpha})`;
+                    ctx.fill();
+                }
+
+                for (const p of petals) {
+                    p.y += (p.speed + scrollPush * p.depth * 0.5) * dt;
+                    p.rot += p.rotSpeed * dt;
+                    p.flip += p.flipSpeed * dt;
+                    if (p.y > H + 60) Object.assign(p, makePetal(true));
+                    else if (p.y < -H * 0.5) p.y = H + 20;
+                    drawPetal(p, t);
+                }
+
+                if (!flash && t > nextFlash) spawnFlash(t);
+                drawFlash(t);
+            }
+
+            resize();
+            requestAnimationFrame(loop);
+        })();
     </script>
 </body>
 </html>
